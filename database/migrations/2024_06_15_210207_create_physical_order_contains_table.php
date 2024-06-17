@@ -27,7 +27,7 @@ return new class extends Migration
             $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        // Other constraints
+        // Value range constraints
         DB::statement("ALTER TABLE physical_order_contains ADD CONSTRAINT chk_amount_value CHECK (amount >= 1)");
     }
 

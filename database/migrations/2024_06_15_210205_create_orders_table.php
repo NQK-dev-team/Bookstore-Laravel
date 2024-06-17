@@ -21,10 +21,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Foreign keys
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        // Other constraints
+        // Value range constraints
         DB::statement("ALTER TABLE orders ADD CONSTRAINT chk_total_cost_value CHECK (total_cost >= 0)");
         DB::statement("ALTER TABLE orders ADD CONSTRAINT chk_total_discount_value CHECK (total_discount >= 0)");
 

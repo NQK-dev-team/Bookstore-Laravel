@@ -12,22 +12,65 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // ------------------------- User table -------------------------
         Schema::create('users', function (Blueprint $table) {
             $table->string('id', 20)->primary();
             $table->string('name')->nullable(false);
-            $table->string('email')->unique()->nullable();
-            $table->string('password')->nullable();
+            $table->string('email')->nullable(false);
+            $table->string('password')->nullable(false);
             $table->string('address', 1000)->nullable();
             $table->date('dob')->nullable(false);
-            $table->string('phone', 10)->nullable();
+            $table->string('phone', 10)->nullable(false);
             $table->string('image')->nullable();
             $table->char('gender')->nullable(false);
+            $table->boolean('is_admin')->default(false)->nullable(false);
+            $table->double('points')->nullable()->default(0);
+            $table->string('referrer_id', 20)->nullable();
+            $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();
         });
 
-        // Other constraints for the users table
+        // If the user is an admin then the following columns must be not null
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_not_null_address CHECK (is_admin = true AND address IS NOT NULL)");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_not_null_img CHECK (is_admin = true AND image IS NOT NULL)");
+
+        // If the user is an admin then the following columns must be null
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_points CHECK (is_admin = true AND points IS NULL)");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_referrer_id CHECK (is_admin = true AND referrer_id IS NULL)");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_deleted_at CHECK (is_admin = true AND deleted_at IS NULL)");
+
+
+        Schema::table('users', function (Blueprint $table) {
+            // Self referencing foreign key
+            $table->foreign('referrer_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+        });
+
+        // Partial unique constraints
+        DB::statement("CREATE UNIQUE INDEX unique_email_deleted_at ON users(email, deleted_at) WHERE deleted_at IS NULL;");
+        DB::statement("CREATE UNIQUE INDEX unique_phone_deleted_at ON users(phone, deleted_at) WHERE deleted_at IS NULL;");
+
+        // Value range constraints
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_points_value CHECK (points >= 0)");
         DB::statement("ALTER TABLE users ADD CONSTRAINT chk_gender CHECK (gender IN ('M', 'F','O'))");
+
+        // ------------------------- End of user table -------------------------
+
+        // ------------------------- Delete Queue table -------------------------
+        Schema::create('delete_queue', function (Blueprint $table) {
+            $table->integer('id')->primary();
+            $table->string('user_id', 20)->nullable(false);
+            $table->string('status')->nullable(false)->default('pending');
+            $table->timestamps();
+
+            // Foreign key constraints
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
+        });
+
+        // Value range constraints
+        DB::statement("ALTER TABLE delete_queue ADD CONSTRAINT chk_status CHECK (status IN ('pending', 'deleted', 'cancelled'))");
+
+        // ------------------------- End of delete queue table -------------------------
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

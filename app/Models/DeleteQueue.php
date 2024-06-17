@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Customer extends Model
+class DeleteQueue extends Model
 {
     use HasFactory;
 
@@ -14,12 +14,5 @@ class Customer extends Model
      *
      * @var string
      */
-    protected $table = 'customers';
-
-    /**
-     * The data type of the primary key ID.
-     *
-     * @var string
-     */
-    protected $keyType = 'string';
+    protected $table = 'delete_queue';
 }

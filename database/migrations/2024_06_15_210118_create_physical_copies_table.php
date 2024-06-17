@@ -24,7 +24,7 @@ return new class extends Migration
 
         });
 
-        // Other constraints
+        // Value range constraints
         DB::statement("ALTER TABLE physical_copies ADD CONSTRAINT chk_price_value CHECK (price >= 0)");
         DB::statement("ALTER TABLE physical_copies ADD CONSTRAINT chk_quantity_value CHECK (quantity >= 0)");
     }

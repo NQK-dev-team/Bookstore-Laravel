@@ -22,7 +22,7 @@ return new class extends Migration
             $table->foreign('id')->references('id')->on('discounts')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        // Other constraints
+        // Value range constraints
         DB::statement("ALTER TABLE referrer_discounts ADD CONSTRAINT chk_number_of_people_value CHECK (number_of_people >= 0)");
         DB::statement("ALTER TABLE referrer_discounts ADD CONSTRAINT chk_discount_value CHECK (discount >= 0 AND discount <= 100)");
     }

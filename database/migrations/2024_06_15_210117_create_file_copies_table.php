@@ -23,7 +23,7 @@ return new class extends Migration
             $table->foreign('id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        // Other constraints
+        // Value range constraints
         DB::statement("ALTER TABLE file_copies ADD CONSTRAINT chk_price_value CHECK (price >= 0)");
     }
 

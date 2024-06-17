@@ -25,10 +25,10 @@ return new class extends Migration
 
             // Foreign keys
             $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        // Other constraints
+        // Value range constraints
         DB::statement("ALTER TABLE ratings ADD CONSTRAINT chk_star_value CHECK (star >= 0 AND star <= 5)");
     }
 

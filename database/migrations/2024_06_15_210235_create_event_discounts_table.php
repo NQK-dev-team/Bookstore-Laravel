@@ -25,7 +25,7 @@ return new class extends Migration
             $table->foreign('id')->references('id')->on('discounts')->onDelete('cascade')->onUpdate('cascade');
         });
 
-        // Other constraints
+        // Value range constraints
         DB::statement("ALTER TABLE event_discounts ADD CONSTRAINT chk_discount_value CHECK (discount >= 0 AND discount <= 100)");
         DB::statement("ALTER TABLE event_discounts ADD CONSTRAINT chk_start_date_end_date CHECK (start_date <= end_date)");
     }
