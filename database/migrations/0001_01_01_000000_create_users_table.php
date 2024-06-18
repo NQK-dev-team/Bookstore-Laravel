@@ -32,13 +32,13 @@ return new class extends Migration
         });
 
         // If the user is an admin then the following columns must be not null
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_not_null_address CHECK (is_admin = true AND address IS NOT NULL)");
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_not_null_img CHECK (is_admin = true AND image IS NOT NULL)");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_not_null_address CHECK (NOT is_admin OR (is_admin AND address IS NOT NULL))");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_not_null_img CHECK (NOT is_admin OR (is_admin AND image IS NOT NULL))");
 
         // If the user is an admin then the following columns must be null
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_points CHECK (is_admin = true AND points IS NULL)");
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_referrer_id CHECK (is_admin = true AND referrer_id IS NULL)");
-        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_deleted_at CHECK (is_admin = true AND deleted_at IS NULL)");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_points CHECK (NOT is_admin OR (is_admin AND points IS NULL))");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_referrer_id CHECK (NOT is_admin OR (is_admin AND referrer_id IS NULL))");
+        DB::statement("ALTER TABLE users ADD CONSTRAINT chk_admin_null_deleted_at CHECK (NOT is_admin OR (is_admin AND deleted_at IS NULL))");
 
 
         Schema::table('users', function (Blueprint $table) {
