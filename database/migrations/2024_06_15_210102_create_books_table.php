@@ -27,8 +27,8 @@ return new class extends Migration
         });
 
         // Partial unique constraints
-        DB::statement("CREATE UNIQUE INDEX unique_name_edition_deleted_at ON books(name, edition, deleted_at) WHERE deleted_at IS NULL;");
-        DB::statement("CREATE UNIQUE INDEX unique_isbn_deleted_at ON books(isbn, deleted_at) WHERE deleted_at IS NULL;");
+        DB::statement("CREATE UNIQUE INDEX unique_name_edition ON books(name, edition) WHERE deleted_at IS NULL;");
+        DB::statement("CREATE UNIQUE INDEX unique_isbn ON books(isbn) WHERE deleted_at IS NULL;");
 
         // Value range constaints
         DB::statement("ALTER TABLE books ADD CONSTRAINT chk_average_rating CHECK (average_rating >= 0 AND average_rating <= 5)");

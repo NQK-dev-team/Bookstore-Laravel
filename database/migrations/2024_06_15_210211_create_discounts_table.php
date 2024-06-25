@@ -20,7 +20,7 @@ return new class extends Migration
         });
 
         // Partial unique constraints
-        DB::statement("CREATE UNIQUE INDEX unique_name_deleted_at ON discounts(name, deleted_at) WHERE deleted_at IS NULL;");
+        DB::statement("CREATE UNIQUE INDEX unique_name ON discounts(name) WHERE deleted_at IS NULL;");
     }
 
     /**

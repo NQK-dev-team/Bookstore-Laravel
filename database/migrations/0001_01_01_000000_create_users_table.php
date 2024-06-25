@@ -47,8 +47,8 @@ return new class extends Migration
         });
 
         // Partial unique constraints
-        DB::statement("CREATE UNIQUE INDEX unique_email_deleted_at ON users(email, deleted_at) WHERE deleted_at IS NULL;");
-        DB::statement("CREATE UNIQUE INDEX unique_phone_deleted_at ON users(phone, deleted_at) WHERE deleted_at IS NULL;");
+        DB::statement("CREATE UNIQUE INDEX unique_email ON users(email) WHERE deleted_at IS NULL;");
+        DB::statement("CREATE UNIQUE INDEX unique_phone ON users(phone) WHERE deleted_at IS NULL;");
 
         // Value range constraints
         DB::statement("ALTER TABLE users ADD CONSTRAINT chk_points_value CHECK (points >= 0)");
