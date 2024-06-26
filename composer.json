@@ -9,6 +9,7 @@
         "haruncpi/laravel-id-generator": "^1.1",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "league/flysystem-aws-s3-v3": "^3.28",
         "livewire/livewire": "^3.5"
     },
     "require-dev": {
