@@ -43,7 +43,8 @@ class UserSeeder extends Seeder
             'phone' => '1234567890',
             'gender' => 'M',
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
+            'point' => '27.31'
         ]);
 
         DB::table('users')->insert([
@@ -56,7 +57,8 @@ class UserSeeder extends Seeder
             'phone' => '0751234567',
             'gender' => 'O',
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
+            'point' => '27.87'
         ]);
 
         DB::table('users')->insert([
@@ -69,7 +71,8 @@ class UserSeeder extends Seeder
             'phone' => '0712345678',
             'gender' => 'F',
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
+            'point' => '27.87'
         ]);
     }
 }
