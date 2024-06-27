@@ -14,15 +14,15 @@ return new class extends Migration
         Schema::create('belongs_to', function (Blueprint $table) {
             $table->id()->primary();
             $table->string('book_id', 20)->nullable(false);
-            $table->string('author_id', 20)->nullable(false);
+            $table->string('category_id', 20)->nullable(false);
             $table->timestamps();
 
             // Real primary key
-            $table->unique(['book_id', 'author_id']);
+            $table->unique(['book_id', 'category_id']);
 
             // Foreign keys
             $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');
-            $table->foreign('author_id')->references('id')->on('authors')->onDelete('cascade')->onUpdate('cascade');
+            $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade')->onUpdate('cascade');
         });
     }
 

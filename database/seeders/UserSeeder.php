@@ -17,7 +17,7 @@ class UserSeeder extends Seeder
     {
         // Insert admins
         DB::table('users')->insert([
-            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-A-']),
+            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-A-', 'reset_on_prefix_change' => true]),
             'name' => 'Nghia Admin',
             'email' => 'nghia.duong272919136@hcmut.edu.vn',
             'password' => Hash::make('#Nghia123456789'),
@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
 
         // Insert customers
         DB::table('users')->insert([
-            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-']),
+            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
             'name' => 'Nghia Customer',
             'email' => 'nghia147ty@gmail.com',
             'password' => Hash::make('#Nghia123456789'),
@@ -44,11 +44,11 @@ class UserSeeder extends Seeder
             'gender' => 'M',
             'created_at' => now(),
             'updated_at' => now(),
-            'point' => '27.31'
+            'points' => '27.31'
         ]);
 
         DB::table('users')->insert([
-            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-']),
+            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
             'name' => 'Attack helicopter Customer',
             'email' => 'khoa.luong.anh.nqk.test@gmail.com',
             'password' => Hash::make('#Khoa123456789'),
@@ -58,11 +58,11 @@ class UserSeeder extends Seeder
             'gender' => 'O',
             'created_at' => now(),
             'updated_at' => now(),
-            'point' => '27.87'
+            'points' => '27.87'
         ]);
 
         DB::table('users')->insert([
-            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-']),
+            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
             'name' => 'Female Customer',
             'email' => 'female.nqk.test@gmail.com',
             'password' => Hash::make('#Female123456789'),
@@ -72,7 +72,7 @@ class UserSeeder extends Seeder
             'gender' => 'F',
             'created_at' => now(),
             'updated_at' => now(),
-            'point' => '27.87'
+            'points' => '27.87'
         ]);
     }
 }

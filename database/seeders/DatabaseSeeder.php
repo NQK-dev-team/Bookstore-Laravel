@@ -27,23 +27,25 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             CategorySeeder::class,
+            BookSeeder::class,
             AuthorSeeder::class,
             BelongToSeeder::class,
-            CustomerDiscountSeeder::class,
-            DiscountApplyToSeeder::class,
-            DiscountSeeder::class,
-            EventApplyToSeeder::class,
-            EventDiscountSeeder::class,
+
             FileCopySeeder::class,
-            FileOrderContainSeeder::class,
-            FileOrderSeeder::class,
-            OrderSeeder::class,
-            PhysicalOrderContainSeeder::class,
-            PhysicalOrderSeeder::class,
             PhysicalCopySeeder::class,
-            RatingSeeder::class,
+
+            OrderSeeder::class,
+            FileOrderSeeder::class,
+            FileOrderContainSeeder::class,
+            PhysicalOrderSeeder::class,
+            PhysicalOrderContainSeeder::class,
+
+            DiscountSeeder::class,
+            CustomerDiscountSeeder::class,
             ReferrerDiscountSeeder::class,
-            BookSeeder::class,
+            EventDiscountSeeder::class,
+            EventApplyToSeeder::class,
+            DiscountApplyToSeeder::class,
         ]);
     }
 }
