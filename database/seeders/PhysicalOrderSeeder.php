@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class PhysicalOrderSeeder extends Seeder
 {
@@ -12,6 +13,34 @@ class PhysicalOrderSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        DB::table('physical_orders')->insert([
+            'id' => 'O-000000000000000001',
+            'address' => '211 Ly Thuong Kiet',
+        ]);
+
+        DB::table('physical_orders')->insert([
+            'id' => 'O-000000000000000003',
+            'address' => '211 Ly Thuong Kiet',
+        ]);
+
+        DB::table('physical_orders')->insert([
+            'id' => 'O-000000000000000004',
+            'address' => '211 Ly Thuong Kiet',
+        ]);
+
+        DB::table('physical_orders')->insert([
+            'id' => 'O-000000000000000006',
+            'address' => '211 Ly Thuong Kiet',
+        ]);
+
+        DB::table('physical_orders')->insert([
+            'id' => 'O-000000000000000007',
+            'address' => '211 Ly Thuong Kiet',
+        ]);
+
+        DB::table('physical_orders')->insert([
+            'id' => 'O-000000000000000009',
+            'address' => '211 Ly Thuong Kiet',
+        ]);
     }
 }

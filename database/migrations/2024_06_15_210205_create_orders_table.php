@@ -13,7 +13,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('orders', function (Blueprint $table) {
-            $table->string('id',16)->primary();
+            $table->string('id',20)->primary();
             $table->boolean('status')->default(false)->nullable(false);
             $table->double('total_cost')->nullable(false)->default(0);
             $table->double('total_discount')->nullable(false)->default(0);

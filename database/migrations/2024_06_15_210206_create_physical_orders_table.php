@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('physical_orders', function (Blueprint $table) {
-            $table->string('id', 16)->primary();
+            $table->string('id', 20)->primary();
             $table->string('address',1000)->nullable(false);
             $table->timestamps();
 

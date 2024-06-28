@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('file_order_contains', function (Blueprint $table) {
             $table->id()->primary();
-            $table->string('order_id', 16)->nullable(false);
+            $table->string('order_id', 20)->nullable(false);
             $table->string('book_id', 20)->nullable(false);
             $table->timestamps();
 
