@@ -3,9 +3,8 @@
 
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/favicon.ico') }}">
-    {{-- <link rel="icon" type="image/png" href="{{ asset('storage/favicon.png') }}"> --}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/images/favicon.ico') }}">
 
     {{-- Bootstrap 5 CDN --}}
     <link rel="stylesheet"
@@ -22,10 +21,11 @@
     {{-- Font Awesome CDN --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {{-- Application CSS --}}
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
 
-    <title>@yield('title')</tittle>
-        @yield('meta_tags')
+    @yield('preloads')
+    @livewireStyles
 </head>
 
 <body>
@@ -34,7 +34,8 @@
             <nav class="navbar navbar-expand-lg py-auto w-100">
                 <div class="container-fluid px-0">
                     <a class="navbar-brand d-flex align-items-center ms-2" href="{{ route('admin.index') }}">
-                        {{-- <img src="/image/logo.png" id="logo_img" title="NQK Bookstore logo"></img> --}}
+                        <img src="{{ asset('assets/images/logo.png') }}" id="logo_img"
+                            title="NQK Bookstore logo"></img>
                         <p class="mb-0 ms-2">NQK Bookstore</p>
                     </a>
                     <button class="navbar-toggler me-3" type="button" data-bs-toggle="collapse"
@@ -44,106 +45,7 @@
                     </button>
                     <div class="collapse navbar-collapse mt-2 mt-lg-0 me-lg-2 bg-white px-3"
                         id="navbarSupportedContent">
-                        <ul class="navbar-nav ms-auto">
-                            <li class="nav-item mx-2">
-                                <a class="nav-link fs-5 d-inline-block" href="{{ route('admin.index') }}"
-                                    id="home_nav">Home</a>
-                            </li>
-                            <li class="nav-item dropdown mx-2">
-                                <p class="nav-link m-0 fs-5 d-inline-block" id="manage_dropdown_0" role="button"
-                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    Manage
-                                    <svg width="16px" height="16px" fill="#000000" stroke="#000000" version="1.1"
-                                        id="Layer_1" xmlns="http://www.w3.org/2000/svg"
-                                        xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 100 100"
-                                        enable-background="new 0 0 100 100" xml:space="preserve" stroke-width="5">
-                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
-                                        </g>
-                                        <g id="SVGRepo_iconCarrier">
-                                            <g>
-                                                <path
-                                                    d="M78.466,35.559L50.15,63.633L22.078,35.317c-0.777-0.785-2.044-0.789-2.828-0.012s-0.789,2.044-0.012,2.827L48.432,67.58 c0.365,0.368,0.835,0.563,1.312,0.589c0.139,0.008,0.278-0.001,0.415-0.021c0.054,0.008,0.106,0.021,0.16,0.022 c0.544,0.029,1.099-0.162,1.515-0.576l29.447-29.196c0.785-0.777,0.79-2.043,0.012-2.828S79.249,34.781,78.466,35.559z">
-                                                </path>
-                                            </g>
-                                        </g>
-                                    </svg>
-                                </p>
-                                <ul class="dropdown-menu">
-                                    @if (auth()->check())
-                                        <li>
-                                            <a id="manage_dropdown_1" class="dropdown-item"
-                                                href="{{ route('admin.manage.book') }}">Book</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_2" class="dropdown-item"
-                                                href="{{ route('admin.manage.category') }}">Category</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_3" class="dropdown-item"
-                                                href="{{ route('admin.manage.customer') }}">Customer</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_4" class="dropdown-item"
-                                                href="{{ route('admin.manage.coupon') }}">Coupon</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_5" class="dropdown-item"
-                                                href="{{ route('admin.manage.request') }}">Request</a>
-                                        </li>
-                                    @else
-                                        <li>
-                                            <a id="manage_dropdown_1" class="dropdown-item"
-                                                href="{{ route('admin.authentication') }}">Book</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_2" class="dropdown-item"
-                                                href="{{ route('admin.authentication') }}">Category</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_3" class="dropdown-item"
-                                                href="{{ route('admin.authentication') }}">Customer</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_4" class="dropdown-item"
-                                                href="{{ route('admin.authentication') }}">Coupon</a>
-                                        </li>
-                                        <li>
-                                            <a id="manage_dropdown_5" class="dropdown-item"
-                                                href="{{ route('admin.authentication') }}">Request</a>
-                                        </li>
-                                    @endif
-                                </ul>
-                            </li>
-                            <li class="nav-item mx-2">
-                                @if (auth()->check())
-                                    <a id="statistic_nav" class="nav-link d-inline-block fs-5"
-                                        href="{{ route('admin.statistic') }}">Statistic</a>
-                                @else
-                                    <a id="statistic_nav" class="nav-link d-inline-block fs-5"
-                                        href="{{ route('admin.authentication') }}">Statistic</a>
-                                @endif
-                            </li>
-                            @if (auth()->check())
-                                <li class="nav-item ms-2">
-                                    <a class="nav-link d-inline-block fs-5" href="{{ route('admin.account') }}"
-                                        id="profile_nav">Account</a>
-                                </li>
-                                <li class="nav-item ms-2">
-                                    <a class="nav-link d-inline-block fs-5 text-danger text-nowrap"
-                                        href="/ajax_service/authentication/logout">Sign Out</a>
-                                </li>
-                            @else
-                                <li class="nav-item ms-2">
-                                    <a class="nav-link d-inline-block fs-5"
-                                        href="{{ route('admin.authentication') }}" id="profile_nav">Account</a>
-                                </li>
-                                <li class="nav-item ms-2">
-                                    <a class="nav-link d-inline-block fs-5"
-                                        href="{{ route('admin.authentication') }}" id="signin_nav">Sign in</a>
-                                </li>
-                            @endif
-                        </ul>
+                        @livewire('navigation.admin')
                     </div>
                 </div>
             </nav>
@@ -198,11 +100,11 @@
                                     </g>
                                 </g>
                             </svg>
-                            <img title='Mastercard payment method' src='{{ asset('storage/mastercard.jpg') }}'
+                            <img title='Mastercard payment method' src='{{ asset('assets/images/mastercard.jpg') }}'
                                 class='payment_method_footer rounded border bg-white ms-sm-1 mt-1 mt-sm-0'>
                         </div>
                         <div class='d-flex flex-column flex-sm-row align-items-center justify-content-center mt-1'>
-                            <img title='American Express payment method' src='{{ asset('storage/AE.png') }}'
+                            <img title='American Express payment method' src='{{ asset('assets/images/AE.png') }}'
                                 class='payment_method_footer rounded border border-1 border-white bg-white me-sm-1 mb-1 mb-sm-0'>
                             <svg class='payment_method_footer rounded border bg-white ms-sm-1 mt-1 mt-sm-0'
                                 version="1.1" id="Layer_1" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"
@@ -243,9 +145,9 @@
                     <h3>Shipping</h3>
                     <div class='d-flex flex-column'>
                         <div class='d-flex flex-column flex-sm-row align-items-center justify-content-center mb-1'>
-                            <img title='DHL shipping service' src='{{ asset('storage/dhl.png') }}'
+                            <img title='DHL shipping service' src='{{ asset('assets/images/dhl.png') }}'
                                 class='shipment_footer rounded border border-1 border-warning bg-warning mb-sm-0 mb-1 me-sm-1'>
-                            <img title='FedEx shipping service' src='{{ asset('storage/fedex.png') }}'
+                            <img title='FedEx shipping service' src='{{ asset('assets/images/fedex.png') }}'
                                 class='shipment_footer rounded border border-1 border-white bg-white mt-sm-0 mt-1 ms-sm-1'>
                         </div>
                         <div class='d-flex flex-column flex-sm-row align-items-center justify-content-center mt-1'>
@@ -287,7 +189,7 @@
                                         clip-rule="evenodd" fill="#006647" fill-rule="evenodd" />
                                 </g>
                             </svg>
-                            <img title='DB Schenker shipping service' src='{{ asset('storage/db.png') }}'
+                            <img title='DB Schenker shipping service' src='{{ asset('assets/images/db.png') }}'
                                 class='shipment_footer rounded border border-1 border-white bg-white mt-sm-0 mt-1 ms-sm-1'>
                         </div>
                     </div>
@@ -363,4 +265,6 @@
             </div>
         </div>
     </section>
+    @yield('postloads')
+    @livewireScripts
 </body>

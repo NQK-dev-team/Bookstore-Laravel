@@ -1,51 +1,115 @@
 <?php
 
-use Illuminate\Routing\RouteAction;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', function () {
-    return view('welcome');
-});
+use App\Http\Middleware\CheckCustomerAuth;
+use App\Http\Controllers\Authentication\Login;
+use App\Http\Controllers\Authentication\Logout;
+use App\Http\Controllers\Authentication\Recovery;
+use App\Http\Controllers\Authentication\Register;
+use App\Http\Middleware\CheckAdminAuth;
+use App\Http\Middleware\RedirectAdmin;
+use App\Http\Middleware\RedirectCustomer;
 
 // Admin routes
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', function () {
-        return '/';
-    })->name('index');
+Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->group(function () {
+    Route::prefix('authentication')->name('authentication.')->middleware(RedirectAdmin::class)->group(function () {
+        Route::get('/', [Login::class, 'adminShow'])->name('index');
+        Route::get('recovery', [Recovery::class, 'adminShow'])->name('recovery');
+        Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
+    });
 
-    Route::get('authentication', function () {
-        return 'authentication';
-    })->name('authentication');
+    Route::middleware(CheckAdminAuth::class)->group(function () {
+        Route::get('/', function () {
+            return view('admin.index');
+        })->name('index');
 
-    Route::prefix('manage')->name('manage.')->group(function () {
-        Route::get('book', function () {
-            return 'manage/book';
-        })->name('book');
+        Route::prefix('manage')->name('manage.')->group(function () {
+            Route::prefix('book')->name('book.')->group(function () {
+                Route::get('/', function () {
+                    return view('admin.manage.book.index');
+                })->name('index');
+            });
 
-        Route::get('category', function () {
-            return 'manage/category';
-        })->name('category');
+            Route::prefix('category')->name('category.')->group(function () {
+                Route::get('/', function () {
+                    return view('admin.manage.category.index');
+                })->name('index');
+            });
 
-        Route::get('customer', function () {
-            return 'manage/customer';
-        })->name('customer');
+            Route::prefix('customer')->name('customer.')->group(function () {
+                Route::get('/', function () {
+                    return view('admin.manage.customer.index');
+                })->name('index');
+            });
 
-        Route::get('coupon', function () {
-            return 'manage/coupon';
-        })->name('coupon');
+            Route::prefix('coupon')->name('coupon.')->group(function () {
+                Route::get('/', function () {
+                    return view('admin.manage.coupon.index');
+                })->name('index');
+            });
 
-        Route::get('request', function () {
-            return 'manage/request';
-        })->name('request');
+            Route::prefix('request')->name('request.')->group(function () {
+                Route::get('/', function () {
+                    return view('admin.manage.request.index');
+                })->name('index');
+            });
+        });
+
+        Route::prefix('statistic')->name('statistic.')->group(function () {
+            Route::get('/', function () {
+                return view('admin.statistic.index');
+            })->name('index');
+        });
+
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', function () {
+                return view('admin.profile.index');
+            })->name('index');
+        });
+
+        Route::post('authentication/logout', [Logout::class, 'adminLogout'])->name('authentication.logout');
     });
 });
 
-
 // Customer routes
+Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(function () {
+    Route::get('/', function () {
+        return view('customer.index');
+    })->name('index');
+
+    Route::prefix('authentication')->name('authentication.')->middleware(RedirectCustomer::class)->group(function () {
+        Route::get('/', [Login::class, 'customerShow'])->name('index');
+        Route::get('recovery', [Recovery::class, 'customerShow'])->name('recovery');
+        Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
+        Route::get('register', [Register::class, 'show'])->name('register');
+    });
+
+    Route::prefix('book')->name('book.')->group(function () {
+        Route::get('/', function () {
+            return view('customer.book.index');
+        })->name('index');
+    });
+
+    Route::middleware(CheckCustomerAuth::class)->group(function () {
+        Route::prefix('cart')->name('cart.')->group(function () {
+            Route::get('/', function () {
+                return view('customer.cart.index');
+            })->name('index');
+        });
+
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', function () {
+                return view('customer.profile.index');
+            })->name('index');
+        });
+
+        Route::post('authentication/logout', [Logout::class, 'customerLogout'])->name('authentication.logout');
+    });
+});
 
 // General routes
 Route::get('about-us', function () {
-    return 'about us';
+    return view('general.about-us');
 })->name('about-us');
 
 Route::get('discount-program', function () {
@@ -53,9 +117,9 @@ Route::get('discount-program', function () {
 })->name('discount-program');
 
 Route::get('privacy-policy', function () {
-    return 'privacy policy';
+    return view('general.privacy-policy');
 })->name('privacy-policy');
 
 Route::get('terms-of-service', function () {
-    return 'terms-of-service';
+    return view('general.terms-of-service');
 })->name('terms-of-service');
