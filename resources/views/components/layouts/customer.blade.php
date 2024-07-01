@@ -25,7 +25,6 @@
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
 
     @yield('preloads')
-    @livewireStyles
 </head>
 
 <body>
@@ -45,7 +44,71 @@
                     </button>
                     <div class="collapse navbar-collapse mt-2 mt-lg-0 me-lg-2 bg-white px-3"
                         id="navbarSupportedContent">
-                        @livewire('navigation.customer')
+                        @php
+                            $tab = request()->path();
+                            $activeTab = '';
+                            if (str_contains($tab, 'book')) {
+                                $activeTab = 'book';
+                            } elseif (str_contains($tab, 'cart')) {
+                                $activeTab = 'cart';
+                            } elseif (str_contains($tab, 'profile')) {
+                                $activeTab = 'profile';
+                            } elseif (str_contains($tab, 'authentication')) {
+                                $activeTab = 'authentication';
+                            } elseif (
+                                !str_contains($tab, 'about-us') &&
+                                !str_contains($tab, 'privacy-policy') &&
+                                !str_contains($tab, 'terms-of-service') &&
+                                !str_contains($tab, 'discount-program')
+                            ) {
+                                $activeTab = 'home';
+                            }
+                        @endphp
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item mx-2">
+                                <a class="nav-link fs-5 d-inline-block {{ $activeTab === 'home' ? 'activeTab' : '' }}"
+                                    href="{{ route('customer.index') }}">Home</a>
+                            </li>
+                            <li class="nav-item mx-2">
+                                <a class="nav-link d-inline-block fs-5 {{ $activeTab === 'book' ? 'activeTab' : '' }}"
+                                    href="{{ route('customer.book.index') }}">Book</a>
+                            </li>
+                            <li class="nav-item mx-2">
+                                @if (auth()->check())
+                                    <a class="nav-link d-inline-block fs-5 {{ $activeTab === 'cart' ? 'activeTab' : '' }}"
+                                        href="{{ route('customer.cart.index') }}">Cart</a>
+                                @else
+                                    <a class="nav-link d-inline-block fs-5"
+                                        href="{{ route('customer.authentication.index') }}">Cart</a>
+                                @endif
+                            </li>
+                            @if (auth()->check())
+                                <li class="nav-item ms-2">
+                                    <a class="nav-link d-inline-block fs-5 {{ $activeTab === 'profile' ? 'activeTab' : '' }}"
+                                        href="{{ route('customer.profile.index') }}">Profile</a>
+                                </li>
+                                <li class="nav-item ms-2">
+                                    <form id="logout-form" action="{{ route('customer.authentication.logout') }}"
+                                        method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
+                                    <a class="nav-link d-inline-block fs-5 text-danger text-nowrap"
+                                        href="{{ route('customer.authentication.logout') }}"
+                                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Sign
+                                        Out</a>
+                                </li>
+                            @else
+                                <li class="nav-item ms-2">
+                                    <a class="nav-link d-inline-block fs-5"
+                                        href="{{ route('customer.authentication.index') }}">Profile</a>
+                                </li>
+                                <li class="nav-item ms-2">
+                                    <a class="nav-link d-inline-block fs-5 {{ $activeTab === 'authentication' ? 'activeTab' : '' }}"
+                                        href="{{ route('customer.authentication.index') }}">Sign in</a>
+                                </li>
+                            @endif
+                        </ul>
+
                     </div>
                 </div>
             </nav>
@@ -266,5 +329,4 @@
         </div>
     </section>
     @yield('postloads')
-    @livewireScripts
 </body>

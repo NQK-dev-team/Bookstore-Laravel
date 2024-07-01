@@ -19,6 +19,11 @@ body {
   overflow-x: hidden;
 }
 
+.activeTab {
+  color: #007bff !important;
+  border-bottom: 3px solid #007bff !important;
+}
+
 #header {
   width: 100%;
   height: 80px;
@@ -111,6 +116,10 @@ body {
 
   .search_form_customer {
     max-width: none;
+  }
+
+  .activeTab {
+    border-bottom: none;
   }
 }
 
