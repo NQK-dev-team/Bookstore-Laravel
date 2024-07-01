@@ -17,7 +17,7 @@ class Login extends Controller
 
         $request->validate([
             'email' => 'required|email',
-            'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()]
+            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()]
         ]);
 
         if (($request->user_type === 'customer' && !Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' => 0]))

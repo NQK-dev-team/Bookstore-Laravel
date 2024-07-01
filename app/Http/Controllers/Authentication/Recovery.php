@@ -62,7 +62,7 @@ class Recovery extends Controller
         $request->validate([
             'token' => 'required',
             'email' => 'required',
-            'password' => ['required', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
+            'password' => ['required', 'string', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
             'confirmPassword' => 'required|same:password',
         ]);
 

@@ -90,6 +90,7 @@ Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(f
         Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
 
         Route::get('register', [Register::class, 'show'])->name('register');
+        Route::post('register', [Register::class, 'register'])->name('register');
 
         Route::get('password-reset', [Recovery::class, 'showNewPasswordForm'])->name('password.reset');
         Route::post('password-reset', [Recovery::class, 'setNewPassword'])->name('password.update');

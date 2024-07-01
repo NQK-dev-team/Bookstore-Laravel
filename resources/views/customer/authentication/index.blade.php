@@ -44,8 +44,7 @@
                     </div>
                     <input required id="inputEmail" type="email"
                         class="form-control @if ($errors->has('email')) {{ 'is-invalid' }} @endif"
-                        placeholder="Enter email" name="email" wire:model="email" autocomplete="email"
-                        value="{{ session('email') }}">
+                        placeholder="Enter email" name="email" autocomplete="email" value="{{ session('email') }}">
                     @if ($errors->has('email'))
                         <div class="invalid-feedback">
                             {{ $errors->first('email') }}
@@ -56,19 +55,16 @@
                     <label for="inputPassword" class="fs-4 fw-medium">Password</label>
                     <input required id="inputPassword" autocomplete="current-password" type="password"
                         class="form-control @if ($errors->has('password')) {{ 'is-invalid' }} @endif"
-                        wire:model="password" placeholder="Enter password" name="password"
-                        value="{{ session('password') }}">
+                        placeholder="Enter password" name="password" value="{{ session('password') }}">
                     @if ($errors->has('password'))
                         <div class="invalid-feedback">
                             {{ $errors->first('password') }}
                         </div>
                     @endif
                 </div>
-                <a class="mx-auto mt-2 text-primary text-decoration-none mb-2"
+                <button type="submit" class="btn btn-primary mt-3">Login</button>
+                <a class="mx-auto mt-3 text-primary text-decoration-none mb-2"
                     href="{{ route('customer.authentication.recovery') }}">Forgot password?</a>
-                <div class="mt-auto my-3 mx-auto">
-                    <button type="submit" class="btn btn-primary">Login</button>
-                </div>
             </form>
         </div>
     </div>
