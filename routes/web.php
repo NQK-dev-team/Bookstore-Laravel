@@ -16,11 +16,11 @@ Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->gro
         Route::get('/', [Login::class, 'show'])->name('index');
         Route::post('/', [Login::class, 'login'])->name('index');
 
-        Route::get('recovery', [Recovery::class, 'show'])->name('recovery');
+        Route::get('recovery', [Recovery::class, 'showEmailForm'])->name('recovery');
         Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
 
-        Route::get('password-reset', [Recovery::class, ''])->name('password.reset');
-        Route::post('password-reset', [Recovery::class, ''])->name('password.update');
+        Route::get('password-reset', [Recovery::class, 'showNewPasswordForm'])->name('password.reset');
+        Route::post('password-reset', [Recovery::class, 'setNewPassword'])->name('password.update');
     });
 
     Route::middleware(CheckAdminAuth::class)->group(function () {
@@ -86,13 +86,13 @@ Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(f
         Route::get('/', [Login::class, 'show'])->name('index');
         Route::post('/', [Login::class, 'login'])->name('index');
 
-        Route::get('recovery', [Recovery::class, 'show'])->name('recovery');
+        Route::get('recovery', [Recovery::class, 'showEmailForm'])->name('recovery');
         Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
 
         Route::get('register', [Register::class, 'show'])->name('register');
 
-        Route::get('password-reset', [Recovery::class, ''])->name('password.reset');
-        Route::post('password-reset', [Recovery::class, ''])->name('password.update');
+        Route::get('password-reset', [Recovery::class, 'showNewPasswordForm'])->name('password.reset');
+        Route::post('password-reset', [Recovery::class, 'setNewPassword'])->name('password.update');
     });
 
     Route::prefix('book')->name('book.')->group(function () {

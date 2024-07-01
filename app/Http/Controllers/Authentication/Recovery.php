@@ -4,13 +4,19 @@ namespace App\Http\Controllers\Authentication;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Validation\Rules\Password as PasswordRule;
 
 class Recovery extends Controller
 {
-    function show(Request $request)
+    function showEmailForm(Request $request)
     {
         if (str_contains($request->route()->getName(), 'admin')) {
             return view('admin.authentication.recovery');
@@ -43,7 +49,54 @@ class Recovery extends Controller
             : back()->withErrors(['email' => __($status)]);
     }
 
-    function resetShow()
+    function showNewPasswordForm(Request $request)
     {
+        if (str_contains($request->route()->getName(), 'admin')) {
+            return view('admin.authentication.reset-password', ['token' => $request->token, 'email' => $request->email]);
+        }
+        return view('customer.authentication.reset-password', ['token' => $request->token, 'email' => $request->email]);
+    }
+
+    function setNewPassword(Request $request)
+    {
+        $request->validate([
+            'token' => 'required',
+            'email' => 'required',
+            'password' => ['required', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
+            'confirmPassword' => 'required|same:password',
+        ]);
+
+        $credentials = $request->only('password', 'password_confirmation', 'token');
+        try {
+            $credentials['email'] = Crypt::decryptString($request->email);
+        } catch (DecryptException $e) {
+            return back()->withErrors(['error' => ['Invalid encrypted email.']]);
+        }
+
+        $status = Password::reset(
+            $credentials,
+            function (User $user, string $password) {
+                $user->forceFill([
+                    'password' => Hash::make($password)
+                ]);
+
+                $user->save();
+
+                // Signal to the application that a user's password has been reset
+                // and allowing any other parts of the application that are listening
+                // for this event to react accordingly.
+                event(new PasswordReset($user));
+            }
+        );
+
+
+        if ($status == Password::PASSWORD_RESET) {
+            if (str_contains($request->route()->getName(), 'admin')) {
+                return redirect()->route('admin.authentication.index');
+            }
+            return redirect()->route('customer.authentication.index');
+        }
+
+        return back()->withErrors(['error' => [__($status)]]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Auth\Notifications\ResetPassword;
 
@@ -28,9 +29,9 @@ class AppServiceProvider extends ServiceProvider
 
         ResetPassword::createUrlUsing(function (User $user, string $token) {
             if ($user->is_admin) {
-                return route('admin.authentication.password.reset', ['token' => $token]);
+                return route('admin.authentication.password.reset', ['token' => $token, 'email' => Crypt::encryptString($user->email)]);
             }
-            return route('customer.authentication.password.reset', ['token' => $token]);
+            return route('customer.authentication.password.reset', ['token' => $token, 'email' => Crypt::encryptString($user->email)]);
         });
     }
 }
