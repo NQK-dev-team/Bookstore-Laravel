@@ -16,29 +16,43 @@ class Customer extends Component
     public $display = 'd-none';
     public $errorMessage = '';
 
+    public $emailError = '';
+    public $passwordError = '';
+
     public function login()
     {
         try {
             $this->validate([
                 'email' => 'required|email',
-                'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()]
             ]);
-
-            if (!(new Login)->login($this->email, $this->password)) {
-                $this->errorMessage = 'Invalid email or password';
-                $this->display = 'd-flex';
-                return;
-            }
-
-            $this->errorMessage = '';
-            $this->display = 'd-none';
-
-            return redirect()->route('customer.index');
         } catch (ValidationException $e) {
-            $this->errorMessage = $e->validator->errors()->first();
+            $this->emailError = $e->validator->errors()->first();
+            return;
+        }
+
+        $this->emailError = '';
+
+        try {
+            $this->validate([
+                'password' => ['required', Password::min(8)->mixedCase()->numbers()->symbols()],
+            ]);
+        } catch (ValidationException $e) {
+            $this->passwordError = $e->validator->errors()->first();
+            return;
+        }
+
+        $this->passwordError = '';
+
+        $this->errorMessage = '';
+        $this->display = 'd-none';
+
+        if (!(new Login)->login($this->email, $this->password)) {
+            $this->errorMessage = 'Incorrect email or password';
             $this->display = 'd-flex';
             return;
         }
+
+        return redirect()->route('customer.index');
     }
 
     public function render()

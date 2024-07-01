@@ -1,4 +1,5 @@
-<form wire:submit="login" class="bg-white border border-black rounded form my-auto d-flex flex-column px-3">
+<form wire:submit="login"
+    class="bg-white border border-black rounded form my-auto d-flex flex-column px-3 needs-validation">
     <div class='w-100 d-flex flex-column'>
         <h1 class="mx-auto mb-0 mt-1">Login</h1>
         <div class="align-items-center justify-content-center error_message mt-3 {{ $display }} py-3">
@@ -22,13 +23,25 @@
             <a href="{{ route('customer.authentication.register') }}" class="text-decoration-none ms-auto py-1">Sign
                 up?</a>
         </div>
-        <input required id="inputEmail" type="email" class="form-control" placeholder="Enter email" name="email"
-            wire:model="email" autocomplete="email">
+        <input required id="inputEmail" type="email"
+            class="form-control @if ($emailError) {{ 'is-invalid' }} @endif" placeholder="Enter email"
+            name="email" wire:model="email" autocomplete="email">
+        @if ($emailError)
+            <div class="invalid-feedback">
+                {{ $emailError }}
+            </div>
+        @endif
     </div>
     <div class="form-group mt-3">
         <label for="inputPassword" class="fs-4 fw-medium">Password</label>
-        <input required id="inputPassword" autocomplete="current-password" type="password" class="form-control"
-            wire:model="password" placeholder="Enter password" name="password">
+        <input required id="inputPassword" autocomplete="current-password" type="password"
+            class="form-control @if ($passwordError) {{ 'is-invalid' }} @endif" wire:model="password"
+            placeholder="Enter password" name="password">
+        @if ($passwordError)
+            <div class="invalid-feedback">
+                {{ $passwordError }}
+            </div>
+        @endif
     </div>
     <a class="mx-auto mt-2 text-primary text-decoration-none mb-2"
         href="{{ route('customer.authentication.recovery') }}">Forgot password?</a>

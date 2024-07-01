@@ -18,13 +18,25 @@
     </div>
     <div class="form-group">
         <label for="inputEmail" class="fs-4 fw-medium">Email</label>
-        <input required id="inputEmail" type="email" class="form-control" placeholder="Enter email" name="email"
-            wire:model="email" autocomplete="email">
+        <input required id="inputEmail" type="email"
+            class="form-control @if ($emailError) {{ 'is-invalid' }} @endif" placeholder="Enter email"
+            name="email" wire:model="email" autocomplete="email">
+        @if ($emailError)
+            <div class="invalid-feedback">
+                {{ $emailError }}
+            </div>
+        @endif
     </div>
     <div class="form-group mt-3">
         <label for="inputPassword" class="fs-4 fw-medium">Password</label>
-        <input required id="inputPassword" autocomplete="current-password" type="password" class="form-control"
-            wire:model="password" placeholder="Enter password" name="password">
+        <input required id="inputPassword" autocomplete="current-password" type="password"
+            class="form-control @if ($passwordError) {{ 'is-invalid' }} @endif" wire:model="password"
+            placeholder="Enter password" name="password">
+        @if ($passwordError)
+            <div class="invalid-feedback">
+                {{ $passwordError }}
+            </div>
+        @endif
     </div>
     <a class="mx-auto mt-2 text-primary text-decoration-none mb-2"
         href="{{ route('admin.authentication.recovery') }}">Forgot password?</a>

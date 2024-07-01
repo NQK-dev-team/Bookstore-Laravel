@@ -17,15 +17,6 @@
       height: 32px;
 }
 
-.used_error svg {
-      width: 16px;
-      height: 16px;
-}
-
-.used_error {
-      display: none;
-}
-
 .background {
       background-image: url('/assets/images/bookstore-bg.jpg');
       background-size: cover;
@@ -34,28 +25,4 @@
       position: absolute;
       height: 100%;
       width: 100%;
-}
-
-/* #recovery_email_form {
-      display: flex;
-}
-
-#recovery_code_form {
-      display: none;
-}
-
-#recovery_password_form {
-      display: none;
-} */
-
-@media only screen and (max-width:330px) {
-      /* .error_message p,
-      .used_error p {
-            font-size: 12px;
-      }
-
-      .used_error svg {
-            width: 12px;
-            height: 12px;
-      } */
 }

@@ -13,9 +13,11 @@ use App\Http\Middleware\RedirectCustomer;
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->group(function () {
     Route::prefix('authentication')->name('authentication.')->middleware(RedirectAdmin::class)->group(function () {
-        Route::get('/', [Login::class, 'adminShow'])->name('index');
-        Route::get('recovery', [Recovery::class, 'adminShow'])->name('recovery');
+        Route::get('/', [Login::class, 'show'])->name('index');
+        Route::get('recovery', [Recovery::class, 'show'])->name('recovery');
         Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
+        Route::get('password-reset', [Recovery::class, ''])->name('password.reset');
+        Route::post('password-reset', [Recovery::class, ''])->name('password.update');
     });
 
     Route::middleware(CheckAdminAuth::class)->group(function () {
@@ -78,10 +80,12 @@ Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(f
     })->name('index');
 
     Route::prefix('authentication')->name('authentication.')->middleware(RedirectCustomer::class)->group(function () {
-        Route::get('/', [Login::class, 'customerShow'])->name('index');
-        Route::get('recovery', [Recovery::class, 'customerShow'])->name('recovery');
+        Route::get('/', [Login::class, 'show'])->name('index');
+        Route::get('recovery', [Recovery::class, 'show'])->name('recovery');
         Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
         Route::get('register', [Register::class, 'show'])->name('register');
+        Route::get('password-reset', [Recovery::class, ''])->name('password.reset');
+        Route::post('password-reset', [Recovery::class, ''])->name('password.update');
     });
 
     Route::prefix('book')->name('book.')->group(function () {

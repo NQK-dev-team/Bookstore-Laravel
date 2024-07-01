@@ -8,11 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class Login extends Controller
 {
-    public function adminShow()
-    {
-        return view('admin.authentication.index');
-    }
-
     public function login($email, $password)
     {
         if (!Auth::attempt(['email' => $email, 'password' => $password])) {
@@ -21,8 +16,11 @@ class Login extends Controller
         return true;
     }
 
-    public function customerShow()
+    public function show(Request $request)
     {
+        if (str_contains($request->route()->getName(), 'admin')) {
+            return view('admin.authentication.index');
+        }
         return view('customer.authentication.index');
     }
 }

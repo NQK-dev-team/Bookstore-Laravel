@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Auth\Notifications\ResetPassword;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -25,8 +26,11 @@ class AppServiceProvider extends ServiceProvider
             return $user->is_admin == 1;
         });
 
-        Gate::define('isCustomer', function (User $user) {
-            return $user->is_admin == 0;
+        ResetPassword::createUrlUsing(function (User $user, string $token) {
+            if ($user->is_admin) {
+                return route('admin.authentication.password.reset', ['token' => $token]);
+            }
+            return route('customer.authentication.password.reset', ['token' => $token]);
         });
     }
 }
