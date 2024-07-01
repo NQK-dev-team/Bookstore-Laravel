@@ -14,8 +14,11 @@ use App\Http\Middleware\RedirectCustomer;
 Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->group(function () {
     Route::prefix('authentication')->name('authentication.')->middleware(RedirectAdmin::class)->group(function () {
         Route::get('/', [Login::class, 'show'])->name('index');
+        Route::post('/', [Login::class, 'login'])->name('index');
+
         Route::get('recovery', [Recovery::class, 'show'])->name('recovery');
         Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
+
         Route::get('password-reset', [Recovery::class, ''])->name('password.reset');
         Route::post('password-reset', [Recovery::class, ''])->name('password.update');
     });
@@ -81,9 +84,13 @@ Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(f
 
     Route::prefix('authentication')->name('authentication.')->middleware(RedirectCustomer::class)->group(function () {
         Route::get('/', [Login::class, 'show'])->name('index');
+        Route::post('/', [Login::class, 'login'])->name('index');
+
         Route::get('recovery', [Recovery::class, 'show'])->name('recovery');
         Route::post('recovery', [Recovery::class, 'sendResetLink'])->name('recovery');
+
         Route::get('register', [Register::class, 'show'])->name('register');
+
         Route::get('password-reset', [Recovery::class, ''])->name('password.reset');
         Route::post('password-reset', [Recovery::class, ''])->name('password.update');
     });

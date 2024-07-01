@@ -20,16 +20,17 @@ class Recovery extends Controller
 
     function sendResetLink(Request $request)
     {
+        session()->flash('email', $request->email);
         $request->validate(['email' => 'required|email']);
 
         $validator = Validator::make($request->all(), []);
 
         $user = User::where('email', $request->email)->first();
-        if ((!$user || $user->is_admin) && $request->post('user_type') == 'customer') {
-            $validator->errors()->add('user_type', 'We can\'t find a user with that email address.');
+        if ((!$user || $user->is_admin) && $request->user_type == 'customer') {
+            $validator->errors()->add('email', 'We can\'t find a user with that email address.');
             return back()->withErrors($validator->errors());
-        } else if ((!$user || !$user->is_admin) && $request->post('user_type') == 'admin') {
-            $validator->errors()->add('user_type', 'We can\'t find an admin with that email address.');
+        } else if ((!$user || !$user->is_admin) && $request->user_type == 'admin') {
+            $validator->errors()->add('email', 'We can\'t find an admin with that email address.');
             return back()->withErrors($validator->errors());
         }
 

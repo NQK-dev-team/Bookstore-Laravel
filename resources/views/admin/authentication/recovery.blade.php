@@ -21,7 +21,7 @@
                     <label for="inputEmail" class="fs-4 fw-medium">Email</label>
                     <input required type="email"
                         class="form-control @if ($errors->any()) {{ 'is-invalid' }} @endif" id="inputEmail"
-                        placeholder="Enter email" name="email" autocomplete="email">
+                        placeholder="Enter email" name="email" autocomplete="email" value="{{ session('email') }}">
                     @if ($errors->has('email'))
                         <div class="invalid-feedback">
                             {{ $errors->first('email') }}
