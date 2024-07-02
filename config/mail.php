@@ -109,8 +109,12 @@ return [
     */
 
     'from' => [
-        'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
-        'name' => env('MAIL_FROM_NAME', 'Example'),
+        'address' => env('MAIL_FROM_ADDRESS', 'nqk.demo@gmail.com'),
+        'name' => env('MAIL_FROM_NAME', 'Bookstore-Laravel'),
     ],
 
+    'reply_to' => [
+        'address' => env('MAIL_REPLY_TO_ADDRESS', 'nqk.demo@gmail.com'),
+        'name' => env('MAIL_REPLY_TO_NAME', 'Bookstore-Laravel'),
+    ],
 ];

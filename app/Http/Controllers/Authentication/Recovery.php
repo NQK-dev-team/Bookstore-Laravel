@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Authentication;
 
 use App\Models\User;
+use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Auth\Events\PasswordReset;
@@ -68,19 +70,24 @@ class Recovery extends Controller
 
         $credentials = $request->only('password', 'password_confirmation', 'token');
         try {
-            $credentials['email'] = Crypt::decryptString($request->email);
+            $email = Crypt::decryptString($request->email);
+            $credentials['email'] = $email;
         } catch (DecryptException $e) {
             return back()->withErrors(['error' => ['Invalid encrypted email.']]);
         }
 
+        $userName = '';
+
         $status = Password::reset(
             $credentials,
-            function (User $user, string $password) {
+            function (User $user, string $password) use (&$userName) {
                 $user->forceFill([
                     'password' => Hash::make($password)
                 ]);
 
                 $user->save();
+
+                $userName = $user->name;
 
                 // Signal to the application that a user's password has been reset
                 // and allowing any other parts of the application that are listening
@@ -94,6 +101,7 @@ class Recovery extends Controller
             if (str_contains($request->route()->getName(), 'admin')) {
                 return redirect()->route('admin.authentication.index');
             }
+            Mail::to($email)->send(new PasswordChange($userName));
             return redirect()->route('customer.authentication.index');
         }
 
