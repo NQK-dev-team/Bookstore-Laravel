@@ -14,7 +14,7 @@
                 @csrf
                 <input name="user_type" type="hidden" value="customer">
                 <div class='w-100 d-flex flex-column'>
-                    <h1 class="text-center mb-0 mt-1">Register</h1>
+                    <h1 class="text-center mb-0 mt-3">Register</h1>
                     <div
                         class="align-items-center justify-content-center error_message mt-3 @if ($errors->has('error_message')) {{ 'd-flex' }} @endif py-3">
                         <svg class="ms-1" fill="#ff0000" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"
@@ -68,12 +68,12 @@
                         <label for="inputGender" class="fs-4 fw-medium">Gender</label>
                         <p class="text-danger mb-0 ms-1 align-middle text-center fs-4 fw-bold">*</p>
                     </div>
-                    <select class="form-select @if ($errors->has('gender')) {{ 'is-invalid' }} @endif"
+                    <select name="gender" class="form-select @if ($errors->has('gender')) {{ 'is-invalid' }} @endif"
                         aria-label="Select gender" id="inputGender">
-                        <option selected value="">Choose your gender</option>
-                        <option value="M">Male</option>
-                        <option value="F">Female</option>
-                        <option value="O">Other</option>
+                        <option {{ session('gender') ? '' : 'selected' }} value="">Choose your gender</option>
+                        <option {{ session('gender') === 'M' ? 'selected' : '' }} value="M">Male</option>
+                        <option {{ session('gender') === 'F' ? 'selected' : '' }} value="F">Female</option>
+                        <option {{ session('gender') === 'O' ? 'selected' : '' }} value="O">Other</option>
                     </select>
                     @if ($errors->has('gender'))
                         <div class="invalid-feedback">

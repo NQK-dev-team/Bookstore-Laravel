@@ -1,20 +1,19 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\CheckCustomerAuth;
 use App\Http\Controllers\Authentication\Login;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
-use App\Http\Middleware\CheckAdminAuth;
-use App\Http\Middleware\RedirectAdmin;
-use App\Http\Middleware\RedirectCustomer;
+use App\Http\Middleware\CheckAuth;
+use App\Http\Middleware\RedirectAuth;
+use App\Http\Middleware\RedirectRole;
 use App\Http\Middleware\RedirectVerifiedEmail;
 use App\Http\Middleware\VerifyEmail;
 
 // Admin routes
-Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->group(function () {
-    Route::prefix('authentication')->name('authentication.')->middleware(RedirectAdmin::class)->group(function () {
+Route::prefix('admin')->name('admin.')->middleware(RedirectRole::class)->group(function () {
+    Route::prefix('authentication')->name('authentication.')->middleware(RedirectAuth::class)->group(function () {
         Route::get('/', [Login::class, 'show'])->name('index');
         Route::post('/', [Login::class, 'login'])->name('index');
 
@@ -25,7 +24,7 @@ Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->gro
         Route::post('password-reset', [Recovery::class, 'setNewPassword'])->name('password.update');
     });
 
-    Route::middleware(CheckAdminAuth::class)->group(function () {
+    Route::middleware(CheckAuth::class)->group(function () {
         Route::get('/', function () {
             return view('admin.index');
         })->name('index');
@@ -79,8 +78,8 @@ Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->gro
 });
 
 // Customer routes
-Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(function () {
-    Route::prefix('authentication')->name('authentication.')->middleware(RedirectCustomer::class)->group(function () {
+Route::prefix('/')->name('customer.')->middleware(RedirectRole::class)->group(function () {
+    Route::prefix('authentication')->name('authentication.')->middleware(RedirectAuth::class)->group(function () {
         Route::get('/', [Login::class, 'show'])->name('index');
         Route::post('/', [Login::class, 'login'])->name('index');
 
@@ -110,7 +109,7 @@ Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(f
             })->name('index');
         });
 
-        Route::middleware(CheckCustomerAuth::class)->group(function () {
+        Route::middleware(CheckAuth::class)->group(function () {
             Route::prefix('cart')->name('cart.')->group(function () {
                 Route::get('/', function () {
                     return view('customer.cart.index');

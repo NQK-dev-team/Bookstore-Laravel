@@ -8,7 +8,9 @@ use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class Register extends Controller
@@ -43,27 +45,35 @@ class Register extends Controller
         ]);
 
         // Create user, login and redirect to email verification page
-        $refID = $request->refEmail === '' ? null : User::where('email', $request->refEmail)->first()->id;
+        $refID = $request->refEmail ? (User::where('email', $request->refEmail)->first()->id) : null;
 
         $user = User::create([
+            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-']),
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
             'dob' => $request->dob,
-            'address' => $request->address === '' ? null : $request->address,
+            'address' => $request->address,
             'gender' => $request->gender,
             'password' =>  Hash::make($request->password),
             'referrer_id' => $refID,
         ]);
 
-        Auth::attempt($user['email'], $user['password']);
+        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' => 0])) { {
+                $validator = Validator::make($request->all(), []);
+                $validator->errors()->add('error_message', 'Error while logging in with new account. Please try again.');
+                return back()->withErrors($validator->errors());
+            }
+        }
 
-        return redirect()->route('customer.authentication.verify-email');
+        return redirect()->route('customer.authentication.verify-email', ['email' => $user->email]);
     }
 
-    public function showVerification()
+    public function showVerification(Request $request)
     {
-        return view('customer.authentication.verify-email');
+        $request->user()->sendEmailVerificationNotification();
+
+        return view('customer.authentication.verify-email', ['email' => $request->email]);
     }
 
     public function requestVerification(Request $request)

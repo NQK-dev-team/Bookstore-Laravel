@@ -271,7 +271,7 @@
                                                                         align="center">
 
                                                                         <img align="center" border="0"
-                                                                            src="{{ asset('assets/images/mail/password-change/image-4.gif') }}"
+                                                                            src="{{ Storage::url('mail/password-change/image-4.gif') }}"
                                                                             alt="image" title="image"
                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 30%;max-width: 180px;"
                                                                             width="180"
@@ -527,7 +527,7 @@
                                                                         align="center">
 
                                                                         <img align="center" border="0"
-                                                                            src="{{ asset('assets/images/mail/password-change/image-2.png') }}"
+                                                                            src="{{ Storage::url('mail/password-change/image-2.png') }}"
                                                                             alt="image" title="image"
                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 65%;max-width: 117px;"
                                                                             width="117"
@@ -649,7 +649,7 @@
                                                                         align="center">
 
                                                                         <img align="center" border="0"
-                                                                            src="{{ asset('assets/images/mail/password-change/image-3.png') }}"
+                                                                            src="{{ Storage::url('mail/password-change/image-3.png') }}"
                                                                             alt="image" title="image"
                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 65%;max-width: 117px;"
                                                                             width="117"
@@ -796,7 +796,7 @@
                                                                         align="center">
 
                                                                         <img align="center" border="0"
-                                                                            src="{{ asset('assets/images/mail/password-change/image-1.png') }}"
+                                                                            src="{{ Storage::url('mail/password-change/image-1.png') }}"
                                                                             alt="image" title="image"
                                                                             style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 100%;max-width: 149px;"
                                                                             width="149"

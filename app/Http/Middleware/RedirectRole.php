@@ -8,10 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Symfony\Component\HttpFoundation\Response;
 
-class RedirectAdmin
+class RedirectRole
 {
     /**
-     * Check if the admin is authenticated if yes then redirect the admin to the appropriate route
+     * Redirect the user to the appropriate route based on the user type
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
@@ -19,8 +19,14 @@ class RedirectAdmin
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Gate::allows('isAdmin')) {
-            return redirect()->route('admin.index');
+        if (str_contains($request->route()->getName(), 'admin')) {
+            if (Auth::check() && !Gate::allows('isAdmin')) {
+                return redirect()->route('customer.index');
+            }
+        } else {
+            if (Auth::check() && Gate::allows('isAdmin')) {
+                return redirect()->route('admin.index');
+            }
         }
 
         return $next($request);
