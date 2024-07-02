@@ -14,7 +14,7 @@
                 @csrf
                 <input name="user_type" type="hidden" value="customer">
                 <div class='w-100 d-flex flex-column'>
-                    <h1 class="mx-auto mb-0 mt-1">Login</h1>
+                    <h1 class="text-center mb-0 mt-1">Login</h1>
                     <div
                         class="align-items-center justify-content-center error_message mt-3 @if ($errors->has('error_message')) {{ 'd-flex' }} @endif py-3">
                         <svg class="ms-1" fill="#ff0000" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg"

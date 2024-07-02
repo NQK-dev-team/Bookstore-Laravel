@@ -1,7 +1,7 @@
 @extends('components.layouts.customer')
 
 @section('preloads')
-    <title>Recovery</title>
+    <title>Reset Password</title>
     <link rel="stylesheet" href="{{ asset('assets/css/authentication/style.css') }}">
 @endsection
 

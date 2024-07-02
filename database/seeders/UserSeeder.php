@@ -29,7 +29,8 @@ class UserSeeder extends Seeder
             'is_admin' => true,
             'points' => null,
             'created_at' => now(),
-            'updated_at' => now()
+            'updated_at' => now(),
+            'email_verified_at' => now()
         ]);
 
         // Insert customers
@@ -44,7 +45,8 @@ class UserSeeder extends Seeder
             'gender' => 'M',
             'created_at' => now(),
             'updated_at' => now(),
-            'points' => '27.31'
+            'points' => '27.31',
+            'email_verified_at' => now()
         ]);
 
         DB::table('users')->insert([
@@ -58,7 +60,8 @@ class UserSeeder extends Seeder
             'gender' => 'O',
             'created_at' => now(),
             'updated_at' => now(),
-            'points' => '27.87'
+            'points' => '27.87',
+            'email_verified_at' => now()
         ]);
 
         DB::table('users')->insert([
@@ -72,7 +75,8 @@ class UserSeeder extends Seeder
             'gender' => 'F',
             'created_at' => now(),
             'updated_at' => now(),
-            'points' => '27.87'
+            'points' => '27.87',
+            'email_verified_at' => now()
         ]);
     }
 }

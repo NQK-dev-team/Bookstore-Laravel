@@ -27,6 +27,10 @@ class AppServiceProvider extends ServiceProvider
             return $user->is_admin == 1;
         });
 
+        Gate::define('isVerified', function (User $user) {
+            return $user->email_verified_at !== null;
+        });
+
         ResetPassword::createUrlUsing(function (User $user, string $token) {
             if ($user->is_admin) {
                 return route('admin.authentication.password.reset', ['token' => $token, 'email' => Crypt::encryptString($user->email)]);

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->boolean('is_admin')->default(false)->nullable(false);
             $table->double('points')->nullable()->default(0);
             $table->string('referrer_id', 20)->nullable();
+            $table->timestamp('email_verified_at')->nullable();
             $table->softDeletes();
             // $table->rememberToken();
             $table->timestamps();

@@ -9,6 +9,8 @@ use App\Http\Controllers\Authentication\Register;
 use App\Http\Middleware\CheckAdminAuth;
 use App\Http\Middleware\RedirectAdmin;
 use App\Http\Middleware\RedirectCustomer;
+use App\Http\Middleware\RedirectVerifiedEmail;
+use App\Http\Middleware\VerifyEmail;
 
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->group(function () {
@@ -78,10 +80,6 @@ Route::prefix('admin')->name('admin.')->middleware(RedirectCustomer::class)->gro
 
 // Customer routes
 Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(function () {
-    Route::get('/', function () {
-        return view('customer.index');
-    })->name('index');
-
     Route::prefix('authentication')->name('authentication.')->middleware(RedirectCustomer::class)->group(function () {
         Route::get('/', [Login::class, 'show'])->name('index');
         Route::post('/', [Login::class, 'login'])->name('index');
@@ -96,26 +94,36 @@ Route::prefix('/')->name('customer.')->middleware(RedirectAdmin::class)->group(f
         Route::post('password-reset', [Recovery::class, 'setNewPassword'])->name('password.update');
     });
 
-    Route::prefix('book')->name('book.')->group(function () {
-        Route::get('/', function () {
-            return view('customer.book.index');
-        })->name('index');
+    Route::prefix('authentication')->name('authentication.')->middleware(RedirectVerifiedEmail::class)->group(function () {
+        Route::get('verify-email', [Register::class, 'showVerification'])->name('verify-email');
     });
 
-    Route::middleware(CheckCustomerAuth::class)->group(function () {
-        Route::prefix('cart')->name('cart.')->group(function () {
+    Route::middleware(VerifyEmail::class)->group(function () {
+        Route::get('/', function () {
+            return view('customer.index');
+        })->name('index');
+
+        Route::prefix('book')->name('book.')->group(function () {
             Route::get('/', function () {
-                return view('customer.cart.index');
+                return view('customer.book.index');
             })->name('index');
         });
 
-        Route::prefix('profile')->name('profile.')->group(function () {
-            Route::get('/', function () {
-                return view('customer.profile.index');
-            })->name('index');
-        });
+        Route::middleware(CheckCustomerAuth::class)->group(function () {
+            Route::prefix('cart')->name('cart.')->group(function () {
+                Route::get('/', function () {
+                    return view('customer.cart.index');
+                })->name('index');
+            });
 
-        Route::post('authentication/logout', [Logout::class, 'customerLogout'])->name('authentication.logout');
+            Route::prefix('profile')->name('profile.')->group(function () {
+                Route::get('/', function () {
+                    return view('customer.profile.index');
+                })->name('index');
+            });
+
+            Route::post('authentication/logout', [Logout::class, 'customerLogout'])->name('authentication.logout');
+        });
     });
 });
 

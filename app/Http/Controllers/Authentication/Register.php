@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\Rules\Password;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
 class Register extends Controller
 {
@@ -39,5 +40,18 @@ class Register extends Controller
         ]);
 
         // Email verification
+    }
+
+    public function showVerification()
+    {
+        return view('customer.authentication.verify-email');
+    
+    }
+
+    public function verifyEmail(EmailVerificationRequest $request)
+    {
+        $request->fulfill();
+
+        return redirect()->route('customer.index');
     }
 }
