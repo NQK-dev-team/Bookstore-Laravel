@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Authentication;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 
@@ -39,13 +42,39 @@ class Register extends Controller
             'confirmPassword' => 'required|same:password',
         ]);
 
-        // Email verification
+        // Create user, login and redirect to email verification page
+        $refID = $request->refEmail === '' ? null : User::where('email', $request->refEmail)->first()->id;
+
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'phone' => $request->phone,
+            'dob' => $request->dob,
+            'address' => $request->address === '' ? null : $request->address,
+            'gender' => $request->gender,
+            'password' =>  Hash::make($request->password),
+            'referrer_id' => $refID,
+        ]);
+
+        Auth::attempt($user['email'], $user['password']);
+
+        return redirect()->route('customer.authentication.verify-email');
     }
 
     public function showVerification()
     {
         return view('customer.authentication.verify-email');
-    
+    }
+
+    public function requestVerification(Request $request)
+    {
+        // $request->validate([
+        //     'email' => 'required|email|exists:users,email',
+        // ]);
+
+        // $request->user()->sendEmailVerificationNotification();
+
+        // return back()->with('status', 'verification-link-sent');
     }
 
     public function verifyEmail(EmailVerificationRequest $request)
