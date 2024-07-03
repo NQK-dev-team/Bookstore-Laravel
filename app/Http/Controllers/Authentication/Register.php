@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Authentication;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Mail\VerifyEmail;
 use Illuminate\Support\Str;
+use App\Mail\ReferralNotice;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
@@ -41,12 +43,14 @@ class Register extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email',
             'phone' => ['required', 'numeric', 'digits:10', Rule::unique('users', 'phone')->whereNull('deleted_at')],
-            'dob' => 'required|date',
+            'dob' => ['required', 'date', 'before_or_equal:' . Carbon::now()->subYears(18)->toDateString()],
             'gender' => 'required|in:M,F,O',
             'address' => 'nullable|string|max:1000',
             'refEmail' => ['nullable', 'email', Rule::exists('users', 'email')->whereNull('deleted_at')],
             'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()],
             'confirmPassword' => 'required|same:password',
+        ], [
+            'dob.before_or_equal' => 'You must be at least 18 years old to register.',
         ]);
 
         // Create user, login and redirect to email verification page
@@ -126,12 +130,12 @@ class Register extends Controller
 
             // Compare token with hased token
             if (!Hash::check($token, $result->token)) {
-                return response('Invalid token.', 401);
+                abort(401);
             }
 
             // If createdTime pass 24 hours from now, return 400 error status code
             if (now()->diffInHours($result->created_at, true) > 24) {
-                return response('Token expired.', 419);
+                abort(419);
             }
 
             // Update user email_verified_at
@@ -139,9 +143,15 @@ class Register extends Controller
                 DB::table('email_verify_tokens')->where('email', $email)->delete();
                 User::where('email', $email)->update(['email_verified_at' => now()]);
             });
+
+            $refID = User::where('email', $email)->first()->referrer_id;
+            if ($refID) {
+                $ref = User::where('id', $refID)->first();
+                Mail::to($ref->email)->send(new ReferralNotice($ref->name, User::where('email', $email)->first()->name));
+            }
         } catch (DecryptException $e) {
             // Return 400 error status code
-            return response('Invalid email.', 400);
+            abort(400);
         }
         return redirect()->route('customer.index');
     }
