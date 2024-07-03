@@ -95,6 +95,7 @@ Route::prefix('/')->name('customer.')->middleware(RedirectRole::class)->group(fu
 
     Route::prefix('authentication')->name('authentication.')->middleware(RedirectVerifiedEmail::class)->group(function () {
         Route::get('verify-email', [Register::class, 'showVerification'])->name('verify-email');
+        Route::get('verify-email/{email}/{token}', [Register::class, 'verifyEmail'])->name('verify');
         Route::post('verify-email', [Register::class, 'requestVerification'])->name('verify-email');
     });
 

@@ -3,15 +3,20 @@
 namespace App\Http\Controllers\Authentication;
 
 use App\Models\User;
+use App\Mail\VerifyEmail;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class Register extends Controller
 {
@@ -66,31 +71,84 @@ class Register extends Controller
             }
         }
 
-        return redirect()->route('customer.authentication.verify-email', ['email' => $user->email]);
+        return redirect()->route('customer.authentication.verify-email');
     }
 
     public function showVerification(Request $request)
     {
-        $request->user()->sendEmailVerificationNotification();
+        $email = auth()->user()->email;
 
-        return view('customer.authentication.verify-email', ['email' => $request->email]);
+        $result = DB::table('email_verify_tokens')->where('email', $email)->first();
+        if (!$result) {
+            $token = Str::random(32);
+            while (DB::table('email_verify_tokens')->where('token', Hash::make($token))->first()) {
+                $token = Str::random(32);
+            }
+            DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => now()]);
+            Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
+        } else {
+            if (now()->diffInHours($result->created_at, true) > 24) {
+                $token = Str::random(32);
+                while (DB::table('email_verify_tokens')->where('token', Hash::make($token))->first()) {
+                    $token = Str::random(32);
+                }
+                DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => now()]);
+                Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
+            }
+        }
+        return view('customer.authentication.verify-email', ['email' => $email]);
     }
 
     public function requestVerification(Request $request)
     {
-        // $request->validate([
-        //     'email' => 'required|email|exists:users,email',
-        // ]);
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
 
-        // $request->user()->sendEmailVerificationNotification();
+        $email = $request->email;
+        $result = DB::table('email_verify_tokens')->where('email', $email)->first();
+        $token = Str::random(32);
+        while (DB::table('email_verify_tokens')->where('token', Hash::make($token))->first()) {
+            $token = Str::random(32);
+        }
 
-        // return back()->with('status', 'verification-link-sent');
+        if ($result) {
+            DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => now()]);
+        } else {
+            DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => now()]);
+        }
+        Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
+
+        return back();
     }
 
-    public function verifyEmail(EmailVerificationRequest $request)
+    public function verifyEmail(Request $request)
     {
-        $request->fulfill();
+        try {
+            $email = Crypt::decryptString($request->email);
+            $token = $request->token;
 
+            $result = DB::table('email_verify_tokens')->where('email', $email)->first();
+
+            // Compare token with hased token
+            if (!Hash::check($token, $result->token)) {
+                return response('Invalid token.', 401);
+            }
+
+            // If createdTime pass 24 hours from now, return 400 error status code
+            if (now()->diffInHours($result->created_at, true) > 24) {
+                return response('Token expired.', 419);
+            }
+
+            // Update user email_verified_at
+            DB::transaction(function () use ($email) {
+                DB::table('email_verify_tokens')->where('email', $email)->delete();
+                User::where('email', $email)->update(['email_verified_at' => now()]);
+            });
+        } catch (DecryptException $e) {
+            // Return 400 error status code
+            return response('Invalid email.', 400);
+        }
         return redirect()->route('customer.index');
     }
 }
