@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Authentication;
 use App\Models\User;
 use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
