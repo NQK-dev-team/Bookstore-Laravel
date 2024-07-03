@@ -81,17 +81,11 @@ class Register extends Controller
         $result = DB::table('email_verify_tokens')->where('email', $email)->first();
         if (!$result) {
             $token = Str::random(32);
-            while (DB::table('email_verify_tokens')->where('token', Hash::make($token))->first()) {
-                $token = Str::random(32);
-            }
             DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => now()]);
             Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
         } else {
             if (now()->diffInHours($result->created_at, true) > 24) {
                 $token = Str::random(32);
-                while (DB::table('email_verify_tokens')->where('token', Hash::make($token))->first()) {
-                    $token = Str::random(32);
-                }
                 DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => now()]);
                 Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
             }
