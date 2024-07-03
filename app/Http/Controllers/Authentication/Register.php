@@ -52,7 +52,7 @@ class Register extends Controller
         // Create user, login and redirect to email verification page
         $refID = $request->refEmail ? (User::where('email', $request->refEmail)->first()->id) : null;
 
-        $user = User::create([
+        User::create([
             'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-']),
             'name' => $request->name,
             'email' => $request->email,
@@ -74,7 +74,7 @@ class Register extends Controller
         return redirect()->route('customer.authentication.verify-email');
     }
 
-    public function showVerification(Request $request)
+    public function showVerification()
     {
         $email = auth()->user()->email;
 
