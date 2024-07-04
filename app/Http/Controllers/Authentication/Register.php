@@ -57,7 +57,7 @@ class Register extends Controller
         $refID = $request->refEmail ? (User::where('email', $request->refEmail)->first()->id) : null;
 
         User::create([
-            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-']),
+            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
             'name' => $request->name,
             'email' => $request->email,
             'phone' => $request->phone,
