@@ -17,7 +17,6 @@ return new class extends Migration
             $table->string('order_id', 20)->nullable(false);
             $table->string('book_id', 20)->nullable(false);
             $table->integer('amount')->nullable(false)->default(1);
-            $table->timestamps();
 
             // Real primary key
             $table->unique(['order_id', 'book_id']);

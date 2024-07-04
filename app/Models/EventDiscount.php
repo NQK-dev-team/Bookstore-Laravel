@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class EventDiscount extends Model
 {
@@ -22,4 +23,9 @@ class EventDiscount extends Model
      * @var string
      */
     protected $keyType = 'string';
+
+    public function booksApplied(): BelongsToMany
+    {
+        return $this->belongsToMany(Book::class, 'event_applies_to', 'event_discount_id', 'book_id');
+    }
 }
