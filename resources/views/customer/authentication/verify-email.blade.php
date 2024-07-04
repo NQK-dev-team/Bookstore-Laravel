@@ -2,6 +2,8 @@
 
 @section('preloads')
     <title>Email Verification</title>
+    <meta name="author" content="Nghia Duong">
+    <meta name="description" content="Verify NQK bookstore email account">
     <link rel="stylesheet" href="{{ asset('assets/css/authentication/style.css') }}">
 @endsection
 

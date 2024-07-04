@@ -2,6 +2,8 @@
 
 @section('preloads')
     <title>Register</title>
+    <meta name="author" content="Nghia Duong">
+    <meta name="description" content="Register new NQK bookstore account">
     <link rel="stylesheet" href="{{ asset('assets/css/authentication/style.css') }}">
 @endsection
 
