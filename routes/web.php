@@ -5,6 +5,7 @@ use App\Http\Controllers\Authentication\Login;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
+use App\Http\Controllers\Customer\Home as CustomerHome;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\RedirectAuth;
 use App\Http\Middleware\RedirectRole;
@@ -100,9 +101,7 @@ Route::prefix('/')->name('customer.')->middleware(RedirectRole::class)->group(fu
     });
 
     Route::middleware(VerifyEmail::class)->group(function () {
-        Route::get('/', function () {
-            return view('customer.index');
-        })->name('index');
+        Route::get('/', [CustomerHome::class, 'show'])->name('index');
 
         Route::prefix('book')->name('book.')->group(function () {
             Route::get('/', function () {
