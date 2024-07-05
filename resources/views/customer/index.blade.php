@@ -110,16 +110,14 @@
                             </g>
                         </svg>&nbsp;Top Categories</h4>
                 </div>
-                <div class='d-flex overflow-x-auto px-4 pb-2'>
-                    {{-- Code here --}}
-                </div>
+                @livewire('customer.home.category')
                 <hr>
-                <div class='container-lg px-2 position-relative'>
-                    <div class='w-100 h-100 position-absolute align-items-center justify-content-between pe-4'
+                <div class='container-lg px-0 position-relative'>
+                    <div class='w-100 h-100 position-absolute align-items-center justify-content-between'
                         id='slideNavigate2'>
                         <div class='slide-button-div'>
                             <button aria-label="Left slide" id='slideLeft2'
-                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0 ms-1'>
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg" stroke="#828282" transform="rotate(180)">
                                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -134,7 +132,7 @@
                         </div>
                         <div class='slide-button-div'>
                             <button aria-label="Right slide" id='slideRight2'
-                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0 me-1'>
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg" stroke="#828282">
                                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -149,7 +147,7 @@
                         </div>
                     </div>
                     <div class='mx-md-4 d-flex overflow-x-auto hideBrowserScrollbar' id='bookList1'>
-                        @livewire('customer.home.category')
+                        {{-- Code here --}}
                     </div>
                 </div>
                 <button class='btn moreBtn mx-auto mt-4' onclick="viewMoreCategoryBook()">Browse More</button>
@@ -162,16 +160,14 @@
                             style="height:28px;width:28px;">&nbsp;Top Publishers
                     </h4>
                 </div>
-                <div class='d-flex overflow-x-auto px-4 pb-2'>
-                    {{-- Code here --}}
-                </div>
+                @livewire('customer.home.publisher')
                 <hr>
-                <div class='container-lg px-2 position-relative'>
-                    <div class='w-100 h-100 position-absolute align-items-center justify-content-between pe-4'
+                <div class='container-lg px-0 position-relative'>
+                    <div class='w-100 h-100 position-absolute align-items-center justify-content-between'
                         id='slideNavigate1'>
                         <div class='slide-button-div'>
                             <button aria-label="Left slide" id='slideLeft1'
-                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0 ms-1'>
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg" stroke="#828282" transform="rotate(180)">
                                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -186,7 +182,7 @@
                         </div>
                         <div class='slide-button-div'>
                             <button aria-label="Right slide" id='slideRight1'
-                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0'>
+                                class='slide-button btn btn-outline-secondary bg-white rounded-circle p-0 me-1'>
                                 <svg width="24px" height="24px" viewBox="0 0 24 24" fill="none"
                                     xmlns="http://www.w3.org/2000/svg" stroke="#828282">
                                     <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
@@ -201,7 +197,7 @@
                         </div>
                     </div>
                     <div class='mx-md-4 d-flex overflow-x-auto hideBrowserScrollbar' id='bookList'>
-                        @livewire('customer.home.publisher')
+                        {{-- Code here --}}
                     </div>
                 </div>
                 <button class='btn moreBtn mx-auto mt-4' onclick="viewMorePublisherBook()">Browse More</button>
@@ -228,7 +224,5 @@
 
 @section('postloads')
     @livewireScripts
-    <script>
-        
-    </script>
+    <script></script>
 @endsection

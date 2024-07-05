@@ -96,7 +96,8 @@
 @media only screen and (max-width:767px) {
 
   #slideNavigate,
-  #slideNavigate1 {
+  #slideNavigate1,
+  #slideNavigate2 {
     display: none;
   }
 
