@@ -14,7 +14,6 @@ return new class extends Migration
     {
         Schema::create('event_discounts', function (Blueprint $table) {
             $table->string('id', 20)->primary();
-            $table->double('discount')->nullable(false);
             $table->dateTime('start_date')->nullable(false);
             $table->dateTime('end_date')->nullable(false);
             $table->boolean('apply_for_all_books')->nullable(false)->default(false);
@@ -26,7 +25,6 @@ return new class extends Migration
         });
 
         // Value range constraints
-        DB::statement("ALTER TABLE event_discounts ADD CONSTRAINT chk_discount_value CHECK (discount >= 0 AND discount <= 100)");
         DB::statement("ALTER TABLE event_discounts ADD CONSTRAINT chk_start_date_end_date CHECK (start_date <= end_date)");
     }
 

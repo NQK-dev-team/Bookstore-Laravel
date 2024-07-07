@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Discount extends Model
 {
@@ -24,18 +24,18 @@ class Discount extends Model
      */
     protected $keyType = 'string';
 
-    public function eventDiscounts(): HasMany
+    public function eventDiscount(): HasOne
     {
-        return $this->hasMany(EventDiscount::class, 'id', 'id');
+        return $this->hasOne(EventDiscount::class, 'id', 'id');
     }
 
-    public function refererrDiscount(): HasMany
+    public function refererrDiscount(): HasOne
     {
-        return $this->hasMany(ReferrerDiscount::class, 'id', 'id');
+        return $this->hasOne(ReferrerDiscount::class, 'id', 'id');
     }
 
-    public function customerDiscount(): HasMany
+    public function customerDiscount(): HasOne
     {
-        return $this->hasMany(CustomerDiscount::class, 'id', 'id');
+        return $this->hasOne(CustomerDiscount::class, 'id', 'id');
     }
 }

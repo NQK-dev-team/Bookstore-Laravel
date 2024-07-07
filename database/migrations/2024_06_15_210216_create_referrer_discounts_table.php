@@ -14,7 +14,6 @@ return new class extends Migration
     {
         Schema::create('referrer_discounts', function (Blueprint $table) {
             $table->string('id', 20)->primary();
-            $table->double('discount')->nullable(false);
             $table->integer('number_of_people')->nullable(false);
             $table->timestamps();
 
@@ -24,7 +23,6 @@ return new class extends Migration
 
         // Value range constraints
         DB::statement("ALTER TABLE referrer_discounts ADD CONSTRAINT chk_number_of_people_value CHECK (number_of_people >= 0)");
-        DB::statement("ALTER TABLE referrer_discounts ADD CONSTRAINT chk_discount_value CHECK (discount >= 0 AND discount <= 100)");
     }
 
     /**

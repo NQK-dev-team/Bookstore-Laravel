@@ -135,3 +135,11 @@ body {
   scrollbar-width: none;
   /* Firefox */
 }
+
+.smooth-scroll {
+  scroll-behavior: smooth;
+}
+
+.text-justify {
+  text-align: justify;
+}

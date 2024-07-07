@@ -16,7 +16,6 @@ class ReferrerDiscountSeeder extends Seeder
         DB::table('referrer_discounts')->insert([
             'id' => 'D-R-0000000000000001',
             'number_of_people' => 3,
-            'discount' => 2,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -24,7 +23,6 @@ class ReferrerDiscountSeeder extends Seeder
         DB::table('referrer_discounts')->insert([
             'id' => 'D-R-0000000000000002',
             'number_of_people' => 5,
-            'discount' => 5,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -32,7 +30,6 @@ class ReferrerDiscountSeeder extends Seeder
         DB::table('referrer_discounts')->insert([
             'id' => 'D-R-0000000000000003',
             'number_of_people' => 10,
-            'discount' => 7,
             'created_at' => now(),
             'updated_at' => now(),
         ]);

@@ -1,16 +1,19 @@
 <?php
 
+use App\Http\Middleware\CheckAuth;
+use App\Http\Middleware\VerifyEmail;
+use App\Http\Middleware\RedirectAuth;
+use App\Http\Middleware\RedirectRole;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Authentication\Login;
+use App\Http\Middleware\RedirectVerifiedEmail;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
 use App\Http\Controllers\Customer\Home as CustomerHome;
-use App\Http\Middleware\CheckAuth;
-use App\Http\Middleware\RedirectAuth;
-use App\Http\Middleware\RedirectRole;
-use App\Http\Middleware\RedirectVerifiedEmail;
-use App\Http\Middleware\VerifyEmail;
+use App\Http\Controllers\General\File;
 
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(RedirectRole::class)->group(function () {
@@ -107,6 +110,10 @@ Route::prefix('/')->name('customer.')->middleware(RedirectRole::class)->group(fu
             Route::get('/', function () {
                 return view('customer.book.index');
             })->name('index');
+
+            Route::get('/{id}', function (string $id) {
+                return $id;
+            })->name('detail');
         });
 
         Route::middleware(CheckAuth::class)->group(function () {
@@ -143,3 +150,9 @@ Route::get('privacy-policy', function () {
 Route::get('terms-of-service', function () {
     return view('general.terms-of-service');
 })->name('terms-of-service');
+
+// Temporary route
+Route::name('temporary-url.')->prefix('temporary-url')->group(function () {
+    Route::get('image', [File::class, 'handleImage'])->where('path', '.*')->name('image');
+    Route::get('pdf', [File::class, 'handlePDF'])->where('path', '.*')->name('pdf');
+});

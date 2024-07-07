@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('customer_discounts', function (Blueprint $table) {
             $table->string('id', 20)->primary();
             $table->double('point')->nullable(false);
-            $table->double('discount')->nullable(false);
             $table->timestamps();
 
             // Foreign keys
@@ -24,7 +23,6 @@ return new class extends Migration
 
         // Value range constraints
         DB::statement("ALTER TABLE customer_discounts ADD CONSTRAINT chk_point_value CHECK (point >= 0)");
-        DB::statement("ALTER TABLE customer_discounts ADD CONSTRAINT chk_discount_value CHECK (discount >= 0 AND discount <= 100)");
     }
 
     /**
