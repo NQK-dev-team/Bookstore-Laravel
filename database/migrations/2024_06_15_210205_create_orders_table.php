@@ -24,6 +24,9 @@ return new class extends Migration
             $table->foreign('customer_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });
 
+        // Unique indexes
+        DB::statement("CREATE UNIQUE INDEX unique_unpaid_order ON orders (customer_id,status) where status = false");
+
         // Value range constraints
         DB::statement("ALTER TABLE orders ADD CONSTRAINT chk_total_cost_value CHECK (total_cost >= 0)");
         DB::statement("ALTER TABLE orders ADD CONSTRAINT chk_total_discount_value CHECK (total_discount >= 0)");
