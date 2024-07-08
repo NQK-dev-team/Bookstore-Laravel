@@ -8,6 +8,8 @@
 
 @section('preloads')
     <title>Privacy Policy</title>
+    <meta name="author" content="Nghia Duong">
+    <meta name="description" content="NQK bookstore privacy policy">
 @endsection
 
 @section('page')

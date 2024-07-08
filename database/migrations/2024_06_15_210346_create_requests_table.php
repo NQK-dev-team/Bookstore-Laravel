@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('requests', function (Blueprint $table) {
             $table->string('id', 20)->primary();
             $table->string('name')->nullable(false);
-            $table->string('author(s)', 500)->nullable(false);
+            $table->string('author', 500)->nullable(false);
             $table->timestamps();
         });
     }

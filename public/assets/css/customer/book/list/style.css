@@ -1,0 +1,16 @@
+.text-small {
+    font-size: 13px;
+}
+
+.item-chosen {
+    color: rgb(255, 125, 0);
+}
+
+.panel {
+    width: 300px;
+}
+
+.item-list {
+    max-height: 250px;
+    overflow-y: auto;
+}

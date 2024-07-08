@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Customer;
+namespace App\Http\Controllers\Customer\Cart;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-class Book extends Controller
+class Controller extends Controller
 {
     //
 }

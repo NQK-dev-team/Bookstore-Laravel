@@ -54,7 +54,9 @@ class Home extends Controller
         $discountedBooks = [];
 
         $discounts = null;
-        $discounts = Discount::whereHas('eventDiscount', function (Builder $query) {
+        $discounts = Discount::with([
+            "eventDiscount" => ["booksApplied"],
+        ])->whereHas('eventDiscount', function (Builder $query) {
             $query->where([
                 ['apply_for_all_books', '=', true],
                 ['start_date', '<=', date('Y-m-d')],
@@ -63,7 +65,9 @@ class Home extends Controller
         })->orderBy('discount', 'desc')->first();
 
         if (!$discounts) {
-            $discounts = Discount::whereHas('eventDiscount', function (Builder $query) {
+            $discounts = Discount::with([
+                "eventDiscount" => ["booksApplied"],
+            ])->whereHas('eventDiscount', function (Builder $query) {
                 $query->where([
                     ['apply_for_all_books', '=', false],
                     ['start_date', '<=', date('Y-m-d')],
@@ -253,7 +257,7 @@ class Home extends Controller
         $bookSales = $this->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
-        $books = Book::whereIn('id', $bookIDs)->get();
+        $books = Book::with("categories")->whereIn('id', $bookIDs)->get();
         $topCategories = [];
 
         foreach ($books as $book) {

@@ -5,6 +5,7 @@
     <meta name="author" content="Nghia Duong">
     <meta name="description" content="Home page of NQK bookstore">
     <link rel="stylesheet" href="{{ asset('assets/css/customer/home/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     @livewireStyles
 @endsection
 

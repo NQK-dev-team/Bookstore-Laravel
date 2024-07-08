@@ -9,6 +9,8 @@
 @section('preloads')
     <title>About Us</title>
     <link rel='stylesheet' href='{{ asset('assets/css/general/about-us.css') }}'>
+    <meta name="author" content="Nghia Duong">
+    <meta name="description" content="About NQK bookstore">
 @endsection
 
 @section('page')

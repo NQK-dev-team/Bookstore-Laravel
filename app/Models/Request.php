@@ -22,4 +22,15 @@ class Request extends Model
      * @var string
      */
     protected $keyType = 'string';
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'id',
+        'name',
+        'author'
+    ];
 }

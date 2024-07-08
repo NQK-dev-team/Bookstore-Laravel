@@ -12,8 +12,10 @@ use App\Http\Middleware\RedirectVerifiedEmail;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
+use App\Http\Controllers\Customer\Book\List\BookList;
 use App\Http\Controllers\Customer\Home as CustomerHome;
 use App\Http\Controllers\General\File;
+use App\Models\Discount;
 
 // Admin routes
 Route::prefix('admin')->name('admin.')->middleware(RedirectRole::class)->group(function () {
@@ -107,9 +109,7 @@ Route::prefix('/')->name('customer.')->middleware(RedirectRole::class)->group(fu
         Route::get('/', [CustomerHome::class, 'show'])->name('index');
 
         Route::prefix('book')->name('book.')->group(function () {
-            Route::get('/', function () {
-                return view('customer.book.index');
-            })->name('index');
+            Route::get('/', [BookList::class, 'show'])->name('index');
 
             Route::get('/{id}', function (string $id) {
                 return $id;
@@ -140,7 +140,13 @@ Route::get('about-us', function () {
 })->name('about-us');
 
 Route::get('discount-program', function () {
-    return 'discount-program';
+    $referrerDiscounts = Discount::whereHas('referrerDiscount')->get();
+    $customerDiscounts = Discount::whereHas('customerDiscount')->get();
+
+    return view('general.discount-program', [
+        'referrerDiscounts' => $referrerDiscounts,
+        'customerDiscounts' => $customerDiscounts,
+    ]);
 })->name('discount-program');
 
 Route::get('privacy-policy', function () {

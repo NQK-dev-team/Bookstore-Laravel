@@ -29,7 +29,7 @@ class Discount extends Model
         return $this->hasOne(EventDiscount::class, 'id', 'id');
     }
 
-    public function refererrDiscount(): HasOne
+    public function referrerDiscount(): HasOne
     {
         return $this->hasOne(ReferrerDiscount::class, 'id', 'id');
     }

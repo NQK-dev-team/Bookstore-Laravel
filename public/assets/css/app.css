@@ -58,14 +58,6 @@ body {
   flex-grow: 1;
 }
 
-#search_book_customer {
-  padding-left: 35px !important;
-}
-
-.search_form_customer {
-  max-width: 290px;
-}
-
 .wait {
   cursor: wait !important;
 }
@@ -114,10 +106,6 @@ body {
     min-height: initial;
   }
 
-  .search_form_customer {
-    max-width: none;
-  }
-
   .activeTab {
     border-bottom: none;
   }
@@ -142,4 +130,8 @@ body {
 
 .text-justify {
   text-align: justify;
+}
+
+.search_form {
+  padding-left: 35px !important;
 }
