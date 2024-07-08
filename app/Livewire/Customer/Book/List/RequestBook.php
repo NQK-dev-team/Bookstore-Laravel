@@ -27,6 +27,11 @@ class RequestBook extends Component
         $this->reset();
     }
 
+    public function updated()
+    {
+        $this->dispatch('openSuccessModal');
+    }
+
     public function render()
     {
         return view('livewire.customer.book.list.request-book');

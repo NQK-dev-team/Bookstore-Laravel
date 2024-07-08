@@ -3,6 +3,7 @@
 namespace App\Livewire\Customer\Book\List;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Http\Controllers\Customer\Book\List\BookList;
 
 class Publisher extends Component
@@ -11,14 +12,16 @@ class Publisher extends Component
     public $publisher;
     public $selectedPublisher;
 
-    public function selectPublisher($publisher)
+    #[On('select-publisher')]
+    public function selectPublisher($publisher, $called = false)
     {
         if ($publisher === $this->selectedPublisher)
             $this->selectedPublisher = '';
         else
             $this->selectedPublisher = $publisher;
 
-        $this->dispatch('select-publisher', selectedPublisher: $this->selectedPublisher);
+        if (!$called)
+            $this->dispatch('select-publisher-modal', publisher: $this->selectedPublisher, called: true);
     }
 
     public function searchPublisher()

@@ -3,6 +3,7 @@
 namespace App\Livewire\Customer\Book\List;
 
 use Livewire\Component;
+use Livewire\Attributes\On;
 use App\Http\Controllers\Customer\Book\List\BookList;
 
 class Author extends Component
@@ -11,14 +12,16 @@ class Author extends Component
     public $authors;
     public $selectedAuthor;
 
-    public function selectAuthor($author)
+    #[On('select-author')]
+    public function selectAuthor($author, $called = false)
     {
         if ($author === $this->selectedAuthor)
             $this->selectedAuthor = '';
         else
             $this->selectedAuthor = $author;
 
-        $this->dispatch('select-author', selectedAuthor: $this->selectedAuthor);
+        if (!$called)
+            $this->dispatch('select-author-modal', author: $this->selectedAuthor, called: true);
     }
 
     public function searchAuthor()

@@ -1,5 +1,5 @@
 <div class='flex-grow-1 border-2 bg-white d-flex flex-column px-1 px-sm-2 rounded' id='listContainer'>
-    <form class="d-flex align-items-center w-100 mt-3" role="search">
+    <form class="d-flex align-items-center w-100 mt-3" role="search" wire:submit="searchBook()">
         <button title='Submit search form' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
             <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" version="1.1"
                 xmlns="http://www.w3.org/2000/svg" stroke="#000000" stroke-width="1.568">
@@ -13,15 +13,15 @@
             </svg>
         </button>
 
-        <input class="form-control search_form" type="search" placeholder="Search book by name"
-            aria-label="Search for books">
+        <input wire:model="searchBook" id="search_book" class="form-control search_form" type="search"
+            placeholder="Search book by name" aria-label="Search for books">
     </form>
     <div class='d-flex mt-3'>
         <div class='d-sm-flex'>
             <div>
-                <select onchange="fetchBook()" id='listOption' class="form-select pointer"
-                    aria-label="Select listing option">
-                    <option value="1" selected>Default Listing</option>
+                <select id='listOption' class="form-select pointer" aria-label="Select listing option"
+                    wire:model.live="listOption">
+                    <option value="1">Default Listing</option>
                     <option value="2">On Sale</option>
                     <option value="3">This Week Best Sellers</option>
                     <option value="4">Price: Low to High</option>
@@ -29,8 +29,9 @@
                 </select>
             </div>
             <div class='ms-sm-3 mt-3 mt-sm-0'>
-                <select id='listLimit' class="form-select pointer" aria-label="Select number of books per page">
-                    <option value="12" selected>12 books</option>
+                <select id='listLimit' class="form-select pointer" aria-label="Select number of books per page"
+                    wire:model.live="bookPerPage">
+                    <option value="12">12 books</option>
                     <option value="24">24 books</option>
                     <option value="48">48 books</option>
                 </select>
@@ -69,6 +70,104 @@
                 name="offset"></button>
             <button onclick="adJustOffset(true)" name="next" type="button"
                 class="btn btn-light fw-medium border border-1 border-secondary">&gt;</button>
+        </div>
+    </div>
+    <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="modalLabel" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Filter</h3>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form wire:submit="searchCategory">
+                        <h5>Category</h5>
+                        <div class="d-flex align-items-center">
+                            <button title='Submit search form'
+                                class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
+                                <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32"
+                                    version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
+                                    stroke-width="1.568">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                    </g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path
+                                            d="M31.707 30.282l-9.717-9.776c1.811-2.169 2.902-4.96 2.902-8.007 0-6.904-5.596-12.5-12.5-12.5s-12.5 5.596-12.5 12.5 5.596 12.5 12.5 12.5c3.136 0 6.002-1.158 8.197-3.067l9.703 9.764c0.39 0.39 1.024 0.39 1.415 0s0.39-1.023 0-1.415zM12.393 23.016c-5.808 0-10.517-4.709-10.517-10.517s4.708-10.517 10.517-10.517c5.808 0 10.516 4.708 10.516 10.517s-4.709 10.517-10.517 10.517z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </button>
+                            <input id="search_category_modal" class="form-control search_form" type="search"
+                                placeholder="Search category" aria-label="Search category" wire:model="category">
+                        </div>
+                        <div class='ps-2 mt-2'>
+                            @foreach ($categories as $category)
+                                <p class="pointer {{ $selectedCategory === $category ? 'item-chosen' : '' }}"
+                                    x-on:click="$wire.selectCategory(`{{ $category }}`)">{{ $category }}
+                                </p>
+                            @endforeach
+                        </div>
+                    </form>
+                    <form class='mt-4' wire:submit="searchAuthor">
+                        <h5>Author</h5>
+                        <div class="d-flex align-items-center">
+                            <button title='Submit search form'
+                                class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
+                                <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32"
+                                    version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
+                                    stroke-width="1.568">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                    </g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path
+                                            d="M31.707 30.282l-9.717-9.776c1.811-2.169 2.902-4.96 2.902-8.007 0-6.904-5.596-12.5-12.5-12.5s-12.5 5.596-12.5 12.5 5.596 12.5 12.5 12.5c3.136 0 6.002-1.158 8.197-3.067l9.703 9.764c0.39 0.39 1.024 0.39 1.415 0s0.39-1.023 0-1.415zM12.393 23.016c-5.808 0-10.517-4.709-10.517-10.517s4.708-10.517 10.517-10.517c5.808 0 10.516 4.708 10.516 10.517s-4.709 10.517-10.517 10.517z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </button>
+                            <input id="search_author_modal" class="form-control search_form" type="search"
+                                placeholder="Search author" aria-label="Search author" wire:model="author">
+                        </div>
+                        <div class='ps-2 mt-2'>
+                            @foreach ($authors as $author)
+                                <p class="pointer {{ $selectedAuthor === $author ? 'item-chosen' : '' }}"
+                                    x-on:click="$wire.selectAuthor(`{{ $author }}`)">{{ $author }}</p>
+                            @endforeach
+                        </div>
+                    </form>
+                    <form class='mt-4' wire:submit="searchPublisher">
+                        <h5>Publisher</h5>
+                        <div class="d-flex align-items-center">
+                            <button title='Submit search form'
+                                class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2" type="submit">
+                                <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32"
+                                    version="1.1" xmlns="http://www.w3.org/2000/svg" stroke="#000000"
+                                    stroke-width="1.568">
+                                    <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round">
+                                    </g>
+                                    <g id="SVGRepo_iconCarrier">
+                                        <path
+                                            d="M31.707 30.282l-9.717-9.776c1.811-2.169 2.902-4.96 2.902-8.007 0-6.904-5.596-12.5-12.5-12.5s-12.5 5.596-12.5 12.5 5.596 12.5 12.5 12.5c3.136 0 6.002-1.158 8.197-3.067l9.703 9.764c0.39 0.39 1.024 0.39 1.415 0s0.39-1.023 0-1.415zM12.393 23.016c-5.808 0-10.517-4.709-10.517-10.517s4.708-10.517 10.517-10.517c5.808 0 10.516 4.708 10.516 10.517s-4.709 10.517-10.517 10.517z">
+                                        </path>
+                                    </g>
+                                </svg>
+                            </button>
+                            <input id="search_publisher_modal" class="form-control search_form" type="search"
+                                placeholder="Search publisher" aria-label="Search publisher" wire:model="publisher">
+                        </div>
+                        <div class='ps-2 mt-2'>
+                            @foreach ($publishers as $publisher)
+                                <p class="pointer {{ $selectedPublisher === $publisher ? 'item-chosen' : '' }}"
+                                    x-on:click="$wire.selectPublisher(`{{ $publisher }}`)">{{ $publisher }}
+                                </p>
+                            @endforeach
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Customer\Book\List;
 
-use App\Http\Controllers\Customer\Book\List\BookList;
 use Livewire\Component;
+use Livewire\Attributes\On;
+use App\Http\Controllers\Customer\Book\List\BookList;
 
 class Category extends Component
 {
@@ -11,14 +12,16 @@ class Category extends Component
     public $category;
     public $selectedCategory;
 
-    public function selectCategory($category)
+    #[On('select-category')]
+    public function selectCategory($category, $called = false)
     {
         if ($category === $this->selectedCategory)
             $this->selectedCategory = '';
         else
             $this->selectedCategory = $category;
 
-        $this->dispatch('select-category', selectedCategory: $this->selectedCategory);
+        if (!$called)
+            $this->dispatch('select-category-modal', category: $this->selectedCategory, called: true);
     }
 
     public function searchCategory()
