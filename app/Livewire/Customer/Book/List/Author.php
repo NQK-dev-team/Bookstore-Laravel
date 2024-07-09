@@ -22,6 +22,8 @@ class Author extends Component
 
         if (!$called)
             $this->dispatch('select-author-modal', author: $this->selectedAuthor, called: true);
+        else
+            $this->dispatch('search-book');
     }
 
     public function searchAuthor()
@@ -36,7 +38,7 @@ class Author extends Component
             $this->authors = (new BookList)->getTopAuthors();
     }
 
-    public function mount()
+    public function __construct()
     {
         $this->authors = (new BookList)->getTopAuthors();
         $this->selectedAuthor = '';

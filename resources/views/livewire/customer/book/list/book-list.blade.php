@@ -20,7 +20,7 @@
         <div class='d-sm-flex'>
             <div>
                 <select id='listOption' class="form-select pointer" aria-label="Select listing option"
-                    wire:model.live="listOption">
+                    wire:model.live="listOption" x-on:change="$wire.resetPageIndex()">
                     <option value="1">Default Listing</option>
                     <option value="2">On Sale</option>
                     <option value="3">This Week Best Sellers</option>
@@ -30,7 +30,7 @@
             </div>
             <div class='ms-sm-3 mt-3 mt-sm-0'>
                 <select id='listLimit' class="form-select pointer" aria-label="Select number of books per page"
-                    wire:model.live="bookPerPage">
+                    wire:model.live="booksPerPage" x-on:change="$wire.resetPageIndex()">
                     <option value="12">12 books</option>
                     <option value="24">24 books</option>
                     <option value="48">48 books</option>
@@ -51,25 +51,25 @@
                 </svg><span class='d-none d-sm-inline'>&nbsp;Filter</span></button>
         </div>
         <div class="btn-group d-none d-xl-inline-flex ms-3">
-            <button onclick="adJustOffset(false)" name="previous" type="button"
-                class="btn btn-light fw-medium border border-1 border-secondary">&lt;</button>
+            <button name="previous" type="button" class="btn btn-light fw-medium border border-1 border-secondary"
+                wire:click="previousPage()" {{ $pageIndex === 1 ? 'disabled' : '' }}>&lt;</button>
             <button type="button" class="btn btn-light fw-medium border border-1 border-secondary" disabled
-                name="offset"></button>
-            <button onclick="adJustOffset(true)" name="next" type="button"
-                class="btn btn-light fw-medium border border-1 border-secondary">&gt;</button>
+                name="offset">{{ $pageIndex }}</button>
+            <button name="next" type="button" class="btn btn-light fw-medium border border-1 border-secondary"
+                wire:click="nextPage()" {{ $disableNext ? 'disabled' : '' }}>&gt;</button>
         </div>
     </div>
     <hr>
-    <div id='bookList' class='d-flex flex-column'>
+    <div class='d-flex flex-column'>
     </div>
     <div class='mx-auto mb-3 mt-auto'>
         <div class="btn-group mt-3">
-            <button onclick="adJustOffset(false)" name="previous" type="button"
-                class="btn btn-light fw-medium border border-1 border-secondary">&lt;</button>
+            <button name="previous" type="button" class="btn btn-light fw-medium border border-1 border-secondary"
+                wire:click="previousPage()" {{ $pageIndex === 1 ? 'disabled' : '' }}>&lt;</button>
             <button type="button" class="btn btn-light fw-medium border border-1 border-secondary" disabled
-                name="offset"></button>
-            <button onclick="adJustOffset(true)" name="next" type="button"
-                class="btn btn-light fw-medium border border-1 border-secondary">&gt;</button>
+                name="offset">{{ $pageIndex }}</button>
+            <button name="next" type="button" class="btn btn-light fw-medium border border-1 border-secondary"
+                wire:click="nextPage()" {{ $disableNext ? 'disabled' : '' }}>&gt;</button>
         </div>
     </div>
     <div class="modal fade" id="filterModal" tabindex="-1" aria-labelledby="modalLabel" wire:ignore.self>

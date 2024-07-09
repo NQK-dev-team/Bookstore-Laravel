@@ -22,6 +22,8 @@ class Publisher extends Component
 
         if (!$called)
             $this->dispatch('select-publisher-modal', publisher: $this->selectedPublisher, called: true);
+        else
+            $this->dispatch('search-book');
     }
 
     public function searchPublisher()
@@ -36,7 +38,7 @@ class Publisher extends Component
             $this->publishers = (new BookList)->getTopPublishers();
     }
 
-    public function mount()
+    public function __construct()
     {
         $this->publishers = (new BookList)->getTopPublishers();
         $this->selectedPublisher = '';

@@ -160,6 +160,10 @@ class BookList extends Controller
         return Author::select('name')->where('name', 'like', '%' . $author . '%')->distinct()->get();
     }
 
+    public function searchBook($author, $category, $publisher, $book, $offset, $limit)
+    {
+    }
+
     public function show()
     {
         return view('customer.book.index');

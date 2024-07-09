@@ -22,6 +22,8 @@ class Category extends Component
 
         if (!$called)
             $this->dispatch('select-category-modal', category: $this->selectedCategory, called: true);
+        else
+            $this->dispatch('search-book');
     }
 
     public function searchCategory()
@@ -36,7 +38,7 @@ class Category extends Component
             $this->categories = (new BookList)->getTopCategories();
     }
 
-    public function mount()
+    public function __construct()
     {
         $this->categories = (new BookList)->getTopCategories();
         $this->selectedCategory = '';
