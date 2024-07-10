@@ -11,6 +11,33 @@
 }
 
 .item-list {
-    max-height: 250px;
+    max-height: 300px;
     overflow-y: auto;
+}
+
+.card {
+    min-width: 250px;
+    max-width: 250px;
+    height: 100%;
+}
+
+.card-img-top {
+    height: 350px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media only screen and (max-width:991px) {
+    .card {
+        min-width: 200px;
+        max-width: 200px;
+    }
+
+    .card-img-top {
+        height: 250px;
+    }
+
+    .card p {
+        font-size: 13px;
+    }
 }

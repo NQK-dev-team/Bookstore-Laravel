@@ -40,7 +40,7 @@ class FileCopySeeder extends Seeder
         DB::table('file_copies')->insert([
             'id' => 'B-000000000000000004',
             'price' => '13.99',
-            'path' => "BOOK4/The+Hitchhiker's+Guide+to+the+Galaxy.pdf",
+            'path' => "files/BOOK4/The+Hitchhiker's+Guide+to+the+Galaxy.pdf",
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -80,7 +80,7 @@ class FileCopySeeder extends Seeder
         DB::table('file_copies')->insert([
             'id' => 'B-000000000000000009',
             'price' => '13.99',
-            'path' => "BOOK9/The+Handmaid's+Tale.pdf",
+            'path' => "files/BOOK9/The+Handmaid's+Tale.pdf",
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -160,7 +160,7 @@ class FileCopySeeder extends Seeder
         DB::table('file_copies')->insert([
             'id' => 'B-000000000000000019',
             'price' => '13.99',
-            'path' => "BOOK19/The+Handmaid's+Tale.pdf",
+            'path' => "files/BOOK19/The+Handmaid's+Tale.pdf",
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -192,7 +192,7 @@ class FileCopySeeder extends Seeder
         DB::table('file_copies')->insert([
             'id' => 'B-000000000000000023',
             'price' => '13.99',
-            'path' => "BOOK23/The+Hitchhiker's+Guide+to+the+Galaxy.pdf",
+            'path' => "files/BOOK23/The+Hitchhiker's+Guide+to+the+Galaxy.pdf",
             'created_at' => now(),
             'updated_at' => now(),
         ]);
@@ -248,7 +248,7 @@ class FileCopySeeder extends Seeder
         DB::table('file_copies')->insert([
             'id' => 'B-000000000000000030',
             'price' => '13.99',
-            'path' => "BOOK30/The+Girl+with+the+Timekeeper's+Heart.pdf",
+            'path' => "files/BOOK30/The+Girl+with+the+Timekeeper's+Heart.pdf",
             'created_at' => now(),
             'updated_at' => now(),
         ]);

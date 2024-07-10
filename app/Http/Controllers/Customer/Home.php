@@ -106,15 +106,8 @@ class Home extends Controller
         $temp = $discountedBooks;
         $discountedBooks = [];
         foreach ($temp as $id) {
-            $discountedBooks[] = refineBookData(Book::find($id));
+            $discountedBooks[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
         }
-
-        // $discountedBooks = Book::whereIn('id', $discountedBooks)->get();
-
-        // // Refine data before returning
-        // foreach ($discountedBooks as &$book) {
-        //     refineBookData($book);
-        // }
 
         return $discountedBooks;
     }
@@ -127,7 +120,7 @@ class Home extends Controller
 
         $books = [];
         foreach ($bookIDs as $id) {
-            $books[] = refineBookData(Book::find($id));
+            $books[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
         }
 
         return $books;
@@ -166,35 +159,10 @@ class Home extends Controller
         $result = [];
 
         foreach ($books as $id) {
-            $result[] = refineBookData(Book::find($id));
+            $result[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
         }
 
         return $result;
-
-        /*
-        $books = Book::whereIn('id', $bookIDs)->whereHas('categories', function (Builder $query) use ($category) {
-            $query->where([
-                ['name', '=', $category]
-            ]);
-        })->limit(10)->get();
-
-        if (count($books) < 10) {
-            $moreBooks = Book::whereHas('categories', function (Builder $query) use ($category) {
-                $query->where([
-                    ['name', '=', $category]
-                ]);
-            })->whereNotIn('id', $bookIDs)->limit(10 - count($books))->get();
-
-            $books = $books->merge($moreBooks);
-        }
-
-        // Refine data before returning
-        foreach ($books as &$book) {
-            refineBookData($book);
-        }
-
-        return $books;
-        */
     }
 
     public function getPublisherBooks($publisher)
@@ -225,31 +193,10 @@ class Home extends Controller
         $result = [];
 
         foreach ($books as $id) {
-            $result[] = refineBookData(Book::find($id));
+            $result[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
         }
 
         return $result;
-
-        /*
-        $books = Book::whereIn('id', $bookIDs)->where([
-            ['publisher', '=', $publisher]
-        ])->limit(10)->get();
-
-        if (count($books) < 10) {
-            $moreBooks = Book::where([
-                ['publisher', '=', $publisher]
-            ])->whereNotIn('id', $bookIDs)->limit(10 - count($books))->get();
-
-            $books = $books->merge($moreBooks);
-        }
-
-        // Refine data before returning
-        foreach ($books as &$book) {
-            refineBookData($book);
-        }
-
-        return $books;
-        */
     }
 
     public function getTopCategories()

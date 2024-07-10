@@ -1,4 +1,4 @@
-<div class='container-xl my-3 px-1 px-xl-3'>
+<div class='container-xxl my-3 px-1 px-xl-3'>
     <form class="bg-white rounded d-flex flex-column border-2 p-2" wire:submit="submit">
         <h4 class='mx-auto mt-2'>Request new book</h4>
         <small class='mx-auto text-center'>Is there a book you want to add to our store?</small>

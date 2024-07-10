@@ -23,13 +23,15 @@ class BookList extends Component
 
     public $booksPerPage;
     public $listOption;
-    public $searchBook;
+    public $searchBookInput;
 
     public $books;
 
     public $pageIndex;
     public $disableNext;
     private $numberOfBooks;
+
+    public $booksPerRow;
 
     public function __construct()
     {
@@ -44,9 +46,16 @@ class BookList extends Component
 
         $this->booksPerPage = 12;
         $this->listOption = 1;
-        $this->searchBook = '';
+        $this->searchBookInput = '';
 
-        $this->resetPageIndex(true);
+        $this->booksPerRow = 0;
+
+        $this->resetPageIndex();
+    }
+
+    public function setBookPerRow($booksPerRow)
+    {
+        $this->booksPerRow = $booksPerRow;
     }
 
     #[On('select-publisher-modal')]
@@ -130,15 +139,24 @@ class BookList extends Component
     #[On('search-book')]
     public function searchBook()
     {
+        $temp = (new BookListController)->searchBook(
+            $this->listOption,
+            $this->selectedAuthor ? $this->selectedAuthor : '%',
+            $this->selectedCategory ? $this->selectedCategory : '%',
+            $this->selectedPublisher ? $this->selectedPublisher : '%',
+            $this->searchBookInput,
+            $this->pageIndex - 1,
+            $this->booksPerPage
+        );
+        // foreach ($temp as $book)
+        //     refineBookData($book);
+        $this->books = $temp;
+
         $this->numberOfBooks = Book::count();
-        $temp = (new BookListController)->searchBook($this->selectedAuthor, $this->selectedCategory, $this->selectedPublisher, $this->searchBook, $this->pageIndex - 1, $this->booksPerPage);
-        if (!$temp) {
-            $this->pageIndex--;
+        if ($this->pageIndex * $this->booksPerPage >= $this->numberOfBooks || count($this->books) < $this->booksPerPage)
             $this->disableNext = true;
-        } else {
-            $this->books = $temp;
+        else
             $this->disableNext = false;
-        }
     }
 
     public function nextPage()
@@ -158,21 +176,9 @@ class BookList extends Component
         }
     }
 
-    public function resetPageIndex($partOfConstructor = false)
+    public function resetPageIndex()
     {
         $this->pageIndex = 1;
-        $this->numberOfBooks = Book::count();
-        if ($this->pageIndex * $this->booksPerPage >= $this->numberOfBooks)
-            $this->disableNext = true;
-        else
-            $this->disableNext = false;
-
-        if (!$partOfConstructor)
-            $this->searchBook();
-    }
-
-    public function mount()
-    {
         $this->searchBook();
     }
 

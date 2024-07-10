@@ -6,8 +6,10 @@ use App\Models\Book;
 use App\Models\Order;
 use App\Models\Author;
 use App\Models\Category;
+use App\Models\Discount;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Builder;
 
 class BookList extends Controller
 {
@@ -46,6 +48,79 @@ class BookList extends Controller
 
         arsort($bookSales, 1);
         return $bookSales;
+    }
+
+    private function getDiscountBooks($author, $category, $publisher, $bookParam)
+    {
+        $discountedBooks = [];
+
+        $discounts = null;
+        $discounts = Discount::with([
+            "eventDiscount" => ["booksApplied"],
+        ])->whereHas('eventDiscount', function (Builder $query) {
+            $query->where([
+                ['apply_for_all_books', '=', true],
+                ['start_date', '<=', date('Y-m-d')],
+                ['end_date', '>=', date('Y-m-d')],
+            ]);
+        })->orderBy('discount', 'desc')->first();
+
+        if (!$discounts) {
+            $discounts = Discount::with([
+                "eventDiscount" => ["booksApplied"],
+            ])->whereHas('eventDiscount', function (Builder $query) {
+                $query->where([
+                    ['apply_for_all_books', '=', false],
+                    ['start_date', '<=', date('Y-m-d')],
+                    ['end_date', '>=', date('Y-m-d')],
+                ]);
+            })->orderBy('discount', 'desc')->get();
+
+            if (!$discounts) return [];
+            else {
+                foreach ($discounts as $discount) {
+                    $books = $discount->eventDiscount->booksApplied;
+                    foreach ($books as $book) {
+                        if (!in_array($book, $discountedBooks))
+                            $discountedBooks[] = $book->id;
+                    }
+                }
+            }
+        } else {
+            $books = Book::all();
+            foreach ($books as $book) {
+                $discountedBooks[] = $book->id;
+            }
+        }
+
+        $bookSales = $this->getBestBooksInWeek();
+        $bookIDs = array_keys($bookSales);
+        $temp = $discountedBooks;
+        $discountedBooks = array_intersect($bookIDs, $discountedBooks);
+
+        if (count($discountedBooks) < count($temp)) {
+            $moreBooks = array_diff($temp, $discountedBooks);
+            $moreBooks = array_slice($moreBooks, 0, count($temp) - count($discountedBooks), true);
+            $discountedBooks = array_merge($discountedBooks, $moreBooks);
+        }
+
+        $temp = $discountedBooks;
+        $discountedBooks = [];
+        foreach ($temp as $id) {
+            $discountedBooks[] = Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])
+                ->whereHas('authors', function ($query) use ($author) {
+                    $query->where('name', 'like',  $author);
+                })->whereHas('categories', function ($query) use ($category) {
+                    $query->where('name', 'like', $category);
+                })
+                ->where([
+                    ['id', '=', $id],
+                    ['name', 'ilike', '%' . $bookParam . '%'],
+                    ['publisher', 'like', $publisher],
+                ])->first();
+        }
+
+        return $discountedBooks;
     }
 
     public function getTopCategories()
@@ -160,8 +235,77 @@ class BookList extends Controller
         return Author::select('name')->where('name', 'like', '%' . $author . '%')->distinct()->get();
     }
 
-    public function searchBook($author, $category, $publisher, $book, $offset, $limit)
+    public function searchBook($option, $author, $category, $publisher, $book, $offset, $limit)
     {
+        switch ($option) {
+            case 1:
+                return Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
+                    $query->where('name', 'like',  $author);
+                })->whereHas('categories', function ($query) use ($category) {
+                    $query->where('name', 'like',  $category);
+                })->where([
+                    ['name', 'ilike', '%' . $book . '%'],
+                    ['publisher', 'like',  $publisher],
+                ])->offset($offset * $limit)->limit($limit)->get();
+            case 2:
+                return array_slice($this->getDiscountBooks($author, $category, $publisher, $book), $offset * $limit, $limit);
+            case 3: {
+                    $bookSales = $this->getBestBooksInWeek();
+                    $bookIDs = array_keys($bookSales);
+
+                    $result = [];
+                    foreach ($bookIDs as $id) {
+                        $result[] = Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])
+                            ->whereHas('authors', function ($query) use ($author) {
+                                $query->where('name', 'like',  $author);
+                            })->whereHas('categories', function ($query) use ($category) {
+                                $query->where('name', 'like', $category);
+                            })
+                            ->where([
+                                ['id', '=', $id],
+                                ['name', 'ilike', '%' . $book . '%'],
+                                ['publisher', 'like', $publisher],
+                            ])->first();
+                    }
+                    return array_slice($result, $offset * $limit, $limit);
+                }
+            case 4:
+                return Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])
+                    ->whereHas('authors', function ($query) use ($author) {
+                        $query->where('name', 'like',  $author);
+                    })
+                    ->whereHas('categories', function ($query) use ($category) {
+                        $query->where('name', 'like',  $category);
+                    })
+                    ->where([
+                        ['name', 'ilike', '%' . $book . '%'],
+                        ['publisher', 'like',  $publisher],
+                    ])
+                    ->join('physical_copies', 'books.id', '=', 'physical_copies.id')
+                    ->orderBy('physical_copies.price', 'asc')
+                    ->offset($offset * $limit)
+                    ->limit($limit)
+                    ->select('books.*') // Ensure only book fields are selected after join
+                    ->get();
+            case 5:
+                return Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])
+                    ->whereHas('authors', function ($query) use ($author) {
+                        $query->where('name', 'like', '%' . $author . '%');
+                    })
+                    ->whereHas('categories', function ($query) use ($category) {
+                        $query->where('name', 'like', '%' . $category . '%');
+                    })
+                    ->where([
+                        ['name', 'ilike', '%' . $book . '%'],
+                        ['publisher', 'like', '%' . $publisher . '%'],
+                    ])
+                    ->join('physical_copies', 'books.id', '=', 'physical_copies.id')
+                    ->orderBy('physical_copies.price', 'desc')
+                    ->offset($offset * $limit)
+                    ->limit($limit)
+                    ->select('books.*') // Ensure only book fields are selected after join
+                    ->get();
+        }
     }
 
     public function show()
