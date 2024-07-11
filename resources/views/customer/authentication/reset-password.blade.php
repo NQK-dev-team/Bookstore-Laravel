@@ -2,7 +2,7 @@
 
 @section('preloads')
     <title>Reset Password</title>
-    <meta name="author" content="Nghia Duong">
+    <meta name="page creator" content="Nghia Duong">
     <meta name="description" content="Reset NQK bookstore account password">
     <link rel="stylesheet" href="{{ asset('assets/css/authentication/style.css') }}">
 @endsection

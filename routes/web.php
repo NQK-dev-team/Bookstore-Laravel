@@ -12,7 +12,8 @@ use App\Http\Middleware\RedirectVerifiedEmail;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
-use App\Http\Controllers\Customer\Book\List\BookList;
+use App\Http\Controllers\Customer\Book\BookDetail;
+use App\Http\Controllers\Customer\Book\BookList;
 use App\Http\Controllers\Customer\Home as CustomerHome;
 use App\Http\Controllers\General\File;
 use App\Models\Discount;
@@ -111,9 +112,7 @@ Route::prefix('/')->name('customer.')->middleware(RedirectRole::class)->group(fu
         Route::prefix('book')->name('book.')->group(function () {
             Route::get('/', [BookList::class, 'show'])->name('index');
 
-            Route::get('/{id}', function (string $id) {
-                return $id;
-            })->name('detail');
+            Route::get('/{id}', [BookDetail::class, 'show'])->name('detail');
         });
 
         Route::middleware(CheckAuth::class)->group(function () {

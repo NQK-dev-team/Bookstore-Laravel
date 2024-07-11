@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customer\Book\List;
+namespace App\Http\Controllers\Customer\Book;
 
 use App\Models\Book;
 use App\Models\Order;

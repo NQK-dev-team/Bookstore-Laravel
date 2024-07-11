@@ -8,7 +8,7 @@
 
 @section('preloads')
     <title>Terms of Service</title>
-    <meta name="author" content="Nghia Duong">
+    <meta name="page creator" content="Nghia Duong">
     <meta name="description" content="NQK bookstore terms of service">
 @endsection
 

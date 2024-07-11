@@ -92,7 +92,7 @@ function refineBookData(Book $book, bool $removeFilePath = true)
 {
   $book->edition = convertToOrdinal($book->edition) . ' Edition';
   $book->image = route('temporary-url.image', ['path' => $book->image]);
-  $book->publication_date = date('Y, M d', strtotime($book->publication_date));
+  $book->publication_date = date('F j, Y', strtotime($book->publication_date));
   $book->isbn = formatISBN($book->isbn);
 
   $authors = [];

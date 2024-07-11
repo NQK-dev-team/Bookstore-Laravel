@@ -4,7 +4,7 @@ namespace App\Livewire\Customer\Book\List;
 
 use App\Models\Book;
 use Livewire\Component;
-use App\Http\Controllers\Customer\Book\List\BookList as BookListController;
+use App\Http\Controllers\Customer\Book\BookList as BookListController;
 
 class BookList extends Component
 {
