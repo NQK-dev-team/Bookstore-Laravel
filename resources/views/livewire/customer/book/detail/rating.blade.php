@@ -3,9 +3,9 @@
     <div class='ratingPanel rounded d-flex align-items-md-center flex-md-row flex-column container-fluid p-3 mt-3'>
         <div>
             <h6>
-                <span class='fs-4'>{{ $rating }}</span> out of 5
+                <span class='fs-4'>{{ $average_rating }}</span> out of 5
             </h6>
-            <div class='fs-4 text-warning'>{!! displayRatingStars($rating) !!}</div>
+            <div class='fs-4 text-warning'>{!! displayRatingStars($average_rating) !!}</div>
         </div>
         <div class='ms-md-5 mt-3 mt-md-0'>
             <div class='d-none d-md-flex align-items-center'>
@@ -47,37 +47,33 @@
             </div>
         </div>
     </div>
-    <?php
-                        // if (check_session() && $_SESSION['type'] === 'customer' && $canRate)
-                        if(false)
-                        {
-                        ?>
-    <hr>
-    <form class='d-flex flex-column' id='ratingForm'>
-        <div class='d-flex align-items-center px-1'>
-            <p class='mb-0'>Rating</p>
-            <div class="star-rating">
-                <input type="radio" id="5-stars" name="rating" value="5" onchange="setRating(event,5)" />
-                <label for="5-stars" class="star">&#9733;</label>
-                <input type="radio" id="4-stars" name="rating" value="4" onchange="setRating(event,4)" />
-                <label for="4-stars" class="star">&#9733;</label>
-                <input type="radio" id="3-stars" name="rating" value="3" onchange="setRating(event,3)" />
-                <label for="3-stars" class="star">&#9733;</label>
-                <input type="radio" id="2-stars" name="rating" value="2" onchange="setRating(event,2)" />
-                <label for="2-stars" class="star">&#9733;</label>
-                <input type="radio" id="1-star" name="rating" value="1" onchange="setRating(event,1)" />
-                <label for="1-star" class="star">&#9733;</label>
+    @if ($isBought)
+        <hr>
+        <form class='d-flex flex-column'>
+            <div class='d-flex align-items-center px-1'>
+                <p class='mb-0'>Rating</p>
+                <div class="star-rating">
+                    <input type="radio" id="5-stars" name="rating" value="5" />
+                    <label for="5-stars" class="star">&#9733;</label>
+                    <input type="radio" id="4-stars" name="rating" value="4" />
+                    <label for="4-stars" class="star">&#9733;</label>
+                    <input type="radio" id="3-stars" name="rating" value="3" />
+                    <label for="3-stars" class="star">&#9733;</label>
+                    <input type="radio" id="2-stars" name="rating" value="2" />
+                    <label for="2-stars" class="star">&#9733;</label>
+                    <input type="radio" id="1-star" name="rating" value="1" />
+                    <label for="1-star" class="star">&#9733;</label>
+                </div>
             </div>
-        </div>
-        <textarea class='form-control mt-1' id='comment' placeholder='Comment about this product' rows=3></textarea>
-        <div class='mt-3 ms-auto'>
-            <button id='deleteBtn' class='btn btn-sm btn-danger <?php echo $userStar !== 'null' ? '' : 'none'; ?>' type='button'
-                onclick="deleteRating()">Delete</button>
-            <button class='btn btn-sm btn-secondary mx-1' type='button' onclick="resetRatingForm()">Reset</button>
-            <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
-        </div>
-    </form>
-    <?php } ?>
+            <textarea class='form-control mt-1' placeholder='Comment about this product' rows=3></textarea>
+            <div class='mt-3 ms-auto'>
+                <button id='deleteBtn' class='btn btn-sm btn-danger {{ $hasRated ? '' : 'd-none' }}' type='button'
+                    x-on:click="">Delete</button>
+                <button class='btn btn-sm btn-secondary mx-1' type='reset'>Reset</button>
+                <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
+            </div>
+        </form>
+    @endif
     <hr class='mb-0'>
     <div class='d-flex flex-column'>
         <h5 class='fw-normal mx-auto mt-3 none text-secondary' id='noRating'>This Product Has No Rating</h5>
