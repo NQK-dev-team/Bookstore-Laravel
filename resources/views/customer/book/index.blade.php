@@ -11,16 +11,7 @@
 
 @section('page')
     <div class="container-xxl my-3 px-1 px-xl-3">
-        <div class='d-flex'>
-            <div class='d-none d-xl-block'>
-                <div class="panel border-2 me-4 bg-white p-3 rounded">
-                    @livewire('customer.book.list.category')
-                    @livewire('customer.book.list.author')
-                    @livewire('customer.book.list.publisher')
-                </div>
-            </div>
-            @livewire('customer.book.list.book-list')
-        </div>
+        @livewire('customer.book.list.book-list')
     </div>
     @livewire('customer.book.list.request-book')
 @endsection

@@ -4,21 +4,20 @@ namespace App\Livewire\Customer\Book\List;
 
 use App\Models\Book;
 use Livewire\Component;
-use Livewire\Attributes\On;
 use App\Http\Controllers\Customer\Book\List\BookList as BookListController;
 
 class BookList extends Component
 {
-    public $category; // For the pop-up filter
-    public $categories; // For the pop-up filter
+    public $category;
+    public $categories;
     public $selectedCategory;
 
-    public $publisher; // For the pop-up filter
-    public $publishers; // For the pop-up filter
+    public $publisher;
+    public $publishers;
     public $selectedPublisher;
 
-    public $author; // For the pop-up filter
-    public $authors; // For the pop-up filter
+    public $author;
+    public $authors;
     public $selectedAuthor;
 
     public $booksPerPage;
@@ -33,21 +32,26 @@ class BookList extends Component
 
     public $booksPerRow;
 
-    public function __construct()
+    public function mount()
     {
         $this->categories = (new BookListController)->getTopCategories();
         $this->selectedCategory = '';
+        $this->category = '';
 
         $this->publishers = (new BookListController)->getTopPublishers();
         $this->selectedPublisher = '';
+        $this->publisher = '';
 
         $this->authors = (new BookListController)->getTopAuthors();
         $this->selectedAuthor = '';
+        $this->author = '';
 
         $this->booksPerPage = 12;
         $this->listOption = 1;
         $this->searchBookInput = '';
 
+        $this->pageIndex = 1;
+        $this->disableNext = true;
         $this->booksPerRow = 0;
 
         $this->resetPageIndex();
@@ -58,18 +62,13 @@ class BookList extends Component
         $this->booksPerRow = $booksPerRow;
     }
 
-    #[On('select-publisher-modal')]
-    public function selectPublisher($publisher, $called = false)
+    public function selectPublisher($publisher)
     {
         if ($publisher === $this->selectedPublisher)
             $this->selectedPublisher = '';
         else
             $this->selectedPublisher = $publisher;
-
-        if (!$called)
-            $this->dispatch('select-publisher', publisher: $this->selectedPublisher, called: true);
-        else
-            $this->dispatch('search-book');
+        $this->searchBook();
     }
 
     public function searchPublisher()
@@ -84,18 +83,13 @@ class BookList extends Component
             $this->publishers = (new BookListController)->getTopPublishers();
     }
 
-    #[On('select-category-modal')]
-    public function selectCategory($category, $called = false)
+    public function selectCategory($category)
     {
         if ($category === $this->selectedCategory)
             $this->selectedCategory = '';
         else
             $this->selectedCategory = $category;
-
-        if (!$called)
-            $this->dispatch('select-category', category: $this->selectedCategory, called: true);
-        else
-            $this->dispatch('search-book');
+        $this->searchBook();
     }
 
     public function searchCategory()
@@ -110,18 +104,13 @@ class BookList extends Component
             $this->categories = (new BookListController)->getTopCategories();
     }
 
-    #[On('select-author-modal')]
-    public function selectAuthor($author, $called = false)
+    public function selectAuthor($author)
     {
         if ($author === $this->selectedAuthor)
             $this->selectedAuthor = '';
         else
             $this->selectedAuthor = $author;
-
-        if (!$called)
-            $this->dispatch('select-author', author: $this->selectedAuthor, called: true);
-        else
-            $this->dispatch('search-book');
+        $this->searchBook();
     }
 
     public function searchAuthor()
@@ -136,7 +125,6 @@ class BookList extends Component
             $this->authors = (new BookListController)->getTopAuthors();
     }
 
-    #[On('search-book')]
     public function searchBook()
     {
         $temp = (new BookListController)->searchBook(
@@ -148,8 +136,6 @@ class BookList extends Component
             $this->pageIndex - 1,
             $this->booksPerPage
         );
-        // foreach ($temp as $book)
-        //     refineBookData($book);
         $this->books = $temp;
 
         $this->numberOfBooks = Book::count();
