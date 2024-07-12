@@ -8,23 +8,54 @@ use Livewire\Component;
 
 class Rating extends Component
 {
+    public $book_id;
     public $average_rating;
     public $isBought;
     public $hasRated;
     public $comment;
+    public $rating;
 
-    public function refreshAverageRating()
+    private function getCustomerRating()
     {
-        $book = Book::find(request()->id);
+        $rating = (new BookDetail)->getCustomerRating($this->book_id);
+        if ($rating) {
+            $this->hasRated = true;
+            $this->comment = $rating->comment;
+            $this->rating = $rating->star;
+        } else {
+            $this->hasRated = false;
+            $this->comment = '';
+            $this->rating = 0;
+        }
+    }
+
+    private function refreshAverageRating()
+    {
+        $book = Book::find($this->book_id);
         $this->average_rating = $book->average_rating;
+    }
+
+    public function submitRating()
+    {
+        (new BookDetail)->submitRating($this->book_id, $this->rating, $this->comment);
+        $this->refreshAverageRating();
+        $this->dispatch('refresh-rating');
+    }
+
+    public function deleteRating()
+    {
+        (new BookDetail)->deleteRating($this->book_id);
+        $this->refreshAverageRating();
+        $this->dispatch('refresh-rating');
     }
 
     public function mount()
     {
-        $book = Book::find(request()->id);
+        $this->book_id = request()->id;
+        $book = Book::find($this->book_id);
         $this->average_rating = $book->average_rating;
-        $this->isBought = (new BookDetail)->checkCustomerBoughtBook(request()->id);
-        $this->hasRated = (new BookDetail)->checkCustomerRateBook(request()->id);
+        $this->isBought = (new BookDetail)->checkCustomerBoughtBook($this->book_id);
+        $this->getCustomerRating();
     }
 
     public function render()

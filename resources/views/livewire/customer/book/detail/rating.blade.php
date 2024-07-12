@@ -49,30 +49,49 @@
     </div>
     @if ($isBought)
         <hr>
-        <form class='d-flex flex-column'>
+        <form class='d-flex flex-column' wire:submit="submitRating">
             <div class='d-flex align-items-center px-1'>
                 <p class='mb-0'>Rating</p>
                 <div class="star-rating">
-                    <input type="radio" id="5-stars" name="rating" value="5" />
+                    <input type="radio" id="5-stars" name="rating" value="5" wire:model="rating" />
                     <label for="5-stars" class="star">&#9733;</label>
-                    <input type="radio" id="4-stars" name="rating" value="4" />
+                    <input type="radio" id="4-stars" name="rating" value="4" wire:model="rating" />
                     <label for="4-stars" class="star">&#9733;</label>
-                    <input type="radio" id="3-stars" name="rating" value="3" />
+                    <input type="radio" id="3-stars" name="rating" value="3" wire:model="rating" />
                     <label for="3-stars" class="star">&#9733;</label>
-                    <input type="radio" id="2-stars" name="rating" value="2" />
+                    <input type="radio" id="2-stars" name="rating" value="2" wire:model="rating" />
                     <label for="2-stars" class="star">&#9733;</label>
-                    <input type="radio" id="1-star" name="rating" value="1" />
+                    <input type="radio" id="1-star" name="rating" value="1" wire:model="rating" />
                     <label for="1-star" class="star">&#9733;</label>
                 </div>
             </div>
-            <textarea class='form-control mt-1' placeholder='Comment about this product' rows=3></textarea>
+            <textarea class='form-control mt-1' placeholder='Comment about this product' rows=3 wire:model="comment"></textarea>
             <div class='mt-3 ms-auto'>
                 <button id='deleteBtn' class='btn btn-sm btn-danger {{ $hasRated ? '' : 'd-none' }}' type='button'
-                    x-on:click="">Delete</button>
+                    data-bs-toggle="modal" data-bs-target="#deleteRatingModel">Delete</button>
                 <button class='btn btn-sm btn-secondary mx-1' type='reset'>Reset</button>
                 <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
             </div>
         </form>
+        <div class="modal fade" id="deleteRatingModal" tabindex="-1" aria-labelledby="modalLabel">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title fs-5">Notice</h2>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body d-flex flex-column">
+                        <p>Do you want to delete your rating on this book?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-light border" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                            x-on:click="$wire.deleteRating()">Confirm</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     @endif
     <hr class='mb-0'>
     <div class='d-flex flex-column'>
