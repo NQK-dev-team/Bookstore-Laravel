@@ -60,15 +60,20 @@ class BookDetail extends Controller
                     ['customer_id', '=', auth()->id()],
                     ['book_id', '=', $book_id]
                 ])->update(
-                    ['star' => $rating, 'comment' => $comment],
+                    ['star' => $rating, 'comment' => $comment ? $comment : null],
                 );
             else
                 Rating::create([
                     'customer_id' => auth()->id(),
                     'book_id' => $book_id,
                     'star' => $rating,
-                    'comment' => $comment
+                    'comment' => $comment ? $comment : null
                 ]);
+
+            $new_average_rating = Rating::where('book_id', $book_id)->avg('star');
+            Book::where([
+                ['id', '=', $book_id],
+            ])->update(['average_rating' => $new_average_rating ? $new_average_rating : 0]);
         });
     }
 
@@ -79,6 +84,11 @@ class BookDetail extends Controller
                 ['customer_id', '=', auth()->id()],
                 ['book_id', '=', $id]
             ])->delete();
+
+            $new_average_rating = Rating::where('book_id', $id)->avg('star');
+            Book::where([
+                ['id', '=', $id],
+            ])->update(['average_rating' => $new_average_rating ? $new_average_rating : 0]);
         });
     }
 

@@ -68,8 +68,8 @@
             <textarea class='form-control mt-1' placeholder='Comment about this product' rows=3 wire:model="comment"></textarea>
             <div class='mt-3 ms-auto'>
                 <button id='deleteBtn' class='btn btn-sm btn-danger {{ $hasRated ? '' : 'd-none' }}' type='button'
-                    data-bs-toggle="modal" data-bs-target="#deleteRatingModel">Delete</button>
-                <button class='btn btn-sm btn-secondary mx-1' type='reset'>Reset</button>
+                    data-bs-toggle="modal" data-bs-target="#deleteRatingModal">Delete</button>
+                <button class='btn btn-sm btn-secondary mx-1' type='reset' x-on:click="$wire.rating=0; $wire.comment='';">Reset</button>
                 <button class='btn btn-sm btn-primary' type='submit'>Submit</button>
             </div>
         </form>

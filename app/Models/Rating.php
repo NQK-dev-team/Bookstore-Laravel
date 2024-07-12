@@ -2,12 +2,9 @@
 
 namespace App\Models;
 
-use App\Observers\RatingObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
-#[ObservedBy([RatingObserver::class])]
 class Rating extends Model
 {
     use HasFactory;
@@ -27,12 +24,9 @@ class Rating extends Model
     protected $keyType = 'string';
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that aren't mass assignable.
      *
-     * @var array<int, string>
+     * @var array
      */
-    protected $fillable = [
-        'customer_id',
-        'book_id',
-    ];
+    protected $guarded = []; // Using this line means that every column in the table can be mass assigned.
 }

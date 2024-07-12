@@ -40,6 +40,7 @@ class Rating extends Component
         (new BookDetail)->submitRating($this->book_id, $this->rating, $this->comment);
         $this->refreshAverageRating();
         $this->dispatch('refresh-rating');
+        $this->hasRated = true;
     }
 
     public function deleteRating()
@@ -47,6 +48,9 @@ class Rating extends Component
         (new BookDetail)->deleteRating($this->book_id);
         $this->refreshAverageRating();
         $this->dispatch('refresh-rating');
+        $this->hasRated = false;
+        $this->rating = 0;
+        $this->comment = '';
     }
 
     public function mount()

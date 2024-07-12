@@ -28,7 +28,7 @@ class BookList extends Component
 
     public $pageIndex;
     public $disableNext;
-    private $numberOfBooks;
+    public $numberOfBooks;
 
     public $booksPerRow;
 
