@@ -56,17 +56,19 @@ class Register extends Controller
         // Create user, login and redirect to email verification page
         $refID = $request->refEmail ? (User::where('email', $request->refEmail)->first()->id) : null;
 
-        User::create([
-            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'dob' => $request->dob,
-            'address' => $request->address,
-            'gender' => $request->gender,
-            'password' =>  Hash::make($request->password),
-            'referrer_id' => $refID,
-        ]);
+        DB::transaction(function () use ($request, $refID) {
+            User::create([
+                'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
+                'name' => $request->name,
+                'email' => $request->email,
+                'phone' => $request->phone,
+                'dob' => $request->dob,
+                'address' => $request->address,
+                'gender' => $request->gender,
+                'password' =>  Hash::make($request->password),
+                'referrer_id' => $refID,
+            ]);
+        });
 
         if (!Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' => 0])) { {
                 $validator = Validator::make($request->all(), []);
