@@ -84,7 +84,7 @@
     <div class='flex-grow-1 border-2 bg-white d-flex flex-column px-1 px-sm-2 rounded' x-data="{
         checkScreenWidth() {
             const screenWidth = window.innerWidth;
-    
+
             if (screenWidth < 576 && $wire.booksPerRow !== 1)
                 $wire.setBookPerRow(1);
             else if (screenWidth >= 576 && screenWidth < 675 && $wire.booksPerRow !== 2)
@@ -161,9 +161,9 @@
         <div class='d-flex flex-column'>
             @if ($booksPerRow !== 0)
                 @foreach ($books as $index => $book)
-                    @php
+                    {{-- @php
                         refineBookData($book);
-                    @endphp
+                    @endphp --}}
                     @if ($index % $booksPerRow === 0)
                         <div class="row my-4">
                     @endif

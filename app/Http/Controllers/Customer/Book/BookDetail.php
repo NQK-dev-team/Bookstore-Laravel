@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer\Book;
 use App\Models\Book;
 use App\Models\Order;
 use App\Models\Rating;
+use voku\helper\AntiXSS;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -51,7 +52,9 @@ class BookDetail extends Controller
 
     public function submitRating($book_id, $rating, $comment)
     {
-        DB::transaction(function () use ($book_id, $rating, $comment) {
+        $antiXss = new AntiXSS();
+
+        DB::transaction(function () use ($book_id, $rating, $comment, $antiXss) {
             if (Rating::where([
                 ['customer_id', '=', auth()->id()],
                 ['book_id', '=', $book_id]
@@ -60,14 +63,14 @@ class BookDetail extends Controller
                     ['customer_id', '=', auth()->id()],
                     ['book_id', '=', $book_id]
                 ])->update(
-                    ['star' => $rating, 'comment' => $comment ? $comment : null],
+                    ['star' => $antiXss->xss_clean($rating), 'comment' => $comment ? $antiXss->xss_clean($comment) : null],
                 );
             else
                 Rating::create([
                     'customer_id' => auth()->id(),
                     'book_id' => $book_id,
-                    'star' => $rating,
-                    'comment' => $comment ? $comment : null
+                    'star' => $antiXss->xss_clean($rating),
+                    'comment' => $comment ? $antiXss->xss_clean($comment) : null
                 ]);
 
             $new_average_rating = Rating::where('book_id', $book_id)->avg('star');
@@ -90,6 +93,34 @@ class BookDetail extends Controller
                 ['id', '=', $id],
             ])->update(['average_rating' => $new_average_rating ? $new_average_rating : 0]);
         });
+    }
+
+    public function isRatingExist($id)
+    {
+        return Rating::where([
+            ['book_id', '=', $id]
+        ])->exists();
+    }
+
+    public function getRatings($id, $numberOfRatings, $filter)
+    {
+        // return Rating::with('customer')->where('book_id', $id)->orderBy('updated_at', 'desc')->limit($numberOfRatings)->get(['users.name as customer_name', 'ratings.updated_at', 'ratings.star', 'ratings.comment']);
+
+        if (!$filter)
+            return Rating::where('book_id', $id)
+                ->orderBy('updated_at', 'desc')
+                ->limit($numberOfRatings)
+                ->join('users', 'users.id', '=', 'ratings.customer_id')
+                ->get(['users.name', 'users.image', 'ratings.updated_at', 'ratings.star', 'ratings.comment']);
+
+        return Rating::where('book_id', $id)
+            ->orderBy('updated_at', 'desc')
+            ->limit($numberOfRatings)
+            ->join('users', 'users.id', '=', 'ratings.customer_id')
+            ->where([
+                ['ratings.star', '=', $filter],
+            ])
+            ->get(['users.name', 'users.image', 'ratings.updated_at', 'ratings.star', 'ratings.comment']);
     }
 
     public function show(Request $request)

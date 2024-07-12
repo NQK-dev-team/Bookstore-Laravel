@@ -170,6 +170,8 @@ class BookList extends Component
 
     public function render()
     {
+        foreach ($this->books as $book)
+            refineBookData($book);
         return view('livewire.customer.book.list.book-list');
     }
 }

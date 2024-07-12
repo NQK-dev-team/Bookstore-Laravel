@@ -2,9 +2,9 @@
 
 namespace App\Livewire\Customer\Book\Detail;
 
-use App\Http\Controllers\Customer\Book\BookDetail;
 use App\Models\Book;
 use Livewire\Component;
+use App\Http\Controllers\Customer\Book\BookDetail;
 
 class Rating extends Component
 {
@@ -13,7 +13,12 @@ class Rating extends Component
     public $isBought;
     public $hasRated;
     public $comment;
+
     public $rating;
+    public $ratings;
+    public $ratingFilter;
+    public $isRatingExist;
+    public $numberOfRatingsShown;
 
     private function getCustomerRating()
     {
@@ -33,12 +38,30 @@ class Rating extends Component
     {
         $book = Book::find($this->book_id);
         $this->average_rating = $book->average_rating;
+        $this->fetchRating();
+    }
+
+    public function fetchRating()
+    {
+        $this->isRatingExist = (new BookDetail)->isRatingExist($this->book_id);
+        $this->ratings = (new BookDetail)->getRatings($this->book_id, $this->numberOfRatingsShown, $this->ratingFilter);
+    }
+
+    public function loadMoreRatings()
+    {
+        $this->numberOfRatingsShown += 20;
+        $this->fetchRating();
     }
 
     public function submitRating()
     {
+        $this->validate([
+            'rating' => 'gte:1|lte:5',
+        ], [
+            'rating.gte' => 'Please rate the book.',
+            'rating.lte' => 'Star value invalid.',
+        ]);
         (new BookDetail)->submitRating($this->book_id, $this->rating, $this->comment);
-        $this->refreshAverageRating();
         $this->dispatch('refresh-rating');
         $this->hasRated = true;
     }
@@ -46,11 +69,11 @@ class Rating extends Component
     public function deleteRating()
     {
         (new BookDetail)->deleteRating($this->book_id);
-        $this->refreshAverageRating();
         $this->dispatch('refresh-rating');
         $this->hasRated = false;
         $this->rating = 0;
         $this->comment = '';
+        $this->resetErrorBag();
     }
 
     public function mount()
@@ -60,10 +83,14 @@ class Rating extends Component
         $this->average_rating = $book->average_rating;
         $this->isBought = (new BookDetail)->checkCustomerBoughtBook($this->book_id);
         $this->getCustomerRating();
+        $this->numberOfRatingsShown = 20;
+        $this->fetchRating();
+        $this->ratingFilter = '';
     }
 
     public function render()
     {
+        $this->refreshAverageRating();
         return view('livewire.customer.book.detail.rating');
     }
 }
