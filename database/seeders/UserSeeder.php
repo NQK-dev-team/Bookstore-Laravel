@@ -61,7 +61,8 @@ class UserSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
             'points' => '27.87',
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
+            'referrer_id' => 'U-C-0000000000000001',
         ]);
 
         DB::table('users')->insert([
@@ -76,7 +77,23 @@ class UserSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
             'points' => '27.87',
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
+            'referrer_id' => 'U-C-0000000000000001',
+        ]);
+
+        DB::table('users')->insert([
+            'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
+            'name' => 'Male Customer',
+            'email' => 'male.nqk.test@gmail.com',
+            'password' => Hash::make('#Male123456789'),
+            'address' => 'Ho Chi Minh City',
+            'dob' => '2000-01-01',
+            'phone' => '0712345671',
+            'gender' => 'M',
+            'created_at' => now(),
+            'updated_at' => now(),
+            'email_verified_at' => now(),
+            'referrer_id' => 'U-C-0000000000000001',
         ]);
     }
 }

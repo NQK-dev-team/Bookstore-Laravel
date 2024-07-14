@@ -3,10 +3,6 @@
     max-width: 250px;
 }
 
-.customBtn {
-    border: 1px solid black;
-}
-
 .ammount_input {
     width: 60px;
 }
@@ -57,10 +53,6 @@ input[type="radio"][name="bookType"]:checked+label {
 .star-rating label:hover,
 .star-rating label:hover~label {
     color: #fc0;
-}
-
-.borderBottom {
-    border-bottom: 1px dashed #ccc;
 }
 
 .ratingImage {

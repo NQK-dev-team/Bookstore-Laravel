@@ -24,8 +24,15 @@ class FileOrder extends Model
      */
     protected $keyType = 'string';
 
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = []; // Using this line means that every column in the table can be mass assigned.
+
     public function fileCopies(): BelongsToMany
     {
-        return $this->belongsToMany(FileCopy::class, 'file_order_contains', 'order_id','book_id');
+        return $this->belongsToMany(FileCopy::class, 'file_order_contains', 'order_id', 'book_id');
     }
 }

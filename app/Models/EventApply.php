@@ -23,4 +23,11 @@ class EventApply extends Pivot
      * @var string
      */
     protected $keyType = 'string';
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 }

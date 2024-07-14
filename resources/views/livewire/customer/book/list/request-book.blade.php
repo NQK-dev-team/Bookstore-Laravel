@@ -34,34 +34,4 @@
             <button type='submit' class='btn btn-light border border-1 border-secondary'>Submit</button>
         </div>
     </form>
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="modalLabel" wire:ignore.self>
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title fs-5">Success</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex flex-column">
-                    <p>Your request was successfully sent, thank you for your contribution!</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Confirm</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        window.addEventListener('openSuccessModal', event => {
-            const successModal = new bootstrap.Modal('#successModal');
-            successModal.toggle();
-        });
-
-        document.getElementById('successModal').addEventListener('hidden.bs.modal', function() {
-            document.getElementsByClassName('modal-backdrop')[0].remove();
-
-            // Remove all styles and classes added by bootstrap in the body tag
-            document.body.classList.remove('modal-open');
-            document.body.style = '';
-        });
-    </script>
 </div>

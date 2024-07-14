@@ -16,4 +16,11 @@ class Belong extends Pivot
      * @var string
      */
     protected $table = 'belongs_to';
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 }

@@ -15,38 +15,56 @@ class FileOrderSeeder extends Seeder
     {
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000001',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000002',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000003',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000004',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000005',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000006',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000007',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000008',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         DB::table('file_orders')->insert([
             'id' => 'O-000000000000000009',
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 }

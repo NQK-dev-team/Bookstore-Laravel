@@ -24,6 +24,13 @@ class PhysicalOrder extends Model
      */
     protected $keyType = 'string';
 
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = []; // Using this line means that every column in the table can be mass assigned.
+
     public function physicalCopies(): BelongsToMany
     {
         return $this->belongsToMany(PhyiscalCopy::class, 'physical_order_contains', 'order_id', 'book_id')->withPivot('amount');
