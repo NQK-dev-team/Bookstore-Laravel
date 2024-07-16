@@ -41,7 +41,7 @@ class Register extends Controller
 
         $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email',
+            'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'phone' => ['required', 'numeric', 'digits:10', Rule::unique('users', 'phone')->whereNull('deleted_at')],
             'dob' => ['required', 'date', 'before_or_equal:' . Carbon::now()->subYears(18)->toDateString()],
             'gender' => 'required|in:M,F,O',
@@ -88,12 +88,12 @@ class Register extends Controller
         if (!$result) {
             $token = Str::random(32);
             DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => now()]);
-            Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
+            Mail::to($email)->queue(new VerifyEmail(Crypt::encryptString($email), $token));
         } else {
             if (now()->diffInHours($result->created_at, true) > 24) {
                 $token = Str::random(32);
                 DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => now()]);
-                Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
+                Mail::to($email)->queue(new VerifyEmail(Crypt::encryptString($email), $token));
             }
         }
         return view('customer.authentication.verify-email', ['email' => $email]);
@@ -117,7 +117,7 @@ class Register extends Controller
         } else {
             DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => now()]);
         }
-        Mail::to($email)->send(new VerifyEmail(Crypt::encryptString($email), $token));
+        Mail::to($email)->queue(new VerifyEmail(Crypt::encryptString($email), $token));
 
         return back();
     }
@@ -149,7 +149,7 @@ class Register extends Controller
             $refID = User::where('email', $email)->first()->referrer_id;
             if ($refID) {
                 $ref = User::where('id', $refID)->first();
-                Mail::to($ref->email)->send(new ReferralNotice($ref->name, User::where('email', $email)->first()->name));
+                Mail::to($ref->email)->queue(new ReferralNotice($ref->name, User::where('email', $email)->first()->name));
             }
         } catch (DecryptException $e) {
             // Return 400 error status code

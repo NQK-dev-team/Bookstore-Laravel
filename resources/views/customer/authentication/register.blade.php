@@ -12,7 +12,7 @@
         <div class='background'></div>
         <div class="container-fluid h-100 d-flex justify-content-center py-4">
             <form action="" method="POST"
-                class="bg-white border border-black rounded form my-auto d-flex flex-column px-3 needs-validation">
+                class="bg-white border border-black rounded form my-auto d-flex flex-column px-3">
                 @csrf
                 <input name="user_type" type="hidden" value="customer">
                 <div class='w-100 d-flex flex-column'>
@@ -88,7 +88,7 @@
                         <label for="inputPhone" class="fs-4 fw-medium">Phone Number</label>
                         <p class="text-danger mb-0 ms-1 align-middle text-center fs-4 fw-bold">*</p>
                     </div>
-                    <input required id="inputPhone" type="tel"
+                    <input required id="inputPhone" type="tel" maxlength="10"
                         class="form-control @if ($errors->has('phone')) {{ 'is-invalid' }} @endif"
                         placeholder="Enter phone number" name="phone" autocomplete="tel" value="{{ session('phone') }}">
                     @if ($errors->has('phone'))
@@ -99,8 +99,14 @@
                 </div>
                 <div class="form-group mt-3">
                     <label for="inputAddress" class="fs-4 fw-medium">Address</label>
-                    <input required id="inputAddress" type="text" class="form-control" placeholder="Enter address"
+                    <input required id="inputAddress" type="text"
+                        class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}" placeholder="Enter address"
                         name="address" autocomplete="off" value="{{ session('address') }}">
+                    @if ($errors->has('address'))
+                        <div class="invalid-feedback">
+                            {{ $errors->first('name') }}
+                        </div>
+                    @endif
                 </div>
                 <div class="form-group mt-3">
                     <div class='d-flex'>

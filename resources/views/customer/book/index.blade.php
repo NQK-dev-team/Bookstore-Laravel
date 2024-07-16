@@ -14,7 +14,7 @@
         @livewire('customer.book.list.book-list')
     </div>
     @livewire('customer.book.list.request-book')
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="modalLabel" wire:ignore.self>
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="Success modal" wire:ignore.self>
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">

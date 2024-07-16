@@ -13,6 +13,7 @@ use App\Http\Controllers\Authentication\Register;
 use App\Http\Controllers\Customer\Book\BookDetail;
 use App\Http\Controllers\Customer\Book\BookList;
 use App\Http\Controllers\Customer\Home as CustomerHome;
+use App\Http\Controllers\Customer\Profile\ProfileController;
 use App\Http\Controllers\General\File;
 use App\Http\Middleware\XssSanitization;
 use App\Models\Discount;
@@ -123,9 +124,9 @@ Route::middleware(XssSanitization::class)->group(function () {
                 });
 
                 Route::prefix('profile')->name('profile.')->group(function () {
-                    Route::get('/', function () {
-                        return view('customer.profile.index');
-                    })->name('index');
+                    Route::get('/', [ProfileController::class, 'show'])->name('index');
+                    Route::post('update-profile', [ProfileController::class, 'updateProfile'])->name('update');
+                    Route::post('change-password', [ProfileController::class, 'changePassword'])->name('change-password');
                 });
 
                 Route::post('authentication/logout', [Logout::class, 'customerLogout'])->name('authentication.logout');

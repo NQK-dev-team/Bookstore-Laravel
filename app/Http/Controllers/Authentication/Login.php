@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Authentication;
 
+use App\Mail\CancelDelete;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
@@ -31,6 +34,12 @@ class Login extends Controller
         if (Auth::user()->is_admin) {
             return redirect()->route('admin.index');
         }
+
+        if (DB::table('delete_queue')->where([['user_id', '=', Auth::user()->id],])->exists()) {
+            DB::table('delete_queue')->where([['user_id', '=', Auth::user()->id],])->delete();
+            Mail::to(Auth::user()->email)->queue(new CancelDelete(Auth::user()->name));
+        }
+
         return redirect()->route('customer.index');
     }
 

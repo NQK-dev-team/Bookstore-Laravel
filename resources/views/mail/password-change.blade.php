@@ -265,7 +265,7 @@
                                                                     <p style="margin: 0; word-break: break-word;">Dear
                                                                         <strong>{{ $userName }}</strong>
                                                                     </p>
-                                                                    <p style="margin: 0; word-break: break-word;">This
+                                                                    <p style="margin: 0; word-break: break-word;">This email
                                                                         is to confirm that the password for your account
                                                                         has been successfully changed. Your account is
                                                                         now secured with the new password that you have
@@ -282,7 +282,7 @@
                                                                     <p style="margin: 0; word-break: break-word;">Thank
                                                                         you for using our service.</p>
                                                                     <p style="margin: 0;">Best regards,
-                                                                        <strong>{{ env('MAIL_FROM_NAME', 'Bookstore-Laravel') }}</strong>
+                                                                        <strong>NQK Bookstore</strong>
                                                                     </p>
                                                                     <p style="margin: 0; word-break: break-word;">
                                                                         &nbsp;</p>

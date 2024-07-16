@@ -100,7 +100,7 @@ class Recovery extends Controller
             if (str_contains($request->route()->getName(), 'admin')) {
                 return redirect()->route('admin.authentication.index');
             }
-            Mail::to($email)->send(new PasswordChange($userName));
+            Mail::to($email)->queue(new PasswordChange($userName));
             return redirect()->route('customer.authentication.index');
         }
 

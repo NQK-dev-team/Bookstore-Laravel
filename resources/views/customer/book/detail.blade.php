@@ -39,7 +39,7 @@
         @livewire('customer.book.detail.rating')
     </div>
 
-    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="modalLabel">
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="Error modal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -56,7 +56,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="noticeModal1" tabindex="-1" aria-labelledby="modalLabel">
+    <div class="modal fade" id="noticeModal1" tabindex="-1" aria-labelledby="Notice modal 1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -73,7 +73,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="noticeModal2" tabindex="-1" aria-labelledby="modalLabel">
+    <div class="modal fade" id="noticeModal2" tabindex="-1" aria-labelledby="Notice modal 2">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -90,7 +90,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="successModal1" tabindex="-1" aria-labelledby="modalLabel">
+    <div class="modal fade" id="successModal1" tabindex="-1" aria-labelledby="Success modal 1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -107,7 +107,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="successModal2" tabindex="-1" aria-labelledby="modalLabel">
+    <div class="modal fade" id="successModal2" tabindex="-1" aria-labelledby="Success modal 2">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">

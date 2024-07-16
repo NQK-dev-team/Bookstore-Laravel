@@ -22,7 +22,7 @@ return new class extends Migration
             $table->date('dob')->nullable(false);
             $table->string('phone', 10)->nullable(false);
             $table->string('image')->nullable();
-            $table->char('gender')->nullable(false);
+            $table->string('gender', 1)->nullable(false);
             $table->boolean('is_admin')->default(false)->nullable(false);
             $table->double('points')->nullable()->default(0);
             $table->string('referrer_id', 20)->nullable();
@@ -59,17 +59,13 @@ return new class extends Migration
 
         // ------------------------- Delete Queue table -------------------------
         Schema::create('delete_queue', function (Blueprint $table) {
-            $table->integer('id')->primary();
-            $table->string('user_id', 20)->nullable(false);
-            $table->string('status')->nullable(false)->default('pending');
+            $table->id()->primary();
+            $table->string('user_id', 20)->nullable(false)->unique();
             $table->timestamps();
 
             // Foreign key constraints
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade')->onUpdate('cascade');
         });
-
-        // Value range constraints
-        DB::statement("ALTER TABLE delete_queue ADD CONSTRAINT chk_status CHECK (status IN ('pending', 'deleted', 'cancelled'))");
 
         // ------------------------- End of delete queue table -------------------------
 
