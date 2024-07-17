@@ -254,8 +254,9 @@
                                                     </td>
                                                     <td class="align-middle"></td>
                                                     <td class="align-middle">
-                                                        {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount }}
-                                                        {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount === 1 ? ' copy' : ' copies' }}
+                                                        {{-- Nope don't use this, this code is not very good, it can lead to information mismatch if not careful --}}
+                                                        {{-- {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount }}
+                                                        {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount === 1 ? ' copy' : ' copies' }} --}}
                                                     </td>
                                                 </tr>
                                             @endforeach
