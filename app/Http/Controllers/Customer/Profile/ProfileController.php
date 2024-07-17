@@ -4,9 +4,14 @@ namespace App\Http\Controllers\Customer\Profile;
 
 use Closure;
 use Carbon\Carbon;
+use App\Models\Book;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Discount;
+use App\Models\FileOrder;
 use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
+use App\Models\PhysicalOrder;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -14,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 
@@ -82,6 +88,127 @@ class ProfileController extends Controller
         session()->flash('password-changed', 1);
 
         return redirect()->route('customer.profile.index', ['option' => 3]);
+    }
+
+    public function getDiscountInfo()
+    {
+        $points = Auth::user()->points;
+
+        $customerDiscount = Discount::whereHas('customerDiscount', function (Builder $query) {
+            $query->where('point', '<=', Auth::user()->points);
+        })->orderBy('discount', 'desc')->first();
+
+        if ($customerDiscount)
+            $customerDiscount = $customerDiscount->discount;
+
+        $referredNumber = User::where('referrer_id', Auth::id())->count();
+
+        $referrerDiscount = Discount::whereHas('referrerDiscount', function (Builder $query) {
+            $query->where('number_of_people', '<=', User::where('referrer_id', Auth::id())->count());
+        })->orderBy('discount', 'desc')->first();
+
+        if ($referrerDiscount)
+            $referrerDiscount = $referrerDiscount->discount;
+
+        return [$points, $customerDiscount, $referredNumber, $referrerDiscount];
+    }
+
+    public function getOrders($searchCode, $searchDate)
+    {
+        $conditions = [
+            ['customer_id', '=', Auth::id()],
+            ['status', '=', true],
+        ];
+
+        if ($searchCode) {
+            $searchCode = str_replace('-', '', $searchCode);
+            $conditions[] = ['code', 'like', '%' . $searchCode . '%'];
+        }
+
+        if ($searchDate)
+            $orders = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->where($conditions)->whereDate('updated_at', '=', $searchDate)->orderBy('updated_at', 'desc')->orderBy('total_price', 'desc')->orderBy('total_discount', 'desc')->get();
+        else
+            $orders = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->where($conditions)->orderBy('updated_at', 'desc')->orderBy('total_price', 'desc')->orderBy('total_discount', 'desc')->get();
+
+        foreach ($orders as $order) {
+            $order->books = [];
+            $temp = [];
+
+            if ($order->physicalOrder) {
+                $books = $order->physicalOrder->physicalCopies;
+
+                foreach ($books as $book) {
+                    if (!in_array($book->id, $temp)) {
+                        $temp[] = $book->id;
+                    }
+                }
+            }
+
+            if ($order->fileOrder) {
+                $books = $order->fileOrder->fileCopies;
+
+                foreach ($books as $book) {
+                    if (!in_array($book->id, $temp)) {
+                        $temp[] = $book->id;
+                    }
+                }
+            }
+
+            $books = [];
+            foreach ($temp as $elem) {
+                $refinedData = refineBookData(Book::find($elem));
+                $books[] = ['name' => $refinedData->name, 'edition' => $refinedData->edition];
+            }
+            usort($books, function ($a, $b) {
+                return strcmp($a['name'], $b['name']) ?: strcmp($a['edition'], $b['edition']);
+            });
+
+            $order->books = $books;
+        }
+
+        return $orders;
+    }
+
+    public function getOrderDetail($id)
+    {
+        $order = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->find($id);
+
+        $physicalTemp = [];
+        if ($order->physicalOrder) {
+            $books = $order->physicalOrder->physicalCopies;
+
+            foreach ($books as $book) {
+                if (!in_array($book->id, $physicalTemp)) {
+                    $physicalTemp[] = $book->id;
+                }
+            }
+        }
+
+        $fileTemp = [];
+        if ($order->fileOrder) {
+            $books = $order->fileOrder->fileCopies;
+
+            foreach ($books as $book) {
+                if (!in_array($book->id, $fileTemp)) {
+                    $fileTemp[] = $book->id;
+                }
+            }
+        }
+
+        $physicalBooks = [];
+        foreach ($physicalTemp as $elem) {
+            $physicalBooks[] = refineBookData(Book::find($elem));
+        }
+
+        $fileBooks = [];
+        foreach ($fileTemp as $elem) {
+            $fileBooks[] = refineBookData(Book::find($elem));
+        }
+
+        $order->hardCovers = $physicalBooks;
+        $order->eBooks = $fileBooks;
+
+        return $order;
     }
 
     public function show(Request $request)
