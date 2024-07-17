@@ -202,7 +202,7 @@ class ProfileController extends Controller
 
         $fileBooks = [];
         foreach ($fileTemp as $elem) {
-            $fileBooks[] = refineBookData(Book::find($elem));
+            $fileBooks[] = refineBookData(Book::find($elem), false);
         }
 
         $order->hardCovers = $physicalBooks;

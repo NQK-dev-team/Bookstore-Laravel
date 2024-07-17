@@ -119,6 +119,8 @@ function refineBookData(Book $book, bool $removeFilePath = true)
 
 	if ($removeFilePath && $book->fileCopy)
 		unset($book->fileCopy->path);
+	else if (!$removeFilePath && $book->fileCopy)
+		$book->fileCopy->path = route('temporary-url.pdf', ['path' => $book->fileCopy->path]);
 
 	return $book;
 }

@@ -164,7 +164,8 @@
                                                     </td>
                                                     <td class="align-middle"></td>
                                                     <td class="align-middle"><a target="_blank" alt="Read PDF File"
-                                                            title="Read {{ $book->name }}" href="#"><i
+                                                            title="Read {{ $book->name }}"
+                                                            href="{{ $book->fileCopy->path }}"><i
                                                                 class="bi bi-file-earmark-fill text-secondary"
                                                                 data-bs-toggle="tooltip" data-bs-placement="top"
                                                                 data-bs-title="Read {{ $book->name }}"></i></a></td>
@@ -252,7 +253,10 @@
                                                         </span>
                                                     </td>
                                                     <td class="align-middle"></td>
-                                                    <td class="align-middle"></td>
+                                                    <td class="align-middle">
+                                                        {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount }}
+                                                        {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount === 1 ? ' copy' : ' copies' }}
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
