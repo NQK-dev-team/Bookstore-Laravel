@@ -32,17 +32,24 @@ class BookList extends Component
 
     public $booksPerRow;
 
+    private $controller;
+
+    public function __construct()
+    {
+        $this->controller = new BookListController;
+    }
+
     public function mount()
     {
-        $this->categories = (new BookListController)->getTopCategories();
+        $this->categories = $this->controller->getTopCategories();
         $this->selectedCategory = '';
         $this->category = '';
 
-        $this->publishers = (new BookListController)->getTopPublishers();
+        $this->publishers = $this->controller->getTopPublishers();
         $this->selectedPublisher = '';
         $this->publisher = '';
 
-        $this->authors = (new BookListController)->getTopAuthors();
+        $this->authors = $this->controller->getTopAuthors();
         $this->selectedAuthor = '';
         $this->author = '';
 
@@ -75,12 +82,12 @@ class BookList extends Component
     {
         if ($this->publisher) {
             $this->publishers = [];
-            $temp = (new BookListController)->searchPublisher($this->publisher);
+            $temp = $this->controller->searchPublisher($this->publisher);
             foreach ($temp as $elem) {
                 $this->publishers[] = $elem->publisher;
             }
         } else
-            $this->publishers = (new BookListController)->getTopPublishers();
+            $this->publishers = $this->controller->getTopPublishers();
     }
 
     public function selectCategory($category)
@@ -96,12 +103,12 @@ class BookList extends Component
     {
         if ($this->category) {
             $this->categories = [];
-            $temp = (new BookListController)->searchCategory($this->category);
+            $temp = $this->controller->searchCategory($this->category);
             foreach ($temp as $elem) {
                 $this->categories[] = $elem->name;
             }
         } else
-            $this->categories = (new BookListController)->getTopCategories();
+            $this->categories = $this->controller->getTopCategories();
     }
 
     public function selectAuthor($author)
@@ -117,17 +124,17 @@ class BookList extends Component
     {
         if ($this->author) {
             $this->authors = [];
-            $temp = (new BookListController)->searchAuthor($this->author);
+            $temp = $this->controller->searchAuthor($this->author);
             foreach ($temp as $elem) {
                 $this->authors[] = $elem->name;
             }
         } else
-            $this->authors = (new BookListController)->getTopAuthors();
+            $this->authors = $this->controller->getTopAuthors();
     }
 
     public function searchBook()
     {
-        $temp = (new BookListController)->searchBook(
+        $temp = $this->controller->searchBook(
             $this->listOption,
             $this->selectedAuthor ? $this->selectedAuthor : '%',
             $this->selectedCategory ? $this->selectedCategory : '%',

@@ -162,7 +162,65 @@
                                                             ({{ $book->average_rating }})
                                                         </span>
                                                     </td>
-                                                    <td class="align-middle"></td>
+                                                    <td class="align-middle">
+                                                        @php
+                                                            $discount = getOrderBookDiscount(
+                                                                $orderDetail->id,
+                                                                $book->id,
+                                                            );
+                                                        @endphp
+                                                        <p class='mb-0 text-nowrap'>
+                                                            <span
+                                                                class='{{ $book->fileCopy->price && $discount ? 'text-decoration-line-through' : 'fw-medium' }}'>${{ $book->fileCopy->price }}
+                                                            </span>
+                                                            @if ($book->fileCopy->price && $discount)
+                                                                <span class='fw-medium ms-1'>
+                                                                    ${{ round(($book->fileCopy->price * (100.0 - $discount->discount)) / 100, 2) }}
+                                                                </span>
+                                                                <span class='text-danger'>
+                                                                    <svg width="24px" height="24px"
+                                                                        viewBox="0 0 24 24" fill="none"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        stroke="#ff0000">
+                                                                        <g id="SVGRepo_bgCarrier" stroke-width="0">
+                                                                        </g>
+                                                                        <g id="SVGRepo_tracerCarrier"
+                                                                            stroke-linecap="round"
+                                                                            stroke-linejoin="round"></g>
+                                                                        <g id="SVGRepo_iconCarrier">
+                                                                            <path
+                                                                                d="M3.9889 14.6604L2.46891 13.1404C1.84891 12.5204 1.84891 11.5004 2.46891 10.8804L3.9889
+                                                                                    9.36039C4.2489 9.10039 4.4589 8.59038 4.4589 8.23038V6.08036C4.4589 5.20036 5.1789 4.48038
+                                                                                    6.0589 4.48038H8.2089C8.5689 4.48038 9.0789 4.27041 9.3389 4.01041L10.8589 2.49039C11.4789
+                                                                                    1.87039 12.4989 1.87039 13.1189 2.49039L14.6389 4.01041C14.8989 4.27041 15.4089 4.48038
+                                                                                    15.7689 4.48038H17.9189C18.7989 4.48038 19.5189 5.20036 19.5189 6.08036V8.23038C19.5189
+                                                                                    8.59038 19.7289 9.10039 19.9889 9.36039L21.5089 10.8804C22.1289 11.5004 22.1289 12.5204
+                                                                                    21.5089 13.1404L19.9889 14.6604C19.7289 14.9204 19.5189 15.4304 19.5189
+                                                                                    15.7904V17.9403C19.5189 18.8203 18.7989 19.5404 17.9189 19.5404H15.7689C15.4089 19.5404
+                                                                                    14.8989 19.7504 14.6389 20.0104L13.1189 21.5304C12.4989 22.1504 11.4789 22.1504 10.8589
+                                                                                    21.5304L9.3389 20.0104C9.0789 19.7504 8.5689 19.5404 8.2089 19.5404H6.0589C5.1789 19.5404
+                                                                                    4.4589 18.8203 4.4589 17.9403V15.7904C4.4589 15.4204 4.2489 14.9104 3.9889 14.6604Z"
+                                                                                stroke="#ff0000" stroke-width="1.5"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round">
+                                                                            </path>
+                                                                            <path d="M9 15L15 9" stroke="#ff0000"
+                                                                                stroke-width="1.5"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"></path>
+                                                                            <path d="M14.4945 14.5H14.5035"
+                                                                                stroke="#ff0000" stroke-width="2"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"></path>
+                                                                            <path d="M9.49451 9.5H9.50349"
+                                                                                stroke="#ff0000" stroke-width="2"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"></path>
+                                                                        </g>
+                                                                    </svg>{{ $discount->discount }}%</span>
+                                                            @endif
+                                                        </p>
+                                                    </td>
                                                     <td class="align-middle"><a target="_blank" alt="Read PDF File"
                                                             title="Read {{ $book->name }}"
                                                             href="{{ $book->fileCopy->path }}"><i
@@ -252,11 +310,71 @@
                                                             ({{ $book->average_rating }})
                                                         </span>
                                                     </td>
-                                                    <td class="align-middle"></td>
                                                     <td class="align-middle">
-                                                        {{-- Nope don't use this, this code is not very good, it can lead to information mismatch if not careful --}}
-                                                        {{-- {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount }}
-                                                        {{ $orderDetail->physicalOrder->physicalCopies[$index]->pivot->amount === 1 ? ' copy' : ' copies' }} --}}
+                                                        @php
+                                                            $discount = getOrderBookDiscount(
+                                                                $orderDetail->id,
+                                                                $book->id,
+                                                            );
+                                                        @endphp
+                                                        <p class='mb-0 text-nowrap'>
+                                                            <span
+                                                                class='{{ $book->physicalCopy->price && $discount ? 'text-decoration-line-through' : 'fw-medium' }}'>${{ $book->physicalCopy->price }}
+                                                            </span>
+                                                            @if ($book->physicalCopy->price && $discount)
+                                                                <span class='fw-medium ms-1'>
+                                                                    ${{ round(($book->physicalCopy->price * (100.0 - $discount->discount)) / 100, 2) }}
+                                                                </span>
+                                                                <span class='text-danger'>
+                                                                    <svg width="24px" height="24px"
+                                                                        viewBox="0 0 24 24" fill="none"
+                                                                        xmlns="http://www.w3.org/2000/svg"
+                                                                        stroke="#ff0000">
+                                                                        <g id="SVGRepo_bgCarrier" stroke-width="0">
+                                                                        </g>
+                                                                        <g id="SVGRepo_tracerCarrier"
+                                                                            stroke-linecap="round"
+                                                                            stroke-linejoin="round"></g>
+                                                                        <g id="SVGRepo_iconCarrier">
+                                                                            <path
+                                                                                d="M3.9889 14.6604L2.46891 13.1404C1.84891 12.5204 1.84891 11.5004 2.46891 10.8804L3.9889
+                                                                                    9.36039C4.2489 9.10039 4.4589 8.59038 4.4589 8.23038V6.08036C4.4589 5.20036 5.1789 4.48038
+                                                                                    6.0589 4.48038H8.2089C8.5689 4.48038 9.0789 4.27041 9.3389 4.01041L10.8589 2.49039C11.4789
+                                                                                    1.87039 12.4989 1.87039 13.1189 2.49039L14.6389 4.01041C14.8989 4.27041 15.4089 4.48038
+                                                                                    15.7689 4.48038H17.9189C18.7989 4.48038 19.5189 5.20036 19.5189 6.08036V8.23038C19.5189
+                                                                                    8.59038 19.7289 9.10039 19.9889 9.36039L21.5089 10.8804C22.1289 11.5004 22.1289 12.5204
+                                                                                    21.5089 13.1404L19.9889 14.6604C19.7289 14.9204 19.5189 15.4304 19.5189
+                                                                                    15.7904V17.9403C19.5189 18.8203 18.7989 19.5404 17.9189 19.5404H15.7689C15.4089 19.5404
+                                                                                    14.8989 19.7504 14.6389 20.0104L13.1189 21.5304C12.4989 22.1504 11.4789 22.1504 10.8589
+                                                                                    21.5304L9.3389 20.0104C9.0789 19.7504 8.5689 19.5404 8.2089 19.5404H6.0589C5.1789 19.5404
+                                                                                    4.4589 18.8203 4.4589 17.9403V15.7904C4.4589 15.4204 4.2489 14.9104 3.9889 14.6604Z"
+                                                                                stroke="#ff0000" stroke-width="1.5"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round">
+                                                                            </path>
+                                                                            <path d="M9 15L15 9" stroke="#ff0000"
+                                                                                stroke-width="1.5"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"></path>
+                                                                            <path d="M14.4945 14.5H14.5035"
+                                                                                stroke="#ff0000" stroke-width="2"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"></path>
+                                                                            <path d="M9.49451 9.5H9.50349"
+                                                                                stroke="#ff0000" stroke-width="2"
+                                                                                stroke-linecap="round"
+                                                                                stroke-linejoin="round"></path>
+                                                                        </g>
+                                                                    </svg>{{ $discount->discount }}%</span>
+                                                            @endif
+                                                        </p>
+                                                    </td>
+                                                    <td class="align-middle">
+                                                        @php
+                                                            $amount = getAmount($orderDetail->id, $book->id);
+                                                        @endphp
+                                                        {{ $amount }}
+                                                        {{ $amount === 1 ? ' copy' : ' copies' }}
                                                     </td>
                                                 </tr>
                                             @endforeach

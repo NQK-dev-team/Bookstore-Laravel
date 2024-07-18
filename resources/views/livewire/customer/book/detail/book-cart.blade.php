@@ -16,7 +16,7 @@
 
     @if ($filePrice !== null)
         <div x-show="radioOption===2">
-            <h5 class='mt-3 align-items-center mb-0'>
+            <h5 class='mt-3 align-items-center mb-0 d-flex'>
                 <span class='fw-normal'>Price:</span><span
                     class='ms-2 {{ $discount ? 'text-decoration-line-through' : '' }}'>${{ $filePrice }}</span>
                 @if ($discount)

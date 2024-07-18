@@ -20,9 +20,16 @@ class Rating extends Component
     public $isRatingExist;
     public $numberOfRatingsShown;
 
+    private $controller;
+
+    public function __construct()
+    {
+        $this->controller = new BookDetail;
+    }
+
     private function getCustomerRating()
     {
-        $rating = (new BookDetail)->getCustomerRating($this->book_id);
+        $rating = $this->controller->getCustomerRating($this->book_id);
         if ($rating) {
             $this->hasRated = true;
             $this->comment = $rating->comment;
@@ -43,8 +50,8 @@ class Rating extends Component
 
     public function fetchRating()
     {
-        $this->isRatingExist = (new BookDetail)->isRatingExist($this->book_id);
-        $this->ratings = (new BookDetail)->getRatings($this->book_id, $this->numberOfRatingsShown, $this->ratingFilter);
+        $this->isRatingExist = $this->controller->isRatingExist($this->book_id);
+        $this->ratings = $this->controller->getRatings($this->book_id, $this->numberOfRatingsShown, $this->ratingFilter);
     }
 
     public function loadMoreRatings()
@@ -61,14 +68,14 @@ class Rating extends Component
             'rating.gte' => 'Please rate the book.',
             'rating.lte' => 'Star value invalid.',
         ]);
-        (new BookDetail)->submitRating($this->book_id, $this->rating, $this->comment);
+        $this->controller->submitRating($this->book_id, $this->rating, $this->comment);
         $this->dispatch('refresh-rating');
         $this->hasRated = true;
     }
 
     public function deleteRating()
     {
-        (new BookDetail)->deleteRating($this->book_id);
+        $this->controller->deleteRating($this->book_id);
         $this->dispatch('refresh-rating');
         $this->hasRated = false;
         $this->rating = 0;
@@ -81,7 +88,7 @@ class Rating extends Component
         $this->book_id = request()->id;
         $book = Book::find($this->book_id);
         $this->average_rating = $book->average_rating;
-        $this->isBought = (new BookDetail)->checkCustomerBoughtBook($this->book_id);
+        $this->isBought = $this->controller->checkCustomerBoughtBook($this->book_id);
         $this->getCustomerRating();
         $this->numberOfRatingsShown = 20;
         $this->fetchRating();

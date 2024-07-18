@@ -14,9 +14,16 @@ class BookCart extends Component
     public $book_id;
     public $quantity;
 
+    private $controller;
+
+    public function __construct()
+    {
+        $this->controller = new BookDetail;
+    }
+
     public function refetchStock()
     {
-        $book = (new BookDetail)->getBook($this->book_id);
+        $book = $this->controller->getBook($this->book_id);
         $this->stock = $book->physicalCopy ? ($book->physicalCopy->quantity) : null;
         $this->checkAmount();
     }
@@ -54,9 +61,9 @@ class BookCart extends Component
         if ($option === 0) {
             $failed = true;
         } else if ($option === 1) {
-            $result = (new BookDetail)->addPhysicalToCart($this->book_id, $this->quantity);
+            $result = $this->controller->addPhysicalToCart($this->book_id, $this->quantity);
         } else if ($option === 2) {
-            $result = (new BookDetail)->addFileToCart($this->book_id);
+            $result = $this->controller->addFileToCart($this->book_id);
 
             if ($result === 1)
                 $bought = true;
@@ -88,7 +95,7 @@ class BookCart extends Component
     public function mount()
     {
         $this->book_id = request()->id;
-        $book = (new BookDetail)->getBook($this->book_id);
+        $book = $this->controller->getBook($this->book_id);
         $this->physicalPrice = $book->physicalCopy ? ($book->physicalCopy->price) : null;
         $this->stock = $book->physicalCopy ? ($book->physicalCopy->quantity) : null;
         $this->filePrice = $book->fileCopy ? ($book->fileCopy->price) : null;

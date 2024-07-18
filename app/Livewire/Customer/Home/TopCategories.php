@@ -10,6 +10,12 @@ class TopCategories extends Component
     public $topCategories = [];
     public $selectedCategory = '';
     public $books = [];
+    private $controller;
+
+    public function __construct()
+    {
+        $this->controller = new Home;
+    }
 
     public function selectCategory($category)
     {
@@ -19,12 +25,12 @@ class TopCategories extends Component
 
     public function getBooks()
     {
-        $this->books = (new Home)->getCategoryBooks($this->selectedCategory);
+        $this->books = $this->controller->getCategoryBooks($this->selectedCategory);
     }
 
     public function mount()
     {
-        $this->topCategories = (new Home)->getTopCategories();
+        $this->topCategories = $this->controller->getTopCategories();
         $this->selectedCategory = $this->topCategories[0];
         $this->getBooks();
     }

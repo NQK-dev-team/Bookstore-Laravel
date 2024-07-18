@@ -7,7 +7,9 @@ use App\Models\Order;
 use App\Models\Discount;
 use App\Models\FileOrder;
 use App\Models\DiscountApply;
+use App\Models\EventDiscount;
 use App\Models\PhysicalOrder;
+use App\Models\PhysicalOrderContain;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -120,7 +122,7 @@ function refineBookData(Book $book, bool $removeFilePath = true)
 	if ($removeFilePath && $book->fileCopy)
 		unset($book->fileCopy->path);
 	else if (!$removeFilePath && $book->fileCopy)
-		$book->fileCopy->path = route('temporary-url.pdf', ['path' => $book->fileCopy->path]);
+		$book->fileCopy->path = route('temporary-url.pdf', ['path' => $book->fileCopy->path, 'id' => $book->id]);
 
 	return $book;
 }
@@ -256,4 +258,46 @@ function splitOrderCode($str)
 function getCategoryDescription($name)
 {
 	return Category::where('name', $name)->first()->description;
+}
+
+function getAmount($orderID, $bookID)
+{
+	return PhysicalOrderContain::where([['order_id', '=', $orderID], ['book_id', '=', $bookID],])->first()->amount;
+}
+
+function getOrderBookDiscount($orderID, $bookID)
+{
+	$temp = DiscountApply::where([['order_id', '=', $orderID],])->get();
+	$eventDiscounts = [];
+
+	foreach ($temp as $elem) {
+		if (EventDiscount::where([['id', '=', $elem->discount_id],])->exists())
+			$eventDiscounts[] = $elem->discount_id;
+	}
+
+	$temp = $eventDiscounts;
+	$eventDiscounts = EventDiscount::whereIn('id', $temp)->get();
+
+	$result = null;
+	foreach ($eventDiscounts as $discount) {
+		if ($discount->apply_for_all_books) {
+			if (!$result)
+				$result = $discount;
+			else if ($result && (Discount::where([['id', '=', $result->id],])->first()->discount < Discount::where([['id', '=', $discount->id],])->first()->discount)) {
+				$result = $discount;
+			}
+		} else {
+			if (EventDiscount::whereHas('booksApplied', function (Builder $query) use ($bookID) {
+				$query->where('book_id', $bookID);
+			})->where([['id', '=', $discount->id],])->exists()) {
+				if (!$result)
+					$result = $discount;
+				else if ($result && (Discount::where([['id', '=', $result->id],])->first()->discount < Discount::where([['id', '=', $discount->id],])->first()->discount)) {
+					$result = $discount;
+				}
+			}
+		}
+	}
+
+	return $result ? Discount::where([['id', '=', $result->id],])->first() : null;
 }

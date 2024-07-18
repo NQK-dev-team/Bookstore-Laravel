@@ -10,6 +10,12 @@ class TopPublishers extends Component
     public $topPublishers = [];
     public $selectedPublisher = '';
     public $books = [];
+    private $controller;
+
+    public function __construct()
+    {
+        $this->controller = new Home;
+    }
 
     public function selectPublisher($publisher)
     {
@@ -19,12 +25,12 @@ class TopPublishers extends Component
 
     private function getBooks()
     {
-        $this->books = (new Home)->getPublisherBooks($this->selectedPublisher);
+        $this->books = $this->controller->getPublisherBooks($this->selectedPublisher);
     }
 
     public function mount()
     {
-        $this->topPublishers = (new Home)->getTopPublishers();
+        $this->topPublishers = $this->controller->getTopPublishers();
         $this->selectedPublisher = $this->topPublishers[0];
         $this->getBooks();
     }

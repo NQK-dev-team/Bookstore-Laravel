@@ -17,20 +17,26 @@ class Order extends Component
     public $searchCode;
     public $searchDate;
     public $orderDetail;
+    private $controller;
+
+    public function __construct()
+    {
+        $this->controller = new ProfileController;
+    }
 
     public function getDiscountInfo()
     {
-        [$this->points, $this->loyalty, $this->referredNumber, $this->refDiscount] = (new ProfileController)->getDiscountInfo();
+        [$this->points, $this->loyalty, $this->referredNumber, $this->refDiscount] = $this->controller->getDiscountInfo();
     }
 
     public function getOrders()
     {
-        $this->orders = (new ProfileController)->getOrders($this->searchCode, $this->searchDate);
+        $this->orders = $this->controller->getOrders($this->searchCode, $this->searchDate);
     }
 
     public function getOrderDetail()
     {
-        $this->orderDetail = (new ProfileController)->getOrderDetail($this->order_id);
+        $this->orderDetail = $this->controller->getOrderDetail($this->order_id);
     }
 
     public function render()

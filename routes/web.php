@@ -159,7 +159,9 @@ Route::middleware(XssSanitization::class)->group(function () {
 
     // Temporary route
     Route::name('temporary-url.')->prefix('temporary-url')->group(function () {
-        Route::get('image', [File::class, 'handleImage'])->where('path', '.*')->name('image');
-        Route::get('pdf', [File::class, 'handlePDF'])->where('path', '.*')->name('pdf');
+        // Route::get('image', [File::class, 'handleImage'])->where('path', '.*')->name('image');
+        // Route::get('pdf', [File::class, 'handlePDF'])->where('path', '.*')->name('pdf');
+        Route::get('image', [File::class, 'handleImage'])->name('image');
+        Route::get('pdf', [File::class, 'handlePDF'])->name('pdf');
     });
 });
