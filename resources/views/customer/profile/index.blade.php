@@ -3,7 +3,7 @@
 @section('preloads')
     <title>{{ auth()->user()->name }}</title>
     <meta name="page creator" content="Nghia Duong">
-    <meta name="description" content="Profile page of customer of NQK Bookstore">
+    <meta name="description" content="Profile page of customers of NQK Bookstore">
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/customer/profile/style.css') }}">
 @endsection

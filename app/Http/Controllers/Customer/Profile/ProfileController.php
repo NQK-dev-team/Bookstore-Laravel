@@ -195,14 +195,28 @@ class ProfileController extends Controller
             }
         }
 
-        $physicalBooks = [];
-        foreach ($physicalTemp as $elem) {
-            $physicalBooks[] = refineBookData(Book::find($elem));
+        // $physicalBooks = [];
+        // foreach ($physicalTemp as $elem) {
+        //     $physicalBooks[] = refineBookData(Book::find($elem));
+        // }
+
+        // // Order by name and edition
+        // $physicalBooks = collect($physicalBooks)->sortBy('name')->sortBy('edition')->values()->all();
+        $physicalBooks = Book::whereIn('id', $physicalTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        foreach ($physicalBooks as &$book) {
+            refineBookData($book);
         }
 
-        $fileBooks = [];
-        foreach ($fileTemp as $elem) {
-            $fileBooks[] = refineBookData(Book::find($elem), false);
+        // $fileBooks = [];
+        // foreach ($fileTemp as $elem) {
+        //     $fileBooks[] = refineBookData(Book::find($elem), false);
+        // }
+
+        // // Order by name and edition
+        // $fileBooks = collect($fileBooks)->sortBy('name')->sortBy('edition')->values()->all();
+        $fileBooks = Book::whereIn('id', $fileTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        foreach ($fileBooks as &$book) {
+            refineBookData($book);
         }
 
         $order->hardCovers = $physicalBooks;

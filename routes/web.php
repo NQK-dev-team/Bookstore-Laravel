@@ -12,6 +12,7 @@ use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
 use App\Http\Controllers\Customer\Book\BookDetail;
 use App\Http\Controllers\Customer\Book\BookList;
+use App\Http\Controllers\Customer\Cart\CartController;
 use App\Http\Controllers\Customer\Home as CustomerHome;
 use App\Http\Controllers\Customer\Profile\ProfileController;
 use App\Http\Controllers\General\File;
@@ -118,9 +119,7 @@ Route::middleware(XssSanitization::class)->group(function () {
 
             Route::middleware(CheckAuth::class)->group(function () {
                 Route::prefix('cart')->name('cart.')->group(function () {
-                    Route::get('/', function () {
-                        return view('customer.cart.index');
-                    })->name('index');
+                    Route::get('/', [CartController::class, 'show'])->name('index');
                 });
 
                 Route::prefix('profile')->name('profile.')->group(function () {
