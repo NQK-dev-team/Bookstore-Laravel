@@ -3,7 +3,6 @@
 namespace App\Livewire\Customer\Profile;
 
 use Livewire\Component;
-use Livewire\Attributes\On;
 use App\Http\Controllers\Customer\Profile\ProfileController;
 
 class Order extends Component

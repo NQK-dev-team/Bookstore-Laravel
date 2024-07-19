@@ -6,7 +6,6 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Discount;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
@@ -20,42 +19,42 @@ class CartController extends Controller
             ['status', '=', false]
         ])->first();
 
-        // if (!$order) return null;
+        if (!$order) return null;
 
-        // $physicalTemp = [];
-        // if ($order->physicalOrder) {
-        //     $books = $order->physicalOrder->physicalCopies;
+        $physicalTemp = [];
+        if ($order->physicalOrder) {
+            $books = $order->physicalOrder->physicalCopies;
 
-        //     foreach ($books as $book) {
-        //         if (!in_array($book->id, $physicalTemp)) {
-        //             $physicalTemp[] = $book->id;
-        //         }
-        //     }
-        // }
+            foreach ($books as $book) {
+                if (!in_array($book->id, $physicalTemp)) {
+                    $physicalTemp[] = $book->id;
+                }
+            }
+        }
 
-        // $fileTemp = [];
-        // if ($order->fileOrder) {
-        //     $books = $order->fileOrder->fileCopies;
+        $fileTemp = [];
+        if ($order->fileOrder) {
+            $books = $order->fileOrder->fileCopies;
 
-        //     foreach ($books as $book) {
-        //         if (!in_array($book->id, $fileTemp)) {
-        //             $fileTemp[] = $book->id;
-        //         }
-        //     }
-        // }
+            foreach ($books as $book) {
+                if (!in_array($book->id, $fileTemp)) {
+                    $fileTemp[] = $book->id;
+                }
+            }
+        }
 
-        // $physicalBooks = Book::whereIn('id', $physicalTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
-        // foreach ($physicalBooks as &$book) {
-        //     refineBookData($book);
-        // }
+        $physicalBooks = Book::whereIn('id', $physicalTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        foreach ($physicalBooks as &$book) {
+            refineBookData($book);
+        }
 
-        // $fileBooks = Book::whereIn('id', $fileTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
-        // foreach ($fileBooks as &$book) {
-        //     refineBookData($book);
-        // }
+        $fileBooks = Book::whereIn('id', $fileTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        foreach ($fileBooks as &$book) {
+            refineBookData($book);
+        }
 
-        // $order->hardCovers = $physicalBooks;
-        // $order->eBooks = $fileBooks;
+        $order->hardCovers = $physicalBooks;
+        $order->eBooks = $fileBooks;
 
         return $order;
     }

@@ -1,9 +1,10 @@
 .ammount_input {
-    width: 70px;
+    width: 60px;
 }
 
 .book_image {
-    width: 120px;
+    width: 100%;
+    max-width: 100px
 }
 
 .customized-button {
@@ -15,4 +16,27 @@
 .cart-form {
     width: 98%;
     height: 98%;
+}
+
+.absolute-trash {
+    position: absolute;
+    right: 0;
+}
+
+@media only screen and (max-width:767px) {
+    .book_image {
+        max-width: 200px;
+    }
+}
+
+@media only screen and (max-width:575px) {
+    .absolute-trash {
+        position: relative;
+        right: 0;
+        margin-left: auto;
+    }
+
+    .ammount_input {
+        width: 50px;
+    }
 }

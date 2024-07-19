@@ -2,8 +2,9 @@
 
 namespace App\Livewire\Customer\Cart;
 
-use App\Http\Controllers\Customer\Cart\CartController;
 use Livewire\Component;
+use App\Models\PhyiscalCopy;
+use App\Http\Controllers\Customer\Cart\CartController;
 
 class Cart extends Component
 {
@@ -30,6 +31,20 @@ class Cart extends Component
     public function updateCart()
     {
         $this->controller->updateCart();
+    }
+
+    public function updateAddress()
+    {
+    }
+
+    public function getBookStock($id)
+    {
+        $result = PhyiscalCopy::find($id);
+        return $result ? $result->quantity : 0;
+    }
+
+    public function updateAmount($id, $amount)
+    {
     }
 
     public function render()

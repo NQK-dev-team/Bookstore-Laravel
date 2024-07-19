@@ -8,6 +8,7 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Discount;
+use voku\helper\AntiXSS;
 use App\Models\FileOrder;
 use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
@@ -42,13 +43,15 @@ class ProfileController extends Controller
             return redirect()->route('customer.profile.index', ['option' => 1])->withErrors($validator)->withInput();
         }
 
-        DB::transaction(function () use ($request) {
+        $antiXss = new AntiXSS();
+
+        DB::transaction(function () use ($request, $antiXss) {
             $data = User::find(Auth::user()->id);
-            $data->name = $request->name;
-            $data->phone = $request->phone;
-            $data->gender = $request->gender;
-            $data->address = $request->address;
-            $data->dob = $request->dob;
+            $data->name = $antiXss->xss_clean($request->name);
+            $data->phone = $antiXss->xss_clean($request->phone);
+            $data->gender = $antiXss->xss_clean($request->gender);
+            $data->address = $antiXss->xss_clean($request->address);
+            $data->dob = $antiXss->xss_clean($request->dob);
 
             if ($request->hasFile('image')) {
                 $imagePath = Storage::putFileAs('files/images/users/' . Auth::user()->id, $request->file('image'), date('YmdHis', time()) . '.' . $request->file('image')->extension());
@@ -79,9 +82,11 @@ class ProfileController extends Controller
             return redirect()->route('customer.profile.index', ['option' => 3])->withErrors($validator)->withInput();
         }
 
-        DB::transaction(function () use ($request) {
+        $antiXss = new AntiXSS();
+
+        DB::transaction(function () use ($request, $antiXss) {
             User::where([['id', '=', Auth::user()->id]])->update([
-                'password' => Hash::make($request->newPassword),
+                'password' => Hash::make($antiXss->xss_clean($request->newPassword)),
             ]);
         });
         Mail::to(Auth::user()->email)->queue(new PasswordChange(Auth::user()->name));
