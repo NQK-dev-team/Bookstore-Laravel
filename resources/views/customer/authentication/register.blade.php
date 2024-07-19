@@ -99,7 +99,7 @@
                 </div>
                 <div class="form-group mt-3">
                     <label for="inputAddress" class="fs-4 fw-medium">Address</label>
-                    <input required id="inputAddress" type="text"
+                    <input maxlength="1000" id="inputAddress" type="text"
                         class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}" placeholder="Enter address"
                         name="address" autocomplete="off" value="{{ session('address') }}">
                     @if ($errors->has('address'))
