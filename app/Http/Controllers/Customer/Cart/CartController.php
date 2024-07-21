@@ -6,9 +6,15 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Discount;
+use App\Models\FileOrder;
+use App\Models\PhysicalOrder;
+use App\Models\FileOrderContain;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\PhysicalOrderContain;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Http;
 
 class CartController extends Controller
 {
@@ -88,6 +94,97 @@ class CartController extends Controller
 
         if ($order)
             recalculateOrderValue($order->id);
+    }
+
+    public function updateAddress($address)
+    {
+        DB::transaction(
+            function () use ($address) {
+                $order = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->where([
+                    ['customer_id', '=', Auth::id()],
+                    ['status', '=', false]
+                ])->first();
+
+                if (!$order || !$order->physicalOrder)
+                    return;
+
+                $order->physicalOrder->address = $address;
+                $order->physicalOrder->save();
+            }
+        );
+    }
+
+    public function updateAmount($id, $amount)
+    {
+        DB::transaction(function () use ($id, $amount) {
+            $order = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->where([
+                ['customer_id', '=', Auth::id()],
+                ['status', '=', false]
+            ])->first();
+
+            if (!$order || !$order->physicalOrder)
+                return;
+
+            $order->physicalOrder->physicalCopies()->updateExistingPivot($id, ['amount' => $amount]);
+        });
+        $this->updateCart();
+    }
+
+    public function deleteBook($id, $mode)
+    {
+        DB::transaction(function () use ($id, $mode) {
+            $order = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->where([
+                ['customer_id', '=', Auth::id()],
+                ['status', '=', false]
+            ])->first();
+
+            if ($mode === 1)
+                $order->physicalOrder->physicalCopies()->detach($id);
+            else if ($mode === 2)
+                $order->fileOrder->fileCopies()->detach($id);
+            $order->save();
+
+            if (PhysicalOrder::where('id', $order->id)->exists() && !PhysicalOrderContain::where('order_id', $order->id)->exists())
+                PhysicalOrder::where('id', $order->id)->delete();
+
+            if (FileOrder::where('id', $order->id)->exists() && !FileOrderContain::where('order_id', $order->id)->exists())
+                FileOrder::where('id', $order->id)->delete();
+
+            if (Order::where('id', $order->id)->exists() && !PhysicalOrder::where('id', $order->id)->exists() && !FileOrder::where('id', $order->id)->exists())
+                Order::where('id', $order->id)->delete();
+        });
+        $this->updateCart();
+    }
+
+    public function getCurrentAddress()
+    {
+        $order = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->where([
+            ['customer_id', '=', Auth::id()],
+            ['status', '=', false]
+        ])->first();
+
+        if (!$order) return null;
+
+        return $order->physicalOrder->address;
+    }
+
+    public function purchase($mode, $paypalData = null)
+    {
+        if ($mode === 2) {
+            $response  = Http::withHeaders([
+                'Authorization' => $paypalData['facilitatorAccessToken'],
+                'Content-Type' => 'application/json',
+            ])->get(env('PAYPAL_SANDBOX_BASE_URL', 'https://api-m.sandbox.paypal.com') . '/v2/checkout/orders/' . $paypalData['orderID']);
+
+            if ($response->failed())
+                abort($response->status());
+                
+            $data = $response->json();
+
+            abort(400, $data);
+        }
+        DB::transaction(function () {
+        });
     }
 
     public function show()

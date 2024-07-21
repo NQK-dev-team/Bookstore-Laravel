@@ -110,12 +110,14 @@ return [
             'level' => env('LOG_LEVEL', 'debug'),
             'facility' => env('LOG_SYSLOG_FACILITY', LOG_USER),
             'replace_placeholders' => true,
+            // 'path' => storage_path('logs/system/laravel.log'),
         ],
 
         'errorlog' => [
             'driver' => 'errorlog',
             'level' => env('LOG_LEVEL', 'debug'),
             'replace_placeholders' => true,
+            // 'path' => storage_path('logs/system/laravel.log'),
         ],
 
         'null' => [

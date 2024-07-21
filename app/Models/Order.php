@@ -25,6 +25,13 @@ class Order extends Model
      */
     protected $keyType = 'string';
 
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * @var array
+     */
+    protected $guarded = []; // Using this line means that every column in the table can be mass assigned.
+
     public function physicalOrder(): HasOne
     {
         return $this->hasOne(PhysicalOrder::class, 'id', 'id');

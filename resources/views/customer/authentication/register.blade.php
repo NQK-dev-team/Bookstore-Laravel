@@ -104,7 +104,7 @@
                         name="address" autocomplete="off" value="{{ session('address') }}">
                     @if ($errors->has('address'))
                         <div class="invalid-feedback">
-                            {{ $errors->first('name') }}
+                            {{ $errors->first('address') }}
                         </div>
                     @endif
                 </div>

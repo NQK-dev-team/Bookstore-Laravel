@@ -86,7 +86,6 @@ class UserSeeder extends Seeder
             'name' => 'Male Customer',
             'email' => 'male.nqk.test@gmail.com',
             'password' => Hash::make('#Male123456789'),
-            'address' => 'Ho Chi Minh City',
             'dob' => '2000-01-01',
             'phone' => '0712345671',
             'gender' => 'M',

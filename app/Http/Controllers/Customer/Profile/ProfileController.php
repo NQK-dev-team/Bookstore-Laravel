@@ -221,7 +221,7 @@ class ProfileController extends Controller
         // $fileBooks = collect($fileBooks)->sortBy('name')->sortBy('edition')->values()->all();
         $fileBooks = Book::whereIn('id', $fileTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
         foreach ($fileBooks as &$book) {
-            refineBookData($book);
+            refineBookData($book, false);
         }
 
         $order->hardCovers = $physicalBooks;

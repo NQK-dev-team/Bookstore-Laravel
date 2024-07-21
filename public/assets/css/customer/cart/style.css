@@ -23,9 +23,17 @@
     right: 0;
 }
 
+.trash-size {
+    font-size: 1.5rem;
+}
+
 @media only screen and (max-width:767px) {
     .book_image {
         max-width: 200px;
+    }
+
+    .trash-size {
+        font-size: 1.75rem;
     }
 }
 

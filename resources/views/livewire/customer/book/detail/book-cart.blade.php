@@ -10,7 +10,7 @@
             <input type="radio" class="btn-check" name="bookType" id="ebook" autocomplete="off"
                 x-on:click="radioOption=2;">
             <label class="btn border border-1 border-dark {{ $physicalPrice !== null ? 'ms-3' : '' }}"
-                for="ebook">E-book</label>
+                for="ebook">Ebook</label>
         @endif
     </div>
 

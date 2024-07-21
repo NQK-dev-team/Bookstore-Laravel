@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('physical_orders', function (Blueprint $table) {
             $table->string('id', 20)->primary();
-            $table->string('address',1000)->nullable(false);
+            $table->string('address',1000)->nullable();
             $table->timestamps();
 
             // Foreign keys
