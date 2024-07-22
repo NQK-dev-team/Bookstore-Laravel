@@ -31,7 +31,7 @@ class TopPublishers extends Component
     public function mount()
     {
         $this->topPublishers = $this->controller->getTopPublishers();
-        $this->selectedPublisher = $this->topPublishers[0];
+        $this->selectedPublisher = $this->topPublishers ? $this->topPublishers[0] : null;
         $this->getBooks();
     }
 

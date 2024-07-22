@@ -31,7 +31,7 @@ class TopCategories extends Component
     public function mount()
     {
         $this->topCategories = $this->controller->getTopCategories();
-        $this->selectedCategory = $this->topCategories[0];
+        $this->selectedCategory = $this->topCategories ? $this->topCategories[0] : null;
         $this->getBooks();
     }
 

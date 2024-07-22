@@ -187,150 +187,153 @@
             <div aria-label="alpine-function-trigger-element" x-init="addScrollEvent('saleScrollLeft', 'saleScrollRight', 'saleList');
             checkOverflow('saleNavigate', 'saleList');"></div>
         </div>
-        <div class='container-xl p-2 mt-4'>
-            <div class='mx-3'>
-                <h4 class='text-white mb-0 text-center banner p-3 rounded-top'>Best Sellers</h4>
-                <div class='bg-white row mx-0 rounded-bottom'>
-                    <div class='col-12 col-lg-5 select-border my-3 pe-sm-0'>
-                        @foreach ($bestSellingBooks as $index => $book)
-                            <a onmouseover="showHoveredBook({{ $index }})"
-                                href='{{ route('customer.book.detail', ['id' => $book->id]) }}'
-                                class='my-4 d-flex flex-column flex-sm-row pointer best-seller text-dark text-decoration-none'>
-                                <img alt='{{ $book->name }} {{ $book->edition }} image' src="{{ $book->image }}"
-                                    class="best-seller-img mx-auto mx-sm-0">
-                                <div
-                                    class='mx-auto ms-sm-3 me-sm-0 d-flex flex-column align-items-center align-items-sm-start'>
-                                    <h5 class='mb-2 mt-2 mt-sm-0 t text-sm-start text-center'>{{ $book->name }}</h5>
-                                    <p class='mb-2'>{{ $book->edition }}</p>
-                                    <p class='mb-2'>{{ $book->authors }}</p>
-                                    <div class='d-flex'>
-                                        <div class='text-warning'>
-                                            {!! displayRatingStars($book->average_rating) !!}
+        @if (count($bestSellingBooks))
+            <div class='container-xl p-2 mt-4'>
+                <div class='mx-3'>
+                    <h4 class='text-white mb-0 text-center banner p-3 rounded-top'>Best Sellers</h4>
+                    <div class='bg-white row mx-0 rounded-bottom'>
+                        <div class='col-12 col-lg-5 select-border my-3 pe-sm-0'>
+                            @foreach ($bestSellingBooks as $index => $book)
+                                <a onmouseover="showHoveredBook({{ $index }})"
+                                    href='{{ route('customer.book.detail', ['id' => $book->id]) }}'
+                                    class='my-4 d-flex flex-column flex-sm-row pointer best-seller text-dark text-decoration-none'>
+                                    <img alt='{{ $book->name }} {{ $book->edition }} image' src="{{ $book->image }}"
+                                        class="best-seller-img mx-auto mx-sm-0">
+                                    <div
+                                        class='mx-auto ms-sm-3 me-sm-0 d-flex flex-column align-items-center align-items-sm-start'>
+                                        <h5 class='mb-2 mt-2 mt-sm-0 t text-sm-start text-center'>{{ $book->name }}</h5>
+                                        <p class='mb-2'>{{ $book->edition }}</p>
+                                        <p class='mb-2'>{{ $book->authors }}</p>
+                                        <div class='d-flex'>
+                                            <div class='text-warning'>
+                                                {!! displayRatingStars($book->average_rating) !!}
+                                            </div>
+                                            <p class='mb-0 ms-2'>({{ $book->average_rating }})</p>
                                         </div>
-                                        <p class='mb-0 ms-2'>({{ $book->average_rating }})</p>
                                     </div>
-                                </div>
-                            </a>
-                            <hr class='d-sm-none'>
-                            </hr>
-                        @endforeach
-                    </div>
-                    <div class='col-lg-7 d-lg-block d-none py-3'>
-                        @foreach ($bestSellingBooks as $index => $book)
-                            @if ($index === 0)
-                                <div id='bestSellerDetail_{{ $index }}' name='bestSellerDetail'>
-                                    <div class='d-flex'>
-                                        <img alt='{{ $book->name }} {{ $book->edition }} image'
-                                            src="{{ $book->image }}" class="best-seller-img-detail">
-                                        <div class='ms-3'>
-                                            <h3>{{ $book->name }}</h3>
-                                            <p>{{ $book->edition }}</p>
-                                            <p>ISBN-13: {{ $book->isbn }}</p>
-                                            <p>Author: {{ $book->authors }}</p>
-                                            <p>Category: {{ $book->categories }}</p>
-                                            <p>Publisher: {{ $book->publisher }}</p>
-                                            <p>Publish Date: {{ $book->publication_date }}</p>
-                                            <div class='mb-3 d-flex'>
-                                                <div class='text-warning'>
-                                                    {!! displayRatingStars($book->average_rating) !!}
+                                </a>
+                                <hr class='d-sm-none'>
+                                </hr>
+                            @endforeach
+                        </div>
+                        <div class='col-lg-7 d-lg-block d-none py-3'>
+                            @foreach ($bestSellingBooks as $index => $book)
+                                @if ($index === 0)
+                                    <div id='bestSellerDetail_{{ $index }}' name='bestSellerDetail'>
+                                        <div class='d-flex'>
+                                            <img alt='{{ $book->name }} {{ $book->edition }} image'
+                                                src="{{ $book->image }}" class="best-seller-img-detail">
+                                            <div class='ms-3'>
+                                                <h3>{{ $book->name }}</h3>
+                                                <p>{{ $book->edition }}</p>
+                                                <p>ISBN-13: {{ $book->isbn }}</p>
+                                                <p>Author: {{ $book->authors }}</p>
+                                                <p>Category: {{ $book->categories }}</p>
+                                                <p>Publisher: {{ $book->publisher }}</p>
+                                                <p>Publish Date: {{ $book->publication_date }}</p>
+                                                <div class='mb-3 d-flex'>
+                                                    <div class='text-warning'>
+                                                        {!! displayRatingStars($book->average_rating) !!}
+                                                    </div>
+                                                    <p class='mb-0 ms-2'>({{ $book->average_rating }})</p>
                                                 </div>
-                                                <p class='mb-0 ms-2'>({{ $book->average_rating }})</p>
-                                            </div>
-                                            @if ($book->discount)
-                                                <span
-                                                    class='bg-danger p-1 rounded text-white'>-{{ $book->discount }}%</span>
-                                            @endif
-                                            <div class='d-flex mt-3'>
-                                                <p class='text-nowrap'>Hardcover:</p>
-                                                <p
-                                                    class='{{ $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                                    {{ $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
-                                                </p>
-                                                @if ($book->physicalCopy->price && $book->discount)
-                                                    <p class='fw-medium'>
-                                                        ${{ round(($book->physicalCopy->price * (100.0 - $book->discount)) / 100, 2) }}
-                                                    </p>
+                                                @if ($book->discount)
+                                                    <span
+                                                        class='bg-danger p-1 rounded text-white'>-{{ $book->discount }}%</span>
                                                 @endif
-                                            </div>
-                                            <div class='d-flex'>
-                                                <p class='text-nowrap'>E-book:</p>
-                                                <p
-                                                    class='{{ $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                                    {{ $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
-                                                </p>
-                                                @if ($book->fileCopy->price && $book->discount)
-                                                    <p class='fw-medium'>
-                                                        ${{ round(($book->fileCopy->price * (100.0 - $book->discount)) / 100, 2) }}
+                                                <div class='d-flex mt-3'>
+                                                    <p class='text-nowrap'>Hardcover:</p>
+                                                    <p
+                                                        class='{{ $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                                        {{ $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
                                                     </p>
-                                                @endif
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <h5 class='mt-3'>Description</h5>
-                                    <p class='text-justify'>{{ $book->description }}</p>
-                                </div>
-                            @else
-                                <div class='none' id='bestSellerDetail_{{ $index }}' name='bestSellerDetail'>
-                                    <div class='d-flex'>
-                                        <img alt='{{ $book->name }} {{ $book->edition }} image'
-                                            src="{{ $book->image }}" class="best-seller-img-detail">
-                                        <div class='ms-3'>
-                                            <h3>{{ $book->name }}</h3>
-                                            <p>{{ $book->edition }}</p>
-                                            <p>ISBN-13: {{ $book->isbn }}</p>
-                                            <p>Author: {{ $book->authors }}</p>
-                                            <p>Category: {{ $book->categories }}</p>
-                                            <p>Publisher: {{ $book->publisher }}</p>
-                                            <p>Publish Date: {{ $book->publication_date }}</p>
-                                            <div class='mb-3 d-flex'>
-                                                <div class='text-warning'>
-                                                    {!! displayRatingStars($book->average_rating) !!}
+                                                    @if ($book->physicalCopy->price && $book->discount)
+                                                        <p class='fw-medium'>
+                                                            ${{ round(($book->physicalCopy->price * (100.0 - $book->discount)) / 100, 2) }}
+                                                        </p>
+                                                    @endif
                                                 </div>
-                                                <p class='mb-0 ms-2'>({{ $book->average_rating }})</p>
-                                            </div>
-                                            @if ($book->discount)
-                                                <span
-                                                    class='bg-danger p-1 rounded text-white'>-{{ $book->discount }}%</span>
-                                            @endif
-                                            <div class='d-flex mt-3'>
-                                                <p class='text-nowrap'>Hardcover:</p>
-                                                <p
-                                                    class='{{ $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                                    {{ $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
-                                                </p>
-                                                @if ($book->physicalCopy->price && $book->discount)
-                                                    <p class='fw-medium'>
-                                                        ${{ round(($book->physicalCopy->price * (100.0 - $book->discount)) / 100, 2) }}
+                                                <div class='d-flex'>
+                                                    <p class='text-nowrap'>E-book:</p>
+                                                    <p
+                                                        class='{{ $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                                        {{ $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
                                                     </p>
-                                                @endif
-                                            </div>
-                                            <div class='d-flex'>
-                                                <p class='text-nowrap'>E-book:</p>
-                                                <p
-                                                    class='{{ $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                                    {{ $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
-                                                </p>
-                                                @if ($book->fileCopy->price && $book->discount)
-                                                    <p class='fw-medium'>
-                                                        ${{ round(($book->fileCopy->price * (100.0 - $book->discount)) / 100, 2) }}
-                                                    </p>
-                                                @endif
+                                                    @if ($book->fileCopy->price && $book->discount)
+                                                        <p class='fw-medium'>
+                                                            ${{ round(($book->fileCopy->price * (100.0 - $book->discount)) / 100, 2) }}
+                                                        </p>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
+                                        <h5 class='mt-3'>Description</h5>
+                                        <p class='text-justify'>{{ $book->description }}</p>
                                     </div>
-                                    <h5 class='mt-3'>Description</h5>
-                                    <p class='text-justify'>{{ $book->description }}</p>
-                                </div>
-                            @endif
-                        @endforeach
+                                @else
+                                    <div class='none' id='bestSellerDetail_{{ $index }}'
+                                        name='bestSellerDetail'>
+                                        <div class='d-flex'>
+                                            <img alt='{{ $book->name }} {{ $book->edition }} image'
+                                                src="{{ $book->image }}" class="best-seller-img-detail">
+                                            <div class='ms-3'>
+                                                <h3>{{ $book->name }}</h3>
+                                                <p>{{ $book->edition }}</p>
+                                                <p>ISBN-13: {{ $book->isbn }}</p>
+                                                <p>Author: {{ $book->authors }}</p>
+                                                <p>Category: {{ $book->categories }}</p>
+                                                <p>Publisher: {{ $book->publisher }}</p>
+                                                <p>Publish Date: {{ $book->publication_date }}</p>
+                                                <div class='mb-3 d-flex'>
+                                                    <div class='text-warning'>
+                                                        {!! displayRatingStars($book->average_rating) !!}
+                                                    </div>
+                                                    <p class='mb-0 ms-2'>({{ $book->average_rating }})</p>
+                                                </div>
+                                                @if ($book->discount)
+                                                    <span
+                                                        class='bg-danger p-1 rounded text-white'>-{{ $book->discount }}%</span>
+                                                @endif
+                                                <div class='d-flex mt-3'>
+                                                    <p class='text-nowrap'>Hardcover:</p>
+                                                    <p
+                                                        class='{{ $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                                        {{ $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
+                                                    </p>
+                                                    @if ($book->physicalCopy->price && $book->discount)
+                                                        <p class='fw-medium'>
+                                                            ${{ round(($book->physicalCopy->price * (100.0 - $book->discount)) / 100, 2) }}
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                                <div class='d-flex'>
+                                                    <p class='text-nowrap'>E-book:</p>
+                                                    <p
+                                                        class='{{ $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                                        {{ $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
+                                                    </p>
+                                                    @if ($book->fileCopy->price && $book->discount)
+                                                        <p class='fw-medium'>
+                                                            ${{ round(($book->fileCopy->price * (100.0 - $book->discount)) / 100, 2) }}
+                                                        </p>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h5 class='mt-3'>Description</h5>
+                                        <p class='text-justify'>{{ $book->description }}</p>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
-                </div>
-                <div class='bg-white d-flex pb-3'>
-                    <a class='btn moreBtn mx-auto' href='{{ route('customer.book.index', ['select' => 'sales']) }}'>
-                        Browse More</a>
+                    <div class='bg-white d-flex pb-3'>
+                        <a class='btn moreBtn mx-auto' href='{{ route('customer.book.index', ['select' => 'sales']) }}'>
+                            Browse More</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        @endif
         @livewire('customer.home.top-categories')
         @livewire('customer.home.top-publishers')
     </div>
