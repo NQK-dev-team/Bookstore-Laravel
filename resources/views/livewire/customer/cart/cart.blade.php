@@ -15,12 +15,12 @@
                                     $discount = getBookBestDiscount($book);
                                 @endphp
                                 <div class='row m-2' x-init="pushEBook({
-                                    bookName: '{{ $book->name }}',
-                                    bookEdition: '{{ $book->edition }}',
-                                    bookID: '{{ $book->id }}',
+                                    bookName: `{{ $book->name }}`,
+                                    bookEdition: `{{ $book->edition }}`,
+                                    bookID: `{{ $book->id }}`,
                                     price: {{ $book->fileCopy->price }},
-                                    image: '{{ app()->environment('local') ? 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg' : $book->image }}',
-                                    url: '{{ route('customer.book.detail', ['id' => $book->id]) }}',
+                                    image: `{{ app()->environment('local') ? 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg' : $book->image }}`,
+                                    url: `{{ route('customer.book.detail', ['id' => $book->id]) }}`,
                                 })">
                                     <div class='col-md-2 col-12 d-flex'>
                                         <a href="{{ route('customer.book.detail', ['id' => $book->id]) }}"
@@ -126,13 +126,13 @@
                                     $stock = $this->getBookStock($book->id);
                                 @endphp
                                 <div class='row m-2' x-init="pushHardCover({
-                                    bookName: '{{ $book->name }}',
-                                    bookEdition: '{{ $book->edition }}',
-                                    bookID: '{{ $book->id }}',
+                                    bookName: `{{ $book->name }}`,
+                                    bookEdition: `{{ $book->edition }}`,
+                                    bookID: `{{ $book->id }}`,
                                     quantity: {{ getAmount($cartDetail->id, $book->id) }},
                                     price: {{ $book->physicalCopy->price }},
-                                    image: '{{ app()->environment('local') ? 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg' : $book->image }}',
-                                    url: '{{ route('customer.book.detail', ['id' => $book->id]) }}',
+                                    image: `{{ app()->environment('local') ? 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg' : $book->image }}`,
+                                    url: `{{ route('customer.book.detail', ['id' => $book->id]) }}`,
                                 })">
                                     <div class='col-md-2 col-12 d-flex'>
                                         <a href="{{ route('customer.book.detail', ['id' => $book->id]) }}"

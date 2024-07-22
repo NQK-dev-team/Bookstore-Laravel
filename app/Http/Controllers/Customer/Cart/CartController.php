@@ -14,7 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PhysicalOrderContain;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Http;
+use Omnipay\Omnipay;
 
 class CartController extends Controller
 {
@@ -171,17 +171,24 @@ class CartController extends Controller
     public function purchase($mode, $paypalData = null)
     {
         if ($mode === 2) {
-            $response  = Http::withHeaders([
-                'Authorization' => $paypalData['facilitatorAccessToken'],
-                'Content-Type' => 'application/json',
-            ])->get(env('PAYPAL_SANDBOX_BASE_URL', 'https://api-m.sandbox.paypal.com') . '/v2/checkout/orders/' . $paypalData['orderID']);
+            $gateWay = Omnipay::create('PayPal_Rest');
+            $gateWay->setClientID(env('PAYPAL_SANDBOX_CLIENT_ID', ''));
+            $gateWay->setClientSecret(env('PAYPAL_SANDBOX_CLIENT_SECRET', ''));
+            $gateWay->setTestMode(true);
 
-            if ($response->failed())
-                abort($response->status());
-                
-            $data = $response->json();
+            // $response  = Http::withHeaders([
+            //     'Authorization' => 'Bearer ' . $paypalData['facilitatorAccessToken'],
+            //     'Content-Type' => 'application/json',
+            // ])->withOptions([
+            //     'verify' => false,
+            // ])->get('https://api-m.sandbox.paypal.com/v2/checkout/orders/' . $paypalData['orderID']);
 
-            abort(400, $data);
+            // if ($response->failed())
+            //     abort($response->status());
+
+            // $data = $response->json();
+
+            // abort(400, $data);
         }
         DB::transaction(function () {
         });
