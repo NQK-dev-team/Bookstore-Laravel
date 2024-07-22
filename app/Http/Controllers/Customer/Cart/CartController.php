@@ -7,21 +7,34 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Discount;
 use App\Models\FileOrder;
+use Illuminate\Http\Request;
 use App\Models\PhysicalOrder;
+use Illuminate\Http\Response;
 use App\Models\FileOrderContain;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\PhysicalOrderContain;
 use Illuminate\Support\Facades\Auth;
+use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Builder;
-use Omnipay\Omnipay;
 
 class CartController extends Controller
 {
-    public function getCartDetail()
+    private $paypalClientId;
+    private $paypalClientSecret;
+    private $paypalCurrency;
+
+    public function __construct()
+    {
+        $this->paypalClientId = env('PAYPAL_SANDBOX_CLIENT_ID', '');
+        $this->paypalClientSecret = env('PAYPAL_SANDBOX_CLIENT_SECRET', '');
+        $this->paypalCurrency = env('PAYPAL_CURRENCY', '');
+    }
+
+    public function getCartDetail($customerID = null)
     {
         $order = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->where([
-            ['customer_id', '=', Auth::id()],
+            ['customer_id', '=', $customerID ?? Auth::id()],
             ['status', '=', false]
         ])->first();
 
@@ -168,30 +181,75 @@ class CartController extends Controller
         return $order->physicalOrder->address;
     }
 
-    public function purchase($mode, $paypalData = null)
+    public function purchase($mode, $paypalData = null, $customerID = null)
     {
-        if ($mode === 2) {
-            $gateWay = Omnipay::create('PayPal_Rest');
-            $gateWay->setClientID(env('PAYPAL_SANDBOX_CLIENT_ID', ''));
-            $gateWay->setClientSecret(env('PAYPAL_SANDBOX_CLIENT_SECRET', ''));
-            $gateWay->setTestMode(true);
+        // if ($mode === 2) {
+        //     // $gateWay = Omnipay::create('PayPal_Rest');
+        //     // $gateWay->setClientID(env('PAYPAL_SANDBOX_CLIENT_ID', ''));
+        //     // $gateWay->setClientSecret(env('PAYPAL_SANDBOX_CLIENT_SECRET', ''));
+        //     // $gateWay->setTestMode(true);
 
-            // $response  = Http::withHeaders([
-            //     'Authorization' => 'Bearer ' . $paypalData['facilitatorAccessToken'],
-            //     'Content-Type' => 'application/json',
-            // ])->withOptions([
-            //     'verify' => false,
-            // ])->get('https://api-m.sandbox.paypal.com/v2/checkout/orders/' . $paypalData['orderID']);
+        //     // $response  = Http::withHeaders([
+        //     //     'Authorization' => 'Bearer ' . $paypalData['facilitatorAccessToken'],
+        //     //     'Content-Type' => 'application/json',
+        //     // ])->withOptions([
+        //     //     'verify' => false,
+        //     // ])->get('https://api-m.sandbox.paypal.com/v2/checkout/orders/' . $paypalData['orderID']);
 
-            // if ($response->failed())
-            //     abort($response->status());
+        //     // if ($response->failed())
+        //     //     abort($response->status());
 
-            // $data = $response->json();
+        //     // $data = $response->json();
 
-            // abort(400, $data);
-        }
+        //     // abort(400, $data);
+        // }
         DB::transaction(function () {
         });
+    }
+
+    public function createPaypalOrder(Request $request, Response $response)
+    {
+        $paypalToken = $request->cookie('paypal_token');
+
+        [$id, $_] = explode('|', $paypalToken);
+
+        $token = PersonalAccessToken::find($id);
+
+        if (!$token) {
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+        if ($token->expires_at->isPast()) {
+            return response()->json(['message' => 'Token expired.'], 419);
+        }
+
+        $customerID = $token->tokenable_id;
+
+        $cart = $this->getCartDetail($customerID);
+
+        $payload = [];
+        $payload['intent'] = 'CAPTURE';
+
+        return var_dump($token);
+    }
+
+    public function capturePaypalOrder(Request $request, Response $response)
+    {
+        $paypalToken = $request->cookie('paypal_token');
+
+        [$id, $_] = explode('|', $paypalToken);
+
+        $token = PersonalAccessToken::find($id);
+
+        if (!$token) {
+            return response()->json(['message' => 'Unauthorized.'], 401);
+        }
+        if ($token->expires_at->isPast()) {
+            return response()->json(['message' => 'Token expired.'], 419);
+        }
+
+        $customerID = $token->tokenable_id;
+
+        return var_dump($token);
     }
 
     public function show()

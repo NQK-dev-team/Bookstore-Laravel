@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Authentication;
 
 use Carbon\Carbon;
+use App\Models\User;
 use App\Mail\DeleteAccount;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -34,6 +35,9 @@ class Logout extends Controller
             ]);
             Mail::to(Auth::user()->email)->queue(new DeleteAccount(Auth::user()->name));
         }
+
+        $user = User::find(Auth::user()->id);
+        $user->tokens()->delete();
 
         Auth::logout();
 

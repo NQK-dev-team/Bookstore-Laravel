@@ -8,6 +8,7 @@
         "php": "^8.2",
         "haruncpi/laravel-id-generator": "^1.1",
         "laravel/framework": "^11.9",
+        "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "league/flysystem-aws-s3-v3": "^3.28",
         "league/omnipay": "^3.2",

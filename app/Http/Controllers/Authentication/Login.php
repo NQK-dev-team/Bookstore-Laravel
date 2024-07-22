@@ -6,6 +6,7 @@ use App\Mail\CancelDelete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -40,7 +41,9 @@ class Login extends Controller
             Mail::to(Auth::user()->email)->queue(new CancelDelete(Auth::user()->name));
         }
 
-        return redirect()->route('customer.index');
+        $user = User::find(Auth::user()->id);
+        $paypalToken = $user->createToken('paypal_token', ['*'], now()->addDays(3));
+        return redirect()->route('customer.index')->withCookie(cookie('paypal_token', $paypalToken->plainTextToken, 0, null, null, null, false, false, 'Lax'));
     }
 
     public function show(Request $request)

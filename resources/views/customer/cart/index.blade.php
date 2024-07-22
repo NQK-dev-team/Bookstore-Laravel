@@ -30,111 +30,126 @@
                 borderRadius: 10,
                 disableMaxWidth: true
             },
-            createOrder(data, actions) {
-                const orderComponent = document.querySelector('[x-data="orderData"]');
-                const orderData = Alpine.$data(orderComponent);
-                const hardCovers = orderData.hardCovers;
-                const eBooks = orderData.eBooks;
-                const totalPrice = orderData.totalPrice;
-                const loyaltyDiscount = orderData.loyaltyDiscount;
-                const referrerDiscount = orderData.referrerDiscount;
-                const discount = orderData.discount;
-
-                const shipping = 0;
-                const handling = 0;
-                const insurance = 0;
-                const tax = 0;
-                const shippingDiscount = 0;
-                const items = [];
-                let itemTotal = 0;
-
-                hardCovers.forEach(hardCover => {
-                    itemTotal += hardCover.price * hardCover.quantity;
-                    itemTotal = Math.round(itemTotal * 100) / 100;
-                    items.push({
-                        "id": hardCover.bookID,
-                        "name": `${hardCover.bookName} - ${hardCover.bookEdition}`,
-                        "unit_amount": {
-                            "currency_code": currency,
-                            "value": hardCover.price,
+            async createOrder() {
+                try {
+                    const response = await fetch('/api/create-paypal-order', {
+                        method: "POST",
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
                         },
-                        "type": "Hardcover",
-                        "quantity": hardCover.quantity,
-                        "image_url": hardCover.image,
-                        "url": hardCover.url,
+                        credentials: 'include',
                     });
-                });
 
-                eBooks.forEach(eBook => {
-                    itemTotal += eBook.price;
-                    itemTotal = Math.round(itemTotal * 100) / 100;
-                    items.push({
-                        "id": eBook.bookID,
-                        "name": `${eBook.bookName} - ${eBook.bookEdition}`,
-                        "unit_amount": {
-                            "currency_code": currency,
-                            "value": eBook.price,
-                        },
-                        "type": "Ebook",
-                        "quantity": 1,
-                        "image_url": eBook.image,
-                        "url": eBook.url,
-                    });
-                });
+                    console.log(response);
+                } catch (error) {
+                    console.error(error);
+                }
 
-                itemTotal = Math.round(itemTotal * 100) / 100;
+                // const orderComponent = document.querySelector('[x-data="orderData"]');
+                // const orderData = Alpine.$data(orderComponent);
+                // const hardCovers = orderData.hardCovers;
+                // const eBooks = orderData.eBooks;
+                // const totalPrice = orderData.totalPrice;
+                // const loyaltyDiscount = orderData.loyaltyDiscount;
+                // const referrerDiscount = orderData.referrerDiscount;
+                // const discount = orderData.discount;
 
-                // console.log(itemTotal, discount, totalPrice);
+                // const shipping = 0;
+                // const handling = 0;
+                // const insurance = 0;
+                // const tax = 0;
+                // const shippingDiscount = 0;
+                // const items = [];
+                // let itemTotal = 0;
 
-                return actions.order.create({
-                    "purchase_units": [{
-                        "reference_id": crypto.randomUUID(),
-                        "amount": {
-                            "currency_code": currency,
-                            "value": totalPrice,
-                            "breakdown": {
-                                "item_total": {
-                                    "currency_code": currency,
-                                    "value": itemTotal,
-                                },
-                                "tax_total": {
-                                    "currency_code": currency,
-                                    "value": tax,
-                                },
-                                "shipping": {
-                                    "currency_code": currency,
-                                    "value": shipping,
-                                },
-                                "handling": {
-                                    "currency_code": currency,
-                                    "value": handling,
-                                },
-                                "insurance": {
-                                    "currency_code": currency,
-                                    "value": insurance,
-                                },
-                                "shipping_discount": {
-                                    "currency_code": currency,
-                                    "value": shippingDiscount,
-                                },
-                                "discount": {
-                                    "currency_code": currency,
-                                    "value": discount,
-                                },
-                            },
-                        },
-                        "items": items,
-                    }],
-                    intent: "CAPTURE",
-                });
+                // hardCovers.forEach(hardCover => {
+                //     itemTotal += hardCover.price * hardCover.quantity;
+                //     itemTotal = Math.round(itemTotal * 100) / 100;
+                //     items.push({
+                //         "id": hardCover.bookID,
+                //         "name": `${hardCover.bookName} - ${hardCover.bookEdition}`,
+                //         "unit_amount": {
+                //             "currency_code": currency,
+                //             "value": hardCover.price,
+                //         },
+                //         "type": "Hardcover",
+                //         "quantity": hardCover.quantity,
+                //         "image_url": hardCover.image,
+                //         "url": hardCover.url,
+                //     });
+                // });
+
+                // eBooks.forEach(eBook => {
+                //     itemTotal += eBook.price;
+                //     itemTotal = Math.round(itemTotal * 100) / 100;
+                //     items.push({
+                //         "id": eBook.bookID,
+                //         "name": `${eBook.bookName} - ${eBook.bookEdition}`,
+                //         "unit_amount": {
+                //             "currency_code": currency,
+                //             "value": eBook.price,
+                //         },
+                //         "type": "Ebook",
+                //         "quantity": 1,
+                //         "image_url": eBook.image,
+                //         "url": eBook.url,
+                //     });
+                // });
+
+                // itemTotal = Math.round(itemTotal * 100) / 100;
+
+                // // console.log(itemTotal, discount, totalPrice);
+
+                // return actions.order.create({
+                //     "purchase_units": [{
+                //         "reference_id": crypto.randomUUID(),
+                //         "amount": {
+                //             "currency_code": currency,
+                //             "value": totalPrice,
+                //             "breakdown": {
+                //                 "item_total": {
+                //                     "currency_code": currency,
+                //                     "value": itemTotal,
+                //                 },
+                //                 "tax_total": {
+                //                     "currency_code": currency,
+                //                     "value": tax,
+                //                 },
+                //                 "shipping": {
+                //                     "currency_code": currency,
+                //                     "value": shipping,
+                //                 },
+                //                 "handling": {
+                //                     "currency_code": currency,
+                //                     "value": handling,
+                //                 },
+                //                 "insurance": {
+                //                     "currency_code": currency,
+                //                     "value": insurance,
+                //                 },
+                //                 "shipping_discount": {
+                //                     "currency_code": currency,
+                //                     "value": shippingDiscount,
+                //                 },
+                //                 "discount": {
+                //                     "currency_code": currency,
+                //                     "value": discount,
+                //                 },
+                //             },
+                //         },
+                //         "items": items,
+                //     }],
+                //     intent: "CAPTURE",
+                // });
             },
             onApprove(data, actions) {
-                document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-submit', {
-                    detail: data,
-                    bubbles: true
-                }));
+                // document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-submit', {
+                //     detail: data,
+                //     bubbles: true
+                // }));
 
-                console.log(data);
+                // console.log(data);
 
                 // actions.payment.execute().then(function() {
                 //     window.alert('ok');
