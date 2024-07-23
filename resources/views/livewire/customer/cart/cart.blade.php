@@ -1,7 +1,8 @@
-<div class='w-100 h-100 d-flex' x-data="orderData">
+<div class='w-100 h-100 d-flex'>
     <form class='bg-white border border-3 rounded m-auto px-3 pt-3 pb-5 d-flex flex-column cart-form'
-        x-on:submit="$wire.purchase(1)" @alpine-submit="$wire.purchase(2,JSON.stringify(event.detail));"
-        @if (!$errors->any()) wire:poll.10s="$refresh" @endif id="pay_form">
+        x-on:submit="$wire.purchase()" @alpine-submit="$wire.purchase()"
+        @alpine-stop-polling="$wire.toggleStopPolling();"
+        @if (!$errors->any() && !$stopPolling) wire:poll.1s="$refresh" @endif id="pay_form">
         <h1 class='mt-2 fs-2'>Shopping Cart</h1>
         <hr>
         <div class='row flex-grow-1'>
@@ -14,14 +15,7 @@
                                 @php
                                     $discount = getBookBestDiscount($book);
                                 @endphp
-                                <div class='row m-2' x-init="pushEBook({
-                                    bookName: `{{ $book->name }}`,
-                                    bookEdition: `{{ $book->edition }}`,
-                                    bookID: `{{ $book->id }}`,
-                                    price: {{ $book->fileCopy->price }},
-                                    image: `{{ app()->environment('local') ? 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg' : $book->image }}`,
-                                    url: `{{ route('customer.book.detail', ['id' => $book->id]) }}`,
-                                })">
+                                <div class='row m-2'>
                                     <div class='col-md-2 col-12 d-flex'>
                                         <a href="{{ route('customer.book.detail', ['id' => $book->id]) }}"
                                             class='m-auto' aria-label='Go to book detail page'>
@@ -125,15 +119,7 @@
                                     $discount = getBookBestDiscount($book);
                                     $stock = $this->getBookStock($book->id);
                                 @endphp
-                                <div class='row m-2' x-init="pushHardCover({
-                                    bookName: `{{ $book->name }}`,
-                                    bookEdition: `{{ $book->edition }}`,
-                                    bookID: `{{ $book->id }}`,
-                                    quantity: {{ getAmount($cartDetail->id, $book->id) }},
-                                    price: {{ $book->physicalCopy->price }},
-                                    image: `{{ app()->environment('local') ? 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg' : $book->image }}`,
-                                    url: `{{ route('customer.book.detail', ['id' => $book->id]) }}`,
-                                })">
+                                <div class='row m-2'>
                                     <div class='col-md-2 col-12 d-flex'>
                                         <a href="{{ route('customer.book.detail', ['id' => $book->id]) }}"
                                             class='m-auto' aria-label='Go to book detail page'>
@@ -270,15 +256,13 @@
                             @endphp
                             {{ $result }}
                         </span></p>
-                    <p>Loyalty Discount:&nbsp;<span class='fw-medium'
-                            x-init="loyaltyDiscount = {{ $loyalty ? $loyalty : 0 }}">{{ $loyalty ? $loyalty . '%' : 0 }}</span></p>
-                    <p>Referrer Discount:&nbsp;<span class='fw-medium'
-                            x-init="referrerDiscount = {{ $refer ? $refer : 0 }}">{{ $refer ? $refer . '%' : 0 }}</span></p>
-                    <p>Total Discount:&nbsp;<span class='fw-medium'
-                            x-init="discount = {{ $cartDetail ? $cartDetail->total_discount : 0 }}">{{ $cartDetail ? '$' . $cartDetail->total_discount : 0 }}</span>
+                    <p>Loyalty Discount:&nbsp;<span class='fw-medium'>{{ $loyalty ? $loyalty . '%' : 0 }}</span></p>
+                    <p>Referrer Discount:&nbsp;<span class='fw-medium'>{{ $refer ? $refer . '%' : 0 }}</span></p>
+                    <p>Total Discount:&nbsp;<span
+                            class='fw-medium'>{{ $cartDetail ? '$' . $cartDetail->total_discount : 0 }}</span>
                     </p>
-                    <h4>Final Price:&nbsp;<span class='fw-medium'
-                            x-init="totalPrice = {{ $cartDetail ? $cartDetail->total_price : 0 }}">{{ $cartDetail ? '$' . $cartDetail->total_price : 0 }}</span></h4>
+                    <h4>Final Price:&nbsp;<span
+                            class='fw-medium'>{{ $cartDetail ? '$' . $cartDetail->total_price : 0 }}</span></h4>
                     <hr>
                     <button type="submit" class="btn btn-primary customized-button text-white mb-3 w-100 mt-3 fs-4"
                         {{ $cartDetail ? '' : 'disabled' }}>Cash On

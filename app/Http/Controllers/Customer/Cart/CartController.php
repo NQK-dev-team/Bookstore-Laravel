@@ -7,14 +7,15 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Discount;
 use App\Models\FileOrder;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PhysicalOrder;
-use Illuminate\Http\Response;
 use App\Models\FileOrderContain;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\PhysicalOrderContain;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -181,33 +182,30 @@ class CartController extends Controller
         return $order->physicalOrder->address;
     }
 
-    public function purchase($mode, $paypalData = null, $customerID = null)
+    public function purchase()
     {
-        // if ($mode === 2) {
-        //     // $gateWay = Omnipay::create('PayPal_Rest');
-        //     // $gateWay->setClientID(env('PAYPAL_SANDBOX_CLIENT_ID', ''));
-        //     // $gateWay->setClientSecret(env('PAYPAL_SANDBOX_CLIENT_SECRET', ''));
-        //     // $gateWay->setTestMode(true);
-
-        //     // $response  = Http::withHeaders([
-        //     //     'Authorization' => 'Bearer ' . $paypalData['facilitatorAccessToken'],
-        //     //     'Content-Type' => 'application/json',
-        //     // ])->withOptions([
-        //     //     'verify' => false,
-        //     // ])->get('https://api-m.sandbox.paypal.com/v2/checkout/orders/' . $paypalData['orderID']);
-
-        //     // if ($response->failed())
-        //     //     abort($response->status());
-
-        //     // $data = $response->json();
-
-        //     // abort(400, $data);
-        // }
         DB::transaction(function () {
         });
     }
 
-    public function createPaypalOrder(Request $request, Response $response)
+    public function getPaypalAccessToken()
+    {
+        $basic = "{$this->paypalClientId}:{$this->paypalClientSecret}";
+        $basic = Str::toBase64($basic);
+
+        $response = Http::asForm()->withHeaders([
+            'Authorization' => "Basic {$basic}",
+            'Content-Type' => 'application/json',
+        ])->withOptions([
+            'verify' => false,
+        ])->post('https://api-m.sandbox.paypal.com/v1/oauth2/token', ["grant_type" => "client_credentials"]);
+
+        $responseBody = $response->json();
+
+        return $responseBody["access_token"];
+    }
+
+    public function createPaypalOrder(Request $request)
     {
         $paypalToken = $request->cookie('paypal_token');
 
@@ -226,13 +224,74 @@ class CartController extends Controller
 
         $cart = $this->getCartDetail($customerID);
 
-        $payload = [];
-        $payload['intent'] = 'CAPTURE';
+        // return actions.order.create({
+        //     "purchase_units": [{
+        //         "reference_id": crypto.randomUUID(),
+        //         "amount": {
+        //             "currency_code": currency,
+        //             "value": totalPrice,
+        //             "breakdown": {
+        //                 "item_total": {
+        //                     "currency_code": currency,
+        //                     "value": itemTotal,
+        //                 },
+        //                 "tax_total": {
+        //                     "currency_code": currency,
+        //                     "value": tax,
+        //                 },
+        //                 "shipping": {
+        //                     "currency_code": currency,
+        //                     "value": shipping,
+        //                 },
+        //                 "handling": {
+        //                     "currency_code": currency,
+        //                     "value": handling,
+        //                 },
+        //                 "insurance": {
+        //                     "currency_code": currency,
+        //                     "value": insurance,
+        //                 },
+        //                 "shipping_discount": {
+        //                     "currency_code": currency,
+        //                     "value": shippingDiscount,
+        //                 },
+        //                 "discount": {
+        //                     "currency_code": currency,
+        //                     "value": discount,
+        //                 },
+        //             },
+        //         },
+        //         "items": items,
+        //     }],
+        //     intent: "CAPTURE",
+        // });
 
-        return var_dump($token);
+        // $payload = [];
+        // $payload['intent'] = 'CAPTURE';
+
+        $payload = [
+            'intent' => 'CAPTURE',
+            'purchase_units' => [
+                [
+                    'amount' => [
+                        'currency_code' => 'USD',
+                        'value' => '100'
+                    ]
+                ]
+            ]
+        ];
+
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$this->getPaypalAccessToken()}",
+            'Content-Type' => 'application/json',
+        ])->withOptions([
+            'verify' => false,
+        ])->post('https://api-m.sandbox.paypal.com/v2/checkout/orders', $payload);
+
+        return $response;
     }
 
-    public function capturePaypalOrder(Request $request, Response $response)
+    public function capturePaypalOrder(Request $request)
     {
         $paypalToken = $request->cookie('paypal_token');
 
@@ -247,9 +306,15 @@ class CartController extends Controller
             return response()->json(['message' => 'Token expired.'], 419);
         }
 
-        $customerID = $token->tokenable_id;
+        $orderID = $request->id;
+        $response = Http::withHeaders([
+            'Authorization' => "Bearer {$this->getPaypalAccessToken()}",
+            'Content-Type' => 'application/json',
+        ])->withOptions([
+            'verify' => false,
+        ])->post("https://api-m.sandbox.paypal.com/v2/checkout/orders/{$orderID}/capture", ['json' => []]);
 
-        return var_dump($token);
+        return $response;
     }
 
     public function show()

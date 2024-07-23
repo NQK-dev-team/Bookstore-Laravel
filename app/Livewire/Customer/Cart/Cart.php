@@ -16,10 +16,17 @@ class Cart extends Component
     public $cartDetail;
     public $deleteID;
     public $deleteMode;
+    public $stopPolling;
 
     public function __construct()
     {
         $this->controller = new CartController();
+        $this->stopPolling = false;
+    }
+
+    public function toggleStopPolling()
+    {
+        $this->stopPolling = !$this->stopPolling;
     }
 
     #[Renderless]
@@ -64,7 +71,7 @@ class Cart extends Component
         $this->controller->updateAmount($id, $amount);
     }
 
-    public function purchase($mode, $paypalData = null)
+    public function purchase()
     {
         $data = [];
         $rules = [];
@@ -88,7 +95,7 @@ class Cart extends Component
 
         Validator::make($data, $rules, $message)->validate();
 
-        $this->controller->purchase($mode, $mode === 2 ? json_decode($paypalData, true) : null);
+        $this->controller->purchase();
     }
 
     public function render()
