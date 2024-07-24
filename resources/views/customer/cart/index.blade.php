@@ -11,6 +11,22 @@
 
 @section('page')
     @livewire('customer.cart.cart')
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="Error modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Error</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p id="error_message"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('postloads')
@@ -18,6 +34,11 @@
     <script
         src="https://www.paypal.com/sdk/js?client-id={{ env('PAYPAL_SANDBOX_CLIENT_ID', '') }}&currency={{ env('PAYPAL_CURRENCY', 'USD') }}&components=buttons"
         data-sdk-integration-source="developer-studio"></script>
+    <script>
+        document.getElementById('errorModal').addEventListener('hidden.bs.modal', function() {
+            document.getElementById('error_message').innerHTML = '';
+        });
+    </script>
     <script>
         const currency = '{{ env('PAYPAL_CURRENCY', 'USD') }}';
         paypal.Buttons({
@@ -31,11 +52,12 @@
                 disableMaxWidth: true
             },
             async createOrder() {
-                try {
-                    document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-stop-polling', {
+                document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                    'alpine-toggle-stop-polling', {
                         bubbles: true
                     }));
 
+                try {
                     const response = await fetch('/api/create-paypal-order', {
                         method: "POST",
                         headers: {
@@ -62,26 +84,68 @@
                         credentials: 'include',
                     });
 
-                    const order = await response.json();
+                    const orderData = await response.json();
+
+                    // Three cases to handle:
+                    //   (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
+                    //   (2) Other non-recoverable errors -> Show a failure message
+                    //   (3) Successful transaction -> Show confirmation or thank you message
+
+                    const errorDetail = orderData?.details?.[0]
+
+                    if (errorDetail?.issue === "INSTRUMENT_DECLINED") {
+                        // (1) Recoverable INSTRUMENT_DECLINED -> call actions.restart()
+                        // recoverable state, per
+                        // https://developer.paypal.com/docs/checkout/standard/customize/handle-funding-failures/
+
+                        return actions.restart();
+                    } else if (errorDetail) {
+                        // (2) Other non-recoverable errors -> Show a failure message
+                        throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
+
+                        document.getElementById('error_message').innerHTML = orderData.message;
+                        const modal = new bootstrap.Modal('#errorModal');
+                        modal.toggle();
+
+                        document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                            'alpine-toggle-stop-polling', {
+                                bubbles: true
+                            }));
+                    } else if (!orderData.purchase_units) {
+                        throw new Error(JSON.stringify(orderData));
+
+                        document.getElementById('error_message').innerHTML = `Paypal order content error.`;
+                        const modal = new bootstrap.Modal('#errorModal');
+                        modal.toggle();
+
+                        document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                            'alpine-toggle-stop-polling', {
+                                bubbles: true
+                            }));
+                    } else {
+                        // (3) Successful transaction
+
+                        // document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-submit', {
+                        //     bubbles: true
+                        // }));
+                    }
                 } catch (error) {
                     console.error(error);
                 }
-
-                // document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-submit', {
-                //     bubbles: true
-                // }));
             },
             async onError(err) {
                 console.error(err);
 
-                document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-stop-polling', {
-                    bubbles: true
-                }));
+                document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                    'alpine-toggle-stop-polling', {
+                        bubbles: true
+                    }));
             },
             async onCancel() {
-                document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-stop-polling', {
-                    bubbles: true
-                }));
+                document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                    'alpine-toggle-stop-polling', {
+                        bubbles: true
+                    }));
             }
         }).render('#paypal_button_container');
     </script>

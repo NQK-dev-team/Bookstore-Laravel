@@ -182,7 +182,7 @@ class CartController extends Controller
         return $order->physicalOrder->address;
     }
 
-    public function purchase()
+    public function purchase($customerID = null)
     {
         DB::transaction(function () {
         });
@@ -223,60 +223,86 @@ class CartController extends Controller
         $customerID = $token->tokenable_id;
 
         $cart = $this->getCartDetail($customerID);
+        $totalPrice = $cart->total_price;
+        $totalDiscount = $cart->total_discount;
+        $items = [];
 
-        // return actions.order.create({
-        //     "purchase_units": [{
-        //         "reference_id": crypto.randomUUID(),
-        //         "amount": {
-        //             "currency_code": currency,
-        //             "value": totalPrice,
-        //             "breakdown": {
-        //                 "item_total": {
-        //                     "currency_code": currency,
-        //                     "value": itemTotal,
-        //                 },
-        //                 "tax_total": {
-        //                     "currency_code": currency,
-        //                     "value": tax,
-        //                 },
-        //                 "shipping": {
-        //                     "currency_code": currency,
-        //                     "value": shipping,
-        //                 },
-        //                 "handling": {
-        //                     "currency_code": currency,
-        //                     "value": handling,
-        //                 },
-        //                 "insurance": {
-        //                     "currency_code": currency,
-        //                     "value": insurance,
-        //                 },
-        //                 "shipping_discount": {
-        //                     "currency_code": currency,
-        //                     "value": shippingDiscount,
-        //                 },
-        //                 "discount": {
-        //                     "currency_code": currency,
-        //                     "value": discount,
-        //                 },
-        //             },
-        //         },
-        //         "items": items,
-        //     }],
-        //     intent: "CAPTURE",
-        // });
+        foreach ($cart->eBooks as $book) {
+            $result = getBookBestDiscount($book);
+            $discount = $result ? "{$result->discount}%" : 0;
+            $items[] = [
+                'id' => $book->id,
+                'name' => "{$book->name} - {$book->edition}",
+                'type' => 'Ebook',
+                'url' => route('customer.book.detail', ['id' => $book->id]),
+                'image_url' => 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg',
+                'quantity' => 1,
+                'unit_amount' => [
+                    'currency_code' => $this->paypalCurrency,
+                    'value' => $book->fileCopy->price,
+                ],
+                'discount' => $discount,
+            ];
+        }
 
-        // $payload = [];
-        // $payload['intent'] = 'CAPTURE';
+        foreach ($cart->hardCovers as $book) {
+            $result = getBookBestDiscount($book);
+            $discount = $result ? "{$result->discount}%" : 0;
+            $items[] = [
+                'id' => $book->id,
+                'name' => "{$book->name} - {$book->edition}",
+                'type' => 'Hardcover',
+                'url' => route('customer.book.detail', ['id' => $book->id]),
+                'image_url' => 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg',
+                'quantity' => getAmount($cart->id, $book->id),
+                'unit_amount' => [
+                    'currency_code' => $this->paypalCurrency,
+                    'value' => $book->physicalCopy->price,
+                ],
+                'discount' => $discount,
+            ];
+        }
 
         $payload = [
             'intent' => 'CAPTURE',
             'purchase_units' => [
                 [
+                    'reference_id' => Str::uuid(),
                     'amount' => [
-                        'currency_code' => 'USD',
-                        'value' => '100'
-                    ]
+                        'currency_code' => $this->paypalCurrency,
+                        'value' => $totalPrice,
+                        'breakdown' => [
+                            'item_total' => [
+                                'currency_code' => $this->paypalCurrency,
+                                'value' => $totalPrice + $totalDiscount,
+                            ],
+                            'tax_total' => [
+                                'currency_code' => $this->paypalCurrency,
+                                'value' => 0,
+                            ],
+                            'shipping' => [
+                                'currency_code' => $this->paypalCurrency,
+                                'value' => 0,
+                            ],
+                            'handling' => [
+                                'currency_code' => $this->paypalCurrency,
+                                'value' => 0,
+                            ],
+                            'insurance' => [
+                                'currency_code' => $this->paypalCurrency,
+                                'value' => 0,
+                            ],
+                            'shipping_discount' => [
+                                'currency_code' => $this->paypalCurrency,
+                                'value' => 0,
+                            ],
+                            'discount' => [
+                                'currency_code' => $this->paypalCurrency,
+                                'value' => $totalDiscount,
+                            ],
+                        ],
+                    ],
+                    'items' => $items,
                 ]
             ]
         ];
@@ -313,6 +339,12 @@ class CartController extends Controller
         ])->withOptions([
             'verify' => false,
         ])->post("https://api-m.sandbox.paypal.com/v2/checkout/orders/{$orderID}/capture", ['json' => []]);
+
+        if($response->status()===201)
+        {
+            $customerID = $token->tokenable_id;
+            $this->purchase($customerID);
+        }
 
         return $response;
     }
