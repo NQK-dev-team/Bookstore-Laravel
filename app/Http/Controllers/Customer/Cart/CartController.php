@@ -184,7 +184,20 @@ class CartController extends Controller
 
     public function purchase($customerID = null)
     {
-        DB::transaction(function () {
+        DB::transaction(function () use ($customerID) {
+            $order = Order::where([
+                ['customer_id', '=', $customerID ?? Auth::id()],
+                ['status', '=', false]
+            ])->first();
+
+            $order->status = true;
+            while ($code = Str::of(Str::random(16))->upper()) {
+                if (!Order::where('code', $code)->exists()) {
+                    $order->code = $code;
+                    break;
+                }
+            }
+            $order->save();
         });
     }
 
@@ -223,6 +236,9 @@ class CartController extends Controller
         $customerID = $token->tokenable_id;
 
         $cart = $this->getCartDetail($customerID);
+
+        if (!$cart) return response()->json(['message' => 'Cart is empty.'], 404);
+
         $totalPrice = $cart->total_price;
         $totalDiscount = $cart->total_discount;
         $items = [];
@@ -340,8 +356,7 @@ class CartController extends Controller
             'verify' => false,
         ])->post("https://api-m.sandbox.paypal.com/v2/checkout/orders/{$orderID}/capture", ['json' => []]);
 
-        if($response->status()===201)
-        {
+        if ($response->status() === 201) {
             $customerID = $token->tokenable_id;
             $this->purchase($customerID);
         }

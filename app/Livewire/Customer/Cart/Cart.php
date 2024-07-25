@@ -58,8 +58,6 @@ class Cart extends Component
 
     public function updateAmount($id, $amount)
     {
-        // Check if there's anything is the cart first
-
         $stock = $this->getBookStock($id);
         Validator::make(["{$id}_amount" => $amount], [
             "{$id}_amount" => "required|numeric|gte:1|lte:{$stock}",
@@ -100,6 +98,8 @@ class Cart extends Component
         $this->controller->purchase();
 
         $this->stopPolling = false;
+
+        return true;
     }
 
     public function render()

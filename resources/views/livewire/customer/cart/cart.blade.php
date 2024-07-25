@@ -1,9 +1,15 @@
 <div class='w-100 h-100 d-flex'>
     <form class='bg-white border border-3 rounded m-auto px-3 pt-3 pb-5 d-flex flex-column cart-form'
-        x-on:submit="$wire.purchase()"
-        {{-- @alpine-submit="$wire.purchase()" --}}
-        @alpine-toggle-stop-polling="$wire.toggleStopPolling();"
-        @if (!$errors->any() && !$stopPolling) wire:poll.10s="$refresh" @endif id="pay_form">
+        x-on:submit.prevent="async()=>{
+            if(await $wire.purchase()===true)
+            {
+                const modal = new bootstrap.Modal('#purchaseModal');
+                modal.toggle();
+            }
+        }"
+        {{-- @alpine-submit="$wire.purchase()" --}} @alpine-toggle-stop-polling="$wire.toggleStopPolling();" @if (!$errors->any() && !$stopPolling)
+        wire:poll.1s="$refresh"
+        @endif id="pay_form">
         <h1 class='mt-2 fs-2'>Shopping Cart</h1>
         <hr>
         <div class='row flex-grow-1'>
@@ -265,11 +271,13 @@
                     <h4>Final Price:&nbsp;<span
                             class='fw-medium'>{{ $cartDetail ? '$' . $cartDetail->total_price : 0 }}</span></h4>
                     <hr>
-                    <button type="submit" class="btn btn-primary customized-button text-white mb-3 w-100 mt-3 fs-4"
-                        {{ $cartDetail ? '' : 'disabled' }}>Cash On
+                    <button type="{{ $cartDetail ? 'submit' : 'button' }}"
+                        class="btn btn-primary customized-button text-white mb-2 w-100 mt-3 fs-4"
+                        {{ $cartDetail ? '' : 'data-bs-toggle=modal data-bs-target=#emptyModal' }}>Cash On
                         Delivery</button>
                     <div wire:ignore>
-                        <div class='text-danger text-center mb-2 fw-medium'>ONLY USE SANDBOX ACCOUNTS FOR PAYPAL PAYMENT!</div>
+                        <div class='text-danger text-center mb-2 fw-medium'>ONLY USE SANDBOX ACCOUNTS FOR PAYPAL
+                            PAYMENT!</div>
                         <div id='paypal_button_container'></div>
                     </div>
                 </div>

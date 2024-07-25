@@ -27,6 +27,40 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="emptyModal" tabindex="-1" aria-labelledby="Cart empty modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Notice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p>Your cart is empty.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="purchaseModal" tabindex="-1" aria-labelledby="Cart purchase modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Notice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p>Thank you for your purchase! Your cart has been successfully processed.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @section('postloads')
@@ -66,6 +100,11 @@
                         },
                         credentials: 'include',
                     });
+
+                    if (response.status === 404) {
+                        const modal = new bootstrap.Modal('#emptyModal');
+                        modal.toggle();
+                    }
 
                     const order = await response.json();
                     return order.id;
@@ -125,9 +164,8 @@
                     } else {
                         // (3) Successful transaction
 
-                        // document.getElementById('pay_form').dispatchEvent(new CustomEvent('alpine-submit', {
-                        //     bubbles: true
-                        // }));
+                        const modal = new bootstrap.Modal('#purchaseModal');
+                        modal.toggle();
                     }
                 } catch (error) {
                     console.error(error);
