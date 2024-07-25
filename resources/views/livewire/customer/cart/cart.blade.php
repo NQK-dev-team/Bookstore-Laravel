@@ -6,9 +6,15 @@
                 const modal = new bootstrap.Modal('#purchaseModal');
                 modal.toggle();
             }
+            else
+            {
+                document.getElementById('error_message').innerHTML = 'The server cannot process your cart. Please try again.';
+                const modal = new bootstrap.Modal('#errorModal');
+                modal.toggle();
+            }
         }"
         {{-- @alpine-submit="$wire.purchase()" --}} @alpine-toggle-stop-polling="$wire.toggleStopPolling();" @if (!$errors->any() && !$stopPolling)
-        wire:poll.1s="$refresh"
+        wire:poll.10s="$refresh"
         @endif id="pay_form">
         <h1 class='mt-2 fs-2'>Shopping Cart</h1>
         <hr>

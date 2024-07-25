@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer\Cart;
 
+use Exception;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Order;
@@ -18,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Builder;
+use PhpParser\Error;
 
 class CartController extends Controller
 {
@@ -63,12 +65,12 @@ class CartController extends Controller
             }
         }
 
-        $physicalBooks = Book::whereIn('id', $physicalTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        $physicalBooks = Book::with('physicalCopy')->whereIn('id', $physicalTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
         foreach ($physicalBooks as &$book) {
             refineBookData($book);
         }
 
-        $fileBooks = Book::whereIn('id', $fileTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        $fileBooks = Book::with('fileCopy')->whereIn('id', $fileTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
         foreach ($fileBooks as &$book) {
             refineBookData($book);
         }
@@ -184,11 +186,13 @@ class CartController extends Controller
 
     public function purchase($customerID = null)
     {
-        DB::transaction(function () use ($customerID) {
-            $order = Order::where([
-                ['customer_id', '=', $customerID ?? Auth::id()],
-                ['status', '=', false]
-            ])->first();
+        $result = true;
+        try {
+            DB::beginTransaction();
+            $order = $this->getCartDetail($customerID); // This code cause error???
+
+            if (!$order)
+                throw new Exception('Cart is empty.');
 
             $order->status = true;
             while ($code = Str::of(Str::random(16))->upper()) {
@@ -198,7 +202,26 @@ class CartController extends Controller
                 }
             }
             $order->save();
-        });
+
+            $totalPrice = $order->total_price;
+            $user = User::find($customerID ?? Auth::id());
+            $user->points += $totalPrice * env('STORE_POINT_CONVERSION_RATE', '10') / 100;
+            $user->save();
+
+            foreach ($order->hardCovers as $book) {
+                $stock = $book->physicalCopy->quantity;
+                $amount = getAmount($order->id, $book->id);
+                $book->physicalCopy->quantity = $stock - $amount;
+                $book->physicalCopy->save();
+            }
+
+            DB::commit();
+        } catch (Exception $e) {
+            DB::rollback();
+            $result = false;
+        }
+
+        return $result;
     }
 
     public function getPaypalAccessToken()
@@ -358,7 +381,9 @@ class CartController extends Controller
 
         if ($response->status() === 201) {
             $customerID = $token->tokenable_id;
-            $this->purchase($customerID);
+            if (!$this->purchase($customerID)) {
+                return response()->json(['message' => 'Failed to purchase cart.'], 500);
+            }
         }
 
         return $response;

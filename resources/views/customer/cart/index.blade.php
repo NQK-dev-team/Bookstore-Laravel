@@ -104,6 +104,11 @@
                     if (response.status === 404) {
                         const modal = new bootstrap.Modal('#emptyModal');
                         modal.toggle();
+
+                        document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                            'alpine-toggle-stop-polling', {
+                                bubbles: true
+                            }));
                     }
 
                     const order = await response.json();
@@ -123,6 +128,18 @@
                         credentials: 'include',
                     });
 
+                    if (response.status === 500) {
+                        document.getElementById('error_message').innerHTML =
+                            'The server cannot process your cart. Please try again.';
+                        const modal = new bootstrap.Modal('#errorModal');
+                        modal.toggle();
+
+                        document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                            'alpine-toggle-stop-polling', {
+                                bubbles: true
+                            }));
+                    }
+
                     const orderData = await response.json();
 
                     // Three cases to handle:
@@ -138,34 +155,30 @@
                         // https://developer.paypal.com/docs/checkout/standard/customize/handle-funding-failures/
 
                         return actions.restart();
-                    } else if (errorDetail) {
-                        // (2) Other non-recoverable errors -> Show a failure message
-                        throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
-
-                        document.getElementById('error_message').innerHTML = orderData.message;
-                        const modal = new bootstrap.Modal('#errorModal');
-                        modal.toggle();
-
-                        document.getElementById('pay_form').dispatchEvent(new CustomEvent(
-                            'alpine-toggle-stop-polling', {
-                                bubbles: true
-                            }));
-                    } else if (!orderData.purchase_units) {
-                        throw new Error(JSON.stringify(orderData));
-
-                        document.getElementById('error_message').innerHTML = `Paypal order content error.`;
-                        const modal = new bootstrap.Modal('#errorModal');
-                        modal.toggle();
-
-                        document.getElementById('pay_form').dispatchEvent(new CustomEvent(
-                            'alpine-toggle-stop-polling', {
-                                bubbles: true
-                            }));
                     } else {
-                        // (3) Successful transaction
+                        if (errorDetail) {
+                            // (2) Other non-recoverable errors -> Show a failure message
+                            throw new Error(`${errorDetail.description} (${orderData.debug_id})`);
 
-                        const modal = new bootstrap.Modal('#purchaseModal');
-                        modal.toggle();
+                            document.getElementById('error_message').innerHTML = orderData.message;
+                            const modal = new bootstrap.Modal('#errorModal');
+                            modal.toggle();
+                        } else if (!orderData.purchase_units) {
+                            throw new Error(JSON.stringify(orderData));
+
+                            document.getElementById('error_message').innerHTML = `Paypal order content error.`;
+                            const modal = new bootstrap.Modal('#errorModal');
+                            modal.toggle();
+                        } else {
+                            // (3) Successful transaction
+
+                            const modal = new bootstrap.Modal('#purchaseModal');
+                            modal.toggle();
+                        }
+                        document.getElementById('pay_form').dispatchEvent(new CustomEvent(
+                            'alpine-toggle-stop-polling', {
+                                bubbles: true
+                            }));
                     }
                 } catch (error) {
                     console.error(error);

@@ -95,11 +95,11 @@ class Cart extends Component
 
         Validator::make($data, $rules, $message)->validate();
 
-        $this->controller->purchase();
+        $result = $this->controller->purchase();
 
         $this->stopPolling = false;
 
-        return true;
+        return $result;
     }
 
     public function render()
