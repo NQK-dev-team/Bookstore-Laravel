@@ -271,6 +271,7 @@ class CartController extends Controller
         if (!$cart) return response()->json(['message' => 'Cart is empty.'], 400);
 
         $totalPrice = $cart->total_price;
+        // $totalDiscount = $cart->total_discount;
         $item_total = 0;
         $items = [];
 
@@ -325,6 +326,7 @@ class CartController extends Controller
                             'item_total' => [
                                 'currency_code' => $this->paypalCurrency,
                                 'value' => $item_total,
+                                // 'value' => round($totalPrice + $totalDiscount, 2),
                             ],
                             'tax_total' => [
                                 'currency_code' => $this->paypalCurrency,
@@ -349,6 +351,7 @@ class CartController extends Controller
                             'discount' => [
                                 'currency_code' => $this->paypalCurrency,
                                 'value' => round($item_total - $totalPrice, 2),
+                                // 'value' => $totalDiscount,
                             ],
                         ],
                     ],

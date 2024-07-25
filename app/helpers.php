@@ -167,7 +167,7 @@ function recalculateOrderValue($id)
 				$discount = getBookBestDiscount(Book::find($physicalCopy->id));
 				$amount = $physicalCopy->pivot->amount;
 
-				$totalBooks += $price * $amount;
+				$totalBooks += round($price * $amount, 2);
 
 				if ($discount) {
 					$totalPrice += round(($price * (100.0 - $discount->discount)) / 100, 2) * $amount;
@@ -181,7 +181,7 @@ function recalculateOrderValue($id)
 							'discount_id' => $discount->id,
 						]);
 				} else {
-					$totalPrice += $price * $amount;
+					$totalPrice += round($price * $amount, 2);
 				}
 			}
 		}
@@ -191,7 +191,7 @@ function recalculateOrderValue($id)
 				$price = $fileCopy->price;
 				$discount = getBookBestDiscount(Book::find($fileCopy->id));
 
-				$totalBooks += $price;
+				$totalBooks += round($price, 2);
 
 				if ($discount) {
 					$totalPrice += round(($price * (100.0 - $discount->discount)) / 100, 2);
@@ -205,7 +205,7 @@ function recalculateOrderValue($id)
 							'discount_id' => $discount->id,
 						]);
 				} else {
-					$totalPrice += $price;
+					$totalPrice += round($price, 2);
 				}
 			}
 		}
