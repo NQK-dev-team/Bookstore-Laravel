@@ -114,7 +114,7 @@
                     <h4>Hardcovers</h4>
                     <div class='mb-2'>
                         <label class='fw-bold form-label' for="physicalDestination">Delivery Address:&nbsp;</label>
-                        <input required
+                        <input {{ $cartDetail && $cartDetail->physicalOrder ? 'required' : ' disabled' }}
                             class='form-control border-3 {{ $errors->has('address') && $cartDetail && $cartDetail->physicalOrder ? 'is-invalid' : '' }}'
                             id="physicalDestination"
                             value="{{ $cartDetail && $cartDetail->physicalOrder ? $cartDetail->physicalOrder->address : '' }}"

@@ -152,8 +152,9 @@ function recalculateOrderValue($id)
 	if (!auth()->check()) return false;
 
 	DB::transaction(function () use ($id) {
+		$totalBooks = 0;
 		$totalPrice = 0;
-		$totalDiscount = 0;
+		// $totalDiscount = 0;
 
 		$physicalOrder = PhysicalOrder::find($id);
 		$fileOrder = FileOrder::find($id);
@@ -166,9 +167,11 @@ function recalculateOrderValue($id)
 				$discount = getBookBestDiscount(Book::find($physicalCopy->id));
 				$amount = $physicalCopy->pivot->amount;
 
+				$totalBooks += $price * $amount;
+
 				if ($discount) {
 					$totalPrice += round(($price * (100.0 - $discount->discount)) / 100, 2) * $amount;
-					$totalDiscount += round(($price * $discount->discount) / 100.0, 2) * $amount;
+					// $totalDiscount += round(($price * $discount->discount) / 100.0, 2) * $amount;
 
 					if (!DiscountApply::where([
 						['discount_id', '=', $discount->id]
@@ -188,9 +191,11 @@ function recalculateOrderValue($id)
 				$price = $fileCopy->price;
 				$discount = getBookBestDiscount(Book::find($fileCopy->id));
 
+				$totalBooks += $price;
+
 				if ($discount) {
 					$totalPrice += round(($price * (100.0 - $discount->discount)) / 100, 2);
-					$totalDiscount += round(($price * $discount->discount) / 100.0, 2);
+					// $totalDiscount += round(($price * $discount->discount) / 100.0, 2);
 
 					if (!DiscountApply::where([
 						['discount_id', '=', $discount->id]
@@ -210,7 +215,7 @@ function recalculateOrderValue($id)
 		})->orderBy('discount', 'desc')->first();
 
 		if ($customerDiscount) {
-			$totalDiscount += round($totalPrice * $customerDiscount->discount / 100.0, 2);
+			// $totalDiscount += round($totalPrice * $customerDiscount->discount / 100.0, 2);
 			$totalPrice = round($totalPrice * (100.0 - $customerDiscount->discount) / 100.0, 2);
 
 			DiscountApply::create([
@@ -224,7 +229,7 @@ function recalculateOrderValue($id)
 		})->orderBy('discount', 'desc')->first();
 
 		if ($referrerDiscount) {
-			$totalDiscount += round($totalPrice * $referrerDiscount->discount / 100.0, 2);
+			// $totalDiscount += round($totalPrice * $referrerDiscount->discount / 100.0, 2);
 			$totalPrice = round($totalPrice * (100.0 - $referrerDiscount->discount) / 100.0, 2);
 
 			DiscountApply::create([
@@ -237,7 +242,7 @@ function recalculateOrderValue($id)
 			['id', '=', $id]
 		])->update([
 			'total_price' => $totalPrice,
-			'total_discount' => $totalDiscount,
+			'total_discount' => $totalBooks - $totalPrice,
 		]);
 	});
 

@@ -77,23 +77,25 @@ class Cart extends Component
         $rules = [];
         $message = [];
 
-        $data["address"] = $this->controller->getCurrentAddress();
-        $rules["address"] = "required|string|max:1000";
+        if ($this->cartDetail->physicalOrder) {
+            $data["address"] = $this->controller->getCurrentAddress();
+            $rules["address"] = "required|string|max:1000";
 
-        foreach ($this->cartDetail->physicalOrder->physicalCopies as $book) {
-            $id = $book->id;
-            $stock = $this->getBookStock($id);
-            $amount = $this->cartDetail->physicalOrder->physicalCopies->find($id)->pivot->amount;
+            foreach ($this->cartDetail->physicalOrder->physicalCopies as $book) {
+                $id = $book->id;
+                $stock = $this->getBookStock($id);
+                $amount = $this->cartDetail->physicalOrder->physicalCopies->find($id)->pivot->amount;
 
-            $data["{$id}_amount"] = $amount;
-            $rules["{$id}_amount"] = "required|numeric|gte:1|lte:{$stock}";
-            $message["{$id}_amount.gte"] = "The book amount must be at least 1.";
-            $message["{$id}_amount.lte"] = "The book amount must be at most {$stock}.";
-            $message["{$id}_amount.required"] = "The book amount must have a value.";
-            $message["{$id}_amount.numeric"] = "The book amount must be a numerical value.";
+                $data["{$id}_amount"] = $amount;
+                $rules["{$id}_amount"] = "required|numeric|gte:1|lte:{$stock}";
+                $message["{$id}_amount.gte"] = "The book amount must be at least 1.";
+                $message["{$id}_amount.lte"] = "The book amount must be at most {$stock}.";
+                $message["{$id}_amount.required"] = "The book amount must have a value.";
+                $message["{$id}_amount.numeric"] = "The book amount must be a numerical value.";
+            }
+
+            Validator::make($data, $rules, $message)->validate();
         }
-
-        Validator::make($data, $rules, $message)->validate();
 
         $result = $this->controller->purchase();
 

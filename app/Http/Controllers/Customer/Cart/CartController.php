@@ -189,7 +189,11 @@ class CartController extends Controller
         $result = true;
         try {
             DB::beginTransaction();
-            $order = $this->getCartDetail($customerID); // This code cause error???
+            $order = Order::with(['physicalOrder' => ['physicalCopies']])->where([
+                ['customer_id', '=', $customerID ?? Auth::id()],
+                ['status', '=', false]
+            ])->first();
+            // $this->getCartDetail($customerID);
 
             if (!$order)
                 throw new Exception('Cart is empty.');
@@ -208,16 +212,20 @@ class CartController extends Controller
             $user->points += $totalPrice * env('STORE_POINT_CONVERSION_RATE', '10') / 100;
             $user->save();
 
-            foreach ($order->hardCovers as $book) {
-                $stock = $book->physicalCopy->quantity;
-                $amount = getAmount($order->id, $book->id);
-                $book->physicalCopy->quantity = $stock - $amount;
-                $book->physicalCopy->save();
+            if ($order->physicalOrder) {
+                foreach ($order->physicalOrder->physicalCopies as $book) {
+                    $stock = $book->quantity;
+                    $amount = getAmount($order->id, $book->id);
+                    $book->quantity = $stock - $amount;
+                    $book->save();
+                }
             }
 
-            DB::commit();
+            if (!$customerID)
+                DB::commit();
         } catch (Exception $e) {
-            DB::rollback();
+            if (!$customerID)
+                DB::rollback();
             $result = false;
         }
 
@@ -260,10 +268,10 @@ class CartController extends Controller
 
         $cart = $this->getCartDetail($customerID);
 
-        if (!$cart) return response()->json(['message' => 'Cart is empty.'], 404);
+        if (!$cart) return response()->json(['message' => 'Cart is empty.'], 400);
 
         $totalPrice = $cart->total_price;
-        $totalDiscount = $cart->total_discount;
+        $item_total = 0;
         $items = [];
 
         foreach ($cart->eBooks as $book) {
@@ -282,6 +290,8 @@ class CartController extends Controller
                 ],
                 'discount' => $discount,
             ];
+
+            $item_total += $book->fileCopy->price;
         }
 
         foreach ($cart->hardCovers as $book) {
@@ -300,6 +310,7 @@ class CartController extends Controller
                 ],
                 'discount' => $discount,
             ];
+            $item_total += $book->physicalCopy->price * getAmount($cart->id, $book->id);
         }
 
         $payload = [
@@ -313,7 +324,7 @@ class CartController extends Controller
                         'breakdown' => [
                             'item_total' => [
                                 'currency_code' => $this->paypalCurrency,
-                                'value' => $totalPrice + $totalDiscount,
+                                'value' => $item_total,
                             ],
                             'tax_total' => [
                                 'currency_code' => $this->paypalCurrency,
@@ -337,7 +348,7 @@ class CartController extends Controller
                             ],
                             'discount' => [
                                 'currency_code' => $this->paypalCurrency,
-                                'value' => $totalDiscount,
+                                'value' => round($item_total - $totalPrice, 2),
                             ],
                         ],
                     ],
@@ -371,6 +382,11 @@ class CartController extends Controller
             return response()->json(['message' => 'Token expired.'], 419);
         }
 
+        $customerID = $token->tokenable_id;
+        if (!$this->purchase($customerID)) {
+            return response()->json(['message' => 'Failed to purchase cart.'], 500);
+        }
+
         $orderID = $request->id;
         $response = Http::withHeaders([
             'Authorization' => "Bearer {$this->getPaypalAccessToken()}",
@@ -380,10 +396,13 @@ class CartController extends Controller
         ])->post("https://api-m.sandbox.paypal.com/v2/checkout/orders/{$orderID}/capture", ['json' => []]);
 
         if ($response->status() === 201) {
-            $customerID = $token->tokenable_id;
-            if (!$this->purchase($customerID)) {
-                return response()->json(['message' => 'Failed to purchase cart.'], 500);
-            }
+            DB::commit();
+            // $customerID = $token->tokenable_id;
+            // if (!$this->purchase($customerID)) {
+            //     return response()->json(['message' => 'Failed to purchase cart.'], 500);
+            // }
+        } else {
+            DB::rollBack();
         }
 
         return $response;

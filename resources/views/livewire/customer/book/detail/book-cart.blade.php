@@ -110,7 +110,7 @@
                     <label class="btn btn-sm btn-secondary fs-6" for="increase_book_ammount">+</label>
                 </div>
                 <p class='mb-0 ms-3'>In stock: <strong
-                        wire:poll.visible.5s="refetchStock">{{ $stock ? $stock : 0 }}</strong></p>
+                        wire:poll.visible.5s.keep-alive="refetchStock">{{ $stock ? $stock : 0 }}</strong></p>
             </div>
         </div>
     @endif
