@@ -82,7 +82,7 @@
                 </div>
             </div>
         </form>
-        <div class="modal fade" id="deleteRatingModal" tabindex="-1" aria-labelledby="modalLabel">
+        <div class="modal fade" id="deleteRatingModal" tabindex="-1" aria-labelledby="Delete rating modal">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
