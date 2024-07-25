@@ -89,7 +89,7 @@
                         </p>
                         <p>Total Discount:&nbsp;<span class='fw-medium'>${{ $orderDetail->total_discount }}</span></p>
                         <p>Total Price:&nbsp;<span class='fw-medium'>${{ $orderDetail->total_price }}</span></p>
-                        @if ($orderDetail->fileOrder)
+                        @if (count($orderDetail->eBooks))
                             <div class='flex-column mb-3'>
                                 <h5>E-books</h5>
                                 <div class="w-100 overflow-x-auto">
@@ -234,7 +234,7 @@
                                 </div>
                             </div>
                         @endif
-                        @if ($orderDetail->physicalOrder)
+                        @if (count($orderDetail->hardCovers))
                             <div class='flex-column'>
                                 <h5>Hardcovers</h5>
                                 <p>Delivery Address:&nbsp;<span
