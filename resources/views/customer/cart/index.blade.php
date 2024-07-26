@@ -101,7 +101,7 @@
                         credentials: 'include',
                     });
 
-                    if (response.status === 404) {
+                    if (response.status === 400) {
                         const modal = new bootstrap.Modal('#emptyModal');
                         modal.toggle();
 
@@ -109,6 +109,8 @@
                             'alpine-toggle-stop-polling', {
                                 bubbles: true
                             }));
+
+                        return null;
                     }
 
                     const order = await response.json();
@@ -138,6 +140,7 @@
                             'alpine-toggle-stop-polling', {
                                 bubbles: true
                             }));
+                        return;
                     }
 
                     const orderData = await response.json();
