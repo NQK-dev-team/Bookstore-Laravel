@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Customer;
+namespace App\Http\Controllers\Customer\Home;
 
 use Carbon\Carbon;
 use App\Models\Book;

@@ -3,7 +3,7 @@
 namespace App\Livewire\Customer\Home;
 
 use Livewire\Component;
-use App\Http\Controllers\Customer\Home;
+use App\Http\Controllers\Customer\Home\Home;
 
 class TopCategories extends Component
 {
@@ -14,7 +14,7 @@ class TopCategories extends Component
 
     public function __construct()
     {
-        $this->controller = new Home;
+        $this->controller = new Home();
     }
 
     public function selectCategory($category)
