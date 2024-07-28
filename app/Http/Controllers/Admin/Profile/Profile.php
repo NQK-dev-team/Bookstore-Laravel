@@ -1,0 +1,97 @@
+<?php
+
+namespace App\Http\Controllers\Admin\Profile;
+
+use Carbon\Carbon;
+use App\Models\User;
+use voku\helper\AntiXSS;
+use App\Mail\PasswordChange;
+use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rules\Password;
+use Closure;
+
+class Profile extends Controller
+{
+    public function updateProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'phone' => ['required', 'numeric', 'digits:10', Rule::unique('users', 'phone')->whereNot('id', Auth::user()->id)->whereNull('deleted_at')],
+            'dob' => ['required', 'date', 'before_or_equal:' . Carbon::now()->subYears(18)->toDateString()],
+            'gender' => 'required|in:M,F,O',
+            'address' => 'nullable|string|max:1000',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ], [
+            'dob.before_or_equal' => 'You must be at least 18 years old.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('customer.profile.index', ['option' => 1])->withErrors($validator)->withInput();
+        }
+
+        $antiXss = new AntiXSS();
+
+        DB::transaction(function () use ($request, $antiXss) {
+            $data = User::find(Auth::user()->id);
+            $data->name = $antiXss->xss_clean($request->name);
+            $data->phone = $antiXss->xss_clean($request->phone);
+            $data->gender = $antiXss->xss_clean($request->gender);
+            $data->address = $antiXss->xss_clean($request->address);
+            $data->dob = $antiXss->xss_clean($request->dob);
+
+            if ($request->hasFile('image')) {
+                $imagePath = Storage::putFileAs('files/images/users/admins/' . Auth::user()->id, $request->file('image'), date('YmdHis', time()) . '.' . $request->file('image')->extension());
+                $data->image = $imagePath;
+            }
+
+            $data->save();
+        });
+
+        return redirect()->route('admin.profile.index', ['option' => 1]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'currentPassword' => ['required', function (string $attribute, mixed $value, Closure $fail) {
+                if (!Hash::check($value, Auth::user()->password)) {
+                    $fail('The current password is incorrect.');
+                }
+            }],
+            'newPassword' => ['required', 'string', 'different:currentPassword', Password::min(8)->mixedCase()->numbers()->symbols()],
+            'confirmPassword' => 'required|same:newPassword',
+        ], [
+            'dob.before_or_equal' => 'You must be at least 18 years old to register.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.profile.index', ['option' => 2])->withErrors($validator)->withInput();
+        }
+
+        $antiXss = new AntiXSS();
+
+        DB::transaction(function () use ($request, $antiXss) {
+            User::where([['id', '=', Auth::user()->id]])->update([
+                'password' => Hash::make($antiXss->xss_clean($request->newPassword)),
+            ]);
+        });
+        Mail::to(Auth::user()->email)->queue(new PasswordChange(Auth::user()->name));
+        session()->flash('password-changed', 1);
+
+        return redirect()->route('admin.profile.index', ['option' => 2]);
+    }
+
+    public function show(Request $request)
+    {
+        $option = $request->query('option', 1);
+        return view('admin.profile.index', ['option' => $option]);
+    }
+}

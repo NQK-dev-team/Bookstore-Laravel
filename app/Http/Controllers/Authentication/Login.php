@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Authentication;
 
+use Carbon\Carbon;
+use App\Models\User;
 use App\Mail\CancelDelete;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
@@ -42,7 +43,7 @@ class Login extends Controller
         }
 
         $user = User::find(Auth::user()->id);
-        $paypalToken = $user->createToken('paypal_token', ['*'], now()->addDays(3));
+        $paypalToken = $user->createToken('paypal_token', ['*'], Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->addDays(3));
         return redirect()->route('customer.index')->withCookie(cookie('paypal_token', $paypalToken->plainTextToken, 0, null, null, null, false, false, 'Lax'));
     }
 

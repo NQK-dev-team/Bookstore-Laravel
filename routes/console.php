@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Discount;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -13,24 +14,36 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::call(function () {
-    $startTime = microtime(true); // Capture start time
+    DB::transaction(function () {
+        $startTime = microtime(true); // Capture start time
 
-    $result = DB::table('delete_queue')->get();
-    $counter = 0;
-    foreach ($result as $row) {
-        if (Carbon::now()->diffInDays($row->created_at, true) > 14) {
-            $user = User::find($row->user_id);
-            if ($user) {
-                $user->delete();
-                $counter++;
+        $result = DB::table('delete_queue')->get();
+        $counter = 0;
+        foreach ($result as $row) {
+            if (Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->diffInSeconds($row->created_at) < 0) {
+                $user = User::find($row->user_id);
+                if ($user) {
+                    $user->delete();
+                    $counter++;
+                }
+                DB::table('delete_queue')->where('id', $row->id)->delete();
             }
-            DB::table('delete_queue')->where('id', $row->id)->delete();
         }
-    }
-    $endTime = microtime(true); // Capture end time
-    $executionTime = $endTime - $startTime; // Calculate execution time
-    $customer = ($counter === 0 || $counter === 1) ? 'customer' : 'customers';
-    Log::channel('customer-delete')->info("{$counter} {$customer} deleted. Execution time: {$executionTime} seconds.");
+        $endTime = microtime(true); // Capture end time
+        $executionTime = $endTime - $startTime; // Calculate execution time
+        $customer = ($counter === 0 || $counter === 1) ? 'customer' : 'customers';
+        Log::channel('customer-delete')->info("{$counter} {$customer} deleted. Execution time: {$executionTime} seconds.");
+    });
 })->everyFiveMinutes();
 
-// Create another schedule to change status to false for all discount events that have expired
+Schedule::call(function () {
+    DB::transaction(function () {
+        $result = Discount::whereHas('eventDiscount')->where('status', true)->get();
+        foreach ($result as $row) {
+            if (Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->diffInSeconds($row->eventDiscount->end_time) < 0) {
+                $row->status = false;
+                $row->save();
+            }
+        }
+    });
+})->everyFiveMinutes();

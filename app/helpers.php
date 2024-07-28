@@ -1,5 +1,6 @@
 <?php
 
+use Carbon\Carbon;
 use App\Models\Book;
 use App\Models\User;
 use App\Models\Order;
@@ -65,8 +66,8 @@ function getBookBestDiscount($book)
 	$specficDiscount = Discount::whereHas('eventDiscount', function (Builder $query) use ($book) {
 		$query->where([
 			['apply_for_all_books', '=', false],
-			['start_date', '<=', date('Y-m-d')],
-			['end_date', '>=', date('Y-m-d')],
+			['start_time', '<=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
+			['end_time', '>=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
 			['status', '=', true],
 		])->whereHas('booksApplied', function (Builder $query) use ($book) {
 			$query->where([
@@ -78,8 +79,8 @@ function getBookBestDiscount($book)
 	$allDiscount = Discount::whereHas('eventDiscount', function (Builder $query) {
 		$query->where([
 			['apply_for_all_books', '=', true],
-			['start_date', '<=', date('Y-m-d')],
-			['end_date', '>=', date('Y-m-d')],
+			['start_time', '<=', now()],
+			['end_time', '>=', now()],
 		]);
 	})->orderBy('discount', 'desc')->first();
 

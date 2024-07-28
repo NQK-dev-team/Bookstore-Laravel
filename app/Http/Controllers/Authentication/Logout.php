@@ -30,8 +30,8 @@ class Logout extends Controller
         if ($request->is_delete_account_request) {
             DB::table('delete_queue')->insert([
                 'user_id' => Auth::user()->id,
-                'created_at' => Carbon::now(),
-                'updated_at' => Carbon::now(),
+                'created_at' => Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')),
+                'updated_at' => Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')),
             ]);
             Mail::to(Auth::user()->email)->queue(new DeleteAccount(Auth::user()->name));
         }

@@ -43,7 +43,7 @@ class Register extends Controller
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'phone' => ['required', 'numeric', 'digits:10', Rule::unique('users', 'phone')->whereNull('deleted_at')],
-            'dob' => ['required', 'date', 'before_or_equal:' . Carbon::now()->subYears(18)->toDateString()],
+            'dob' => ['required', 'date', 'before_or_equal:' . Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->subYears(18)->toDateString()],
             'gender' => 'required|in:M,F,O',
             'address' => 'nullable|string|max:1000',
             'refEmail' => ['nullable', 'email', Rule::exists('users', 'email')->whereNull('deleted_at')],
@@ -87,12 +87,12 @@ class Register extends Controller
         $result = DB::table('email_verify_tokens')->where('email', $email)->first();
         if (!$result) {
             $token = Str::random(32);
-            DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => now()]);
+            DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))]);
             Mail::to($email)->queue(new VerifyEmail(Crypt::encryptString($email), $token));
         } else {
-            if (now()->diffInHours($result->created_at, true) > 24) {
+            if (Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->diffInSeconds($result->created_at) < 0) {
                 $token = Str::random(32);
-                DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => now()]);
+                DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))]);
                 Mail::to($email)->queue(new VerifyEmail(Crypt::encryptString($email), $token));
             }
         }
@@ -113,9 +113,9 @@ class Register extends Controller
         }
 
         if ($result) {
-            DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => now()]);
+            DB::table('email_verify_tokens')->where('email', $email)->update(['token' => Hash::make($token), 'created_at' => Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))]);
         } else {
-            DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => now()]);
+            DB::table('email_verify_tokens')->insert(['email' => $email, 'token' => Hash::make($token), 'created_at' => Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))]);
         }
         Mail::to($email)->queue(new VerifyEmail(Crypt::encryptString($email), $token));
 
@@ -136,14 +136,14 @@ class Register extends Controller
             }
 
             // If createdTime pass 24 hours from now, return 400 error status code
-            if (now()->diffInHours($result->created_at, true) > 24) {
+            if (Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->diffInSeconds($result->created_at) < 0) {
                 abort(419);
             }
 
             // Update user email_verified_at
             DB::transaction(function () use ($email) {
                 DB::table('email_verify_tokens')->where('email', $email)->delete();
-                User::where('email', $email)->update(['email_verified_at' => now()]);
+                User::where('email', $email)->update(['email_verified_at' => Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))]);
             });
 
             $refID = User::where('email', $email)->first()->referrer_id;

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Customer\Book;
 
+use Carbon\Carbon;
 use App\Models\Book;
 use App\Models\Order;
 use App\Models\Author;
@@ -66,8 +67,8 @@ class BookList extends Controller
         ])->whereHas('eventDiscount', function (Builder $query) {
             $query->where([
                 ['apply_for_all_books', '=', true],
-                ['start_date', '<=', date('Y-m-d')],
-                ['end_date', '>=', date('Y-m-d')],
+                ['start_time', '<=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
+                ['end_time', '>=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
             ]);
         })->where('status', true)->orderBy('discount', 'desc')->first();
 
@@ -77,8 +78,8 @@ class BookList extends Controller
             ])->whereHas('eventDiscount', function (Builder $query) {
                 $query->where([
                     ['apply_for_all_books', '=', false],
-                    ['start_date', '<=', date('Y-m-d')],
-                    ['end_date', '>=', date('Y-m-d')],
+                    ['start_time', '<=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
+                    ['end_time', '>=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
                 ]);
             })->where('status', true)->orderBy('discount', 'desc')->get();
 
