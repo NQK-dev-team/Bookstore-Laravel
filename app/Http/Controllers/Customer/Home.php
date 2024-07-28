@@ -26,6 +26,9 @@ class Home extends Controller
         foreach ($orders as $order) {
             if ($physicalOrder = $order->physicalOrder) {
                 foreach ($physicalOrder->physicalCopies as $physicalCopy) {
+                    $book = Book::find($physicalCopy->id);
+                    if (!$book || !$book->status)
+                        continue;
                     if (isset($bookSales[$physicalCopy->id])) {
                         $bookSales[$physicalCopy->id] += $physicalCopy->pivot->amount;
                     } else {
@@ -36,6 +39,9 @@ class Home extends Controller
 
             if ($fileOrder = $order->fileOrder) {
                 foreach ($fileOrder->fileCopies as $fileCopy) {
+                    $book = Book::find($fileCopy->id);
+                    if (!$book || !$book->status)
+                        continue;
                     if (isset($bookSales[$fileCopy->id])) {
                         $bookSales[$fileCopy->id]++;
                     } else {
@@ -62,7 +68,7 @@ class Home extends Controller
                 ['start_date', '<=', date('Y-m-d')],
                 ['end_date', '>=', date('Y-m-d')],
             ]);
-        })->orderBy('discount', 'desc')->first();
+        })->where('status', true)->orderBy('discount', 'desc')->first();
 
         if (!$discounts) {
             $discounts = Discount::with([
@@ -73,13 +79,14 @@ class Home extends Controller
                     ['start_date', '<=', date('Y-m-d')],
                     ['end_date', '>=', date('Y-m-d')],
                 ]);
-            })->orderBy('discount', 'desc')->get();
+            })->where('status', true)->orderBy('discount', 'desc')->get();
 
             if (!$discounts) return [];
             else {
                 foreach ($discounts as $discount) {
                     $books = $discount->eventDiscount->booksApplied;
                     foreach ($books as $book) {
+                        if (!$book->status) continue;
                         if (!in_array($book, $discountedBooks))
                             $discountedBooks[] = $book->id;
                     }
@@ -88,6 +95,7 @@ class Home extends Controller
         } else {
             $books = Book::all();
             foreach ($books as $book) {
+                if (!$book->status) continue;
                 $discountedBooks[] = $book->id;
             }
         }
@@ -106,7 +114,7 @@ class Home extends Controller
         $temp = $discountedBooks;
         $discountedBooks = [];
         foreach ($temp as $id) {
-            $discountedBooks[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
+            $discountedBooks[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->where('status', true)->find($id));
         }
 
         return $discountedBooks;
@@ -120,7 +128,7 @@ class Home extends Controller
 
         $books = [];
         foreach ($bookIDs as $id) {
-            $books[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
+            $books[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->where('status', true)->find($id));
         }
 
         return $books;
@@ -140,7 +148,7 @@ class Home extends Controller
                 $query->where([
                     ['name', '=', $category]
                 ]);
-            })->first())
+            })->where('status', true)->first())
                 $books[] = $id;
         }
 
@@ -149,7 +157,7 @@ class Home extends Controller
                 $query->where([
                     ['name', '=', $category]
                 ]);
-            })->whereNotIn('id', $books)->limit(10 - count($books))->get();
+            })->whereNotIn('id', $books)->where('status', true)->limit(10 - count($books))->get();
 
             foreach ($moreBooks as $book) {
                 $books[] = $book->id;
@@ -159,7 +167,7 @@ class Home extends Controller
         $result = [];
 
         foreach ($books as $id) {
-            $result[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
+            $result[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->where('status', true)->find($id));
         }
 
         return $result;
@@ -175,7 +183,8 @@ class Home extends Controller
         foreach ($bookIDs as $id) {
             if (Book::where([
                 ['publisher', '=', $publisher],
-                ['id', '=', $id]
+                ['id', '=', $id],
+                ['status', '=', true],
             ])->first())
                 $books[] = $id;
         }
@@ -183,7 +192,7 @@ class Home extends Controller
         if (count($books) < 10) {
             $moreBooks = Book::where([
                 ['publisher', '=', $publisher]
-            ])->whereNotIn('id', $books)->limit(10 - count($books))->get();
+            ])->where('status', true)->whereNotIn('id', $books)->limit(10 - count($books))->get();
 
             foreach ($moreBooks as $book) {
                 $books[] = $book->id;
@@ -193,7 +202,7 @@ class Home extends Controller
         $result = [];
 
         foreach ($books as $id) {
-            $result[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->find($id));
+            $result[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->where('status', true)->find($id));
         }
 
         return $result;
@@ -204,7 +213,7 @@ class Home extends Controller
         $bookSales = $this->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
-        $books = Book::with("categories")->whereIn('id', $bookIDs)->get();
+        $books = Book::with("categories")->whereIn('id', $bookIDs)->where('status', true)->get();
         $topCategories = [];
 
         foreach ($books as $book) {
@@ -229,7 +238,7 @@ class Home extends Controller
         $bookSales = $this->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
-        $books = Book::whereIn('id', $bookIDs)->get();
+        $books = Book::whereIn('id', $bookIDs)->where('status', true)->get();
         $topPublishers = [];
 
         foreach ($books as $book) {

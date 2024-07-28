@@ -32,3 +32,5 @@ Schedule::call(function () {
     $customer = ($counter === 0 || $counter === 1) ? 'customer' : 'customers';
     Log::channel('customer-delete')->info("{$counter} {$customer} deleted. Execution time: {$executionTime} seconds.");
 })->everyFiveMinutes();
+
+// Create another schedule to change status to false for all discount events that have expired

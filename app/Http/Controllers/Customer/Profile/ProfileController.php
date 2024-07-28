@@ -9,10 +9,8 @@ use App\Models\User;
 use App\Models\Order;
 use App\Models\Discount;
 use voku\helper\AntiXSS;
-use App\Models\FileOrder;
 use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
-use App\Models\PhysicalOrder;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
@@ -54,7 +52,7 @@ class ProfileController extends Controller
             $data->dob = $antiXss->xss_clean($request->dob);
 
             if ($request->hasFile('image')) {
-                $imagePath = Storage::putFileAs('files/images/users/' . Auth::user()->id, $request->file('image'), date('YmdHis', time()) . '.' . $request->file('image')->extension());
+                $imagePath = Storage::putFileAs('files/images/users/customers/' . Auth::user()->id, $request->file('image'), date('YmdHis', time()) . '.' . $request->file('image')->extension());
                 $data->image = $imagePath;
             }
 
@@ -161,7 +159,7 @@ class ProfileController extends Controller
 
             $books = [];
             foreach ($temp as $elem) {
-                $refinedData = refineBookData(Book::find($elem));
+                $refinedData = refineBookData(Book::withTrashed()->find($elem));
                 $books[] = ['name' => $refinedData->name, 'edition' => $refinedData->edition];
             }
             usort($books, function ($a, $b) {
@@ -177,6 +175,9 @@ class ProfileController extends Controller
     public function getOrderDetail($id)
     {
         $order = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])->find($id);
+
+        if (!$order)
+            return null;
 
         $physicalTemp = [];
         if ($order->physicalOrder) {
@@ -207,7 +208,7 @@ class ProfileController extends Controller
 
         // // Order by name and edition
         // $physicalBooks = collect($physicalBooks)->sortBy('name')->sortBy('edition')->values()->all();
-        $physicalBooks = Book::whereIn('id', $physicalTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        $physicalBooks = Book::whereIn('id', $physicalTemp)->withTrashed()->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
         foreach ($physicalBooks as &$book) {
             refineBookData($book);
         }
@@ -219,7 +220,7 @@ class ProfileController extends Controller
 
         // // Order by name and edition
         // $fileBooks = collect($fileBooks)->sortBy('name')->sortBy('edition')->values()->all();
-        $fileBooks = Book::whereIn('id', $fileTemp)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
+        $fileBooks = Book::whereIn('id', $fileTemp)->withTrashed()->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
         foreach ($fileBooks as &$book) {
             refineBookData($book, false);
         }

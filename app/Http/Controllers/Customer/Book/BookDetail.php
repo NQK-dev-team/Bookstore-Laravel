@@ -21,7 +21,7 @@ class BookDetail extends Controller
 {
     public function getBook($id)
     {
-        return Book::with(['categories', 'authors', 'physicalCopy', 'fileCopy'])->find($id);
+        return Book::with(['categories', 'authors', 'physicalCopy', 'fileCopy'])->where('status', true)->find($id);
     }
 
     public function checkCustomerBoughtBook($id)

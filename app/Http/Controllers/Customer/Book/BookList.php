@@ -27,6 +27,9 @@ class BookList extends Controller
         foreach ($orders as $order) {
             if ($physicalOrder = $order->physicalOrder) {
                 foreach ($physicalOrder->physicalCopies as $physicalCopy) {
+                    $book = Book::find($physicalCopy->id);
+                    if (!$book || !$book->status)
+                        continue;
                     if (isset($bookSales[$physicalCopy->id])) {
                         $bookSales[$physicalCopy->id] += $physicalCopy->pivot->amount;
                     } else {
@@ -37,6 +40,9 @@ class BookList extends Controller
 
             if ($fileOrder = $order->fileOrder) {
                 foreach ($fileOrder->fileCopies as $fileCopy) {
+                    $book = Book::find($fileCopy->id);
+                    if (!$book || !$book->status)
+                        continue;
                     if (isset($bookSales[$fileCopy->id])) {
                         $bookSales[$fileCopy->id]++;
                     } else {
@@ -63,7 +69,7 @@ class BookList extends Controller
                 ['start_date', '<=', date('Y-m-d')],
                 ['end_date', '>=', date('Y-m-d')],
             ]);
-        })->orderBy('discount', 'desc')->first();
+        })->where('status', true)->orderBy('discount', 'desc')->first();
 
         if (!$discounts) {
             $discounts = Discount::with([
@@ -74,13 +80,14 @@ class BookList extends Controller
                     ['start_date', '<=', date('Y-m-d')],
                     ['end_date', '>=', date('Y-m-d')],
                 ]);
-            })->orderBy('discount', 'desc')->get();
+            })->where('status', true)->orderBy('discount', 'desc')->get();
 
             if (!$discounts) return [];
             else {
                 foreach ($discounts as $discount) {
                     $books = $discount->eventDiscount->booksApplied;
                     foreach ($books as $book) {
+                        if (!$book->status) continue;
                         if (!in_array($book, $discountedBooks))
                             $discountedBooks[] = $book->id;
                     }
@@ -89,6 +96,7 @@ class BookList extends Controller
         } else {
             $books = Book::all();
             foreach ($books as $book) {
+                if (!$book->status) continue;
                 $discountedBooks[] = $book->id;
             }
         }
@@ -117,6 +125,7 @@ class BookList extends Controller
                     ['id', '=', $id],
                     ['name', 'ilike', '%' . $bookParam . '%'],
                     ['publisher', 'like', $publisher],
+                    ['status', '=', true],
                 ])->first();
         }
 
@@ -128,7 +137,7 @@ class BookList extends Controller
         $bookSales = $this->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
-        $books = Book::with("categories")->whereIn('id', $bookIDs)->get();
+        $books = Book::with("categories")->whereIn('id', $bookIDs)->where('status', true)->get();
         $topCategories = [];
 
         foreach ($books as $book) {
@@ -161,7 +170,7 @@ class BookList extends Controller
         $bookSales = $this->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
-        $books = Book::whereIn('id', $bookIDs)->get();
+        $books = Book::whereIn('id', $bookIDs)->where('status', true)->get();
         $topPublishers = [];
 
         foreach ($books as $book) {
@@ -177,7 +186,7 @@ class BookList extends Controller
         $publisherNames = array_slice($publisherNames, 0, 5, true);
 
         if (count($publisherNames) < 5) {
-            $publishers = Book::select('publisher')->whereNotIn('publisher', $publisherNames)->limit(5 - count($publisherNames))->distinct()->get();
+            $publishers = Book::select('publisher')->whereNotIn('publisher', $publisherNames)->where('status', true)->limit(5 - count($publisherNames))->distinct()->get();
             foreach ($publishers as $publisher) {
                 if (!in_array($publisher->publisher, $publisherNames))
                     $publisherNames[] = $publisher->publisher;
@@ -192,7 +201,7 @@ class BookList extends Controller
         $bookSales = $this->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
-        $books = Book::with("authors")->whereIn('id', $bookIDs)->get();
+        $books = Book::with("authors")->whereIn('id', $bookIDs)->where('status', true)->get();
         $topAuthors = [];
 
         foreach ($books as $book) {
@@ -227,7 +236,7 @@ class BookList extends Controller
 
     public function searchPublisher($publisher)
     {
-        return Book::select('publisher')->where('publisher', 'like', '%' . $publisher . '%')->distinct()->get();
+        return Book::select('publisher')->where('publisher', 'like', '%' . $publisher . '%')->where('status', true)->distinct()->get();
     }
 
     public function searchAuthor($author)
@@ -246,6 +255,7 @@ class BookList extends Controller
                 })->where([
                     ['name', 'ilike', '%' . $book . '%'],
                     ['publisher', 'like',  $publisher],
+                    ['status', '=', true],
                 ])->offset($offset * $limit)->limit($limit)->get();
             case 2:
                 return array_slice($this->getDiscountBooks($author, $category, $publisher, $book), $offset * $limit, $limit);
@@ -265,6 +275,7 @@ class BookList extends Controller
                                 ['id', '=', $id],
                                 ['name', 'ilike', '%' . $book . '%'],
                                 ['publisher', 'like', $publisher],
+                                ['status', '=', true],
                             ])->first();
                     }
                     return array_slice($result, $offset * $limit, $limit);
@@ -280,6 +291,7 @@ class BookList extends Controller
                     ->where([
                         ['name', 'ilike', '%' . $book . '%'],
                         ['publisher', 'like',  $publisher],
+                        ['status', '=', true],
                     ])
                     ->join('physical_copies', 'books.id', '=', 'physical_copies.id')
                     ->orderBy('physical_copies.price', 'asc')
@@ -298,6 +310,7 @@ class BookList extends Controller
                     ->where([
                         ['name', 'ilike', '%' . $book . '%'],
                         ['publisher', 'like', '%' . $publisher . '%'],
+                        ['status', '=', true],
                     ])
                     ->join('physical_copies', 'books.id', '=', 'physical_copies.id')
                     ->orderBy('physical_copies.price', 'desc')

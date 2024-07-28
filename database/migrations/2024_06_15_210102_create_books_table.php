@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('publication_date')->nullable(false);
             $table->string('image', 255)->nullable(false);
             $table->string('description', 2000)->nullable();
+            $table->boolean('status')->nullable(false)->default(true);
             $table->softDeletes();
             $table->timestamps();
         });

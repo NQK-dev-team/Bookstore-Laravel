@@ -6,6 +6,7 @@
     <meta name="description" content="Profile page of customers of NQK Bookstore">
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/customer/profile/style.css') }}">
+    @livewireStyles
 @endsection
 
 @section('page')

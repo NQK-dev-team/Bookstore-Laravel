@@ -70,9 +70,20 @@
         <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="Order modal" x-init="const modal = new bootstrap.Modal('#orderModal');
         modal.toggle();
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\'tooltip\']');
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));"
-            data-bs-backdrop="static" data-bs-keyboard="false">
-            <div class="modal-dialog modal-dialog-centered modal-xl-custom modal-dialog-scrollable">
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+
+        document.addEventListener('click', function(e) {
+            const dialog = document.getElementById('orderModalDialog');
+            if (dialog && !dialog.contains(e.target)) {
+                document.getElementById('orderModal').dispatchEvent(new CustomEvent(
+                    'alpine-close-order-modal', {
+                        bubbles: true
+                    }));
+            }
+        });"
+            @alpine-close-order-modal="$wire.order_id = null; $wire.$refresh();" data-bs-keyboard="false">
+            <div class="modal-dialog modal-dialog-centered modal-xl-custom modal-dialog-scrollable"
+                id="orderModalDialog">
                 <div class="modal-content">
                     <div class="modal-header">
                         <div class='d-flex'>
@@ -391,5 +402,16 @@
                 </div>
             </div>
         </div>
+
+        {{-- <script>
+            document.addEventListener('click', function(e) {
+                const modal = document.getElementById('orderModalDialog');
+                console.log(e);
+                console.log(modal);
+                if (modal && !modal.contains(e.target)) {
+                    console.log('Clicked outside the order modal');
+                }
+            });
+        </script> --}}
     @endif
 </div>
