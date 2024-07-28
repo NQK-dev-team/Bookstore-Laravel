@@ -309,13 +309,13 @@
                     'data-initial-src');
         }
 
-        document.getElementById('passwordChangedModal').addEventListener('hidden.bs.modal', function() {
-            document.getElementsByClassName('modal-backdrop')[0].remove();
+        // document.getElementById('passwordChangedModal').addEventListener('hidden.bs.modal', function() {
+        //     document.getElementsByClassName('modal-backdrop')[0].remove();
 
-            // Remove all styles and classes added by bootstrap in the body tag
-            document.body.classList.remove('modal-open');
-            document.body.style = '';
-        });
+        //     // Remove all styles and classes added by bootstrap in the body tag
+        //     document.body.classList.remove('modal-open');
+        //     document.body.style = '';
+        // });
 
         if ({{ session('password-changed') ? session('password-changed') : 0 }}) {
             const successModal = new bootstrap.Modal('#passwordChangedModal');
