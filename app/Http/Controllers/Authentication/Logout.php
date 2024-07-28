@@ -45,6 +45,6 @@ class Logout extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect()->route('customer.index');
+        return redirect()->route('customer.home.index');
     }
 }

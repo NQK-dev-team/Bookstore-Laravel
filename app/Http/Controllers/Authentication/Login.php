@@ -34,7 +34,7 @@ class Login extends Controller
         }
 
         if (Auth::user()->is_admin) {
-            return redirect()->route('admin.index');
+            return redirect()->route('admin.home.index');
         }
 
         if (DB::table('delete_queue')->where([['user_id', '=', Auth::user()->id],])->exists()) {
@@ -44,7 +44,7 @@ class Login extends Controller
 
         $user = User::find(Auth::user()->id);
         $paypalToken = $user->createToken('paypal_token', ['*'], Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->addDays(3));
-        return redirect()->route('customer.index')->withCookie(cookie('paypal_token', $paypalToken->plainTextToken, 0, null, null, null, false, false, 'Lax'));
+        return redirect()->route('customer.home.index')->withCookie(cookie('paypal_token', $paypalToken->plainTextToken, 0, null, null, null, false, false, 'Lax'));
     }
 
     public function show(Request $request)

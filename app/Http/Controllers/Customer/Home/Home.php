@@ -260,7 +260,7 @@ class Home extends Controller
 
     public function show()
     {
-        return view('customer.index', [
+        return view('customer.home.index', [
             'discountedBooks' => $this->getDiscountBooks(),
             'bestSellingBooks' => $this->getBestSellers(),
         ]);

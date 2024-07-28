@@ -36,8 +36,8 @@ Route::middleware(XssSanitization::class)->group(function () {
 
         Route::middleware(CheckAuth::class)->group(function () {
             Route::get('/', function () {
-                return view('admin.index');
-            })->name('index');
+                return view('admin.home.index');
+            })->name('home.index');
 
             Route::prefix('manage')->name('manage.')->group(function () {
                 Route::prefix('book')->name('book.')->group(function () {
@@ -110,7 +110,7 @@ Route::middleware(XssSanitization::class)->group(function () {
         });
 
         Route::middleware(VerifyEmail::class)->group(function () {
-            Route::get('/', [CustomerHome::class, 'show'])->name('index');
+            Route::get('/', [CustomerHome::class, 'show'])->name('home.index');
 
             Route::prefix('book')->name('book.')->group(function () {
                 Route::get('/', [BookList::class, 'show'])->name('index');

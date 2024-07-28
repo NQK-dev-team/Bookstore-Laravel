@@ -32,7 +32,7 @@
         <header class="w-100 h-100">
             <nav class="navbar navbar-expand-lg py-auto w-100">
                 <div class="container-fluid px-0">
-                    <a class="navbar-brand d-flex align-items-center ms-2" href="{{ route('admin.index') }}">
+                    <a class="navbar-brand d-flex align-items-center ms-2" href="{{ route('admin.home.index') }}">
                         <img src="{{ asset('assets/images/logo.png') }}" id="logo_img"
                             title="NQK Bookstore logo"></img>
                         <p class="mb-0 ms-2">NQK Bookstore</p>
@@ -76,7 +76,7 @@
                             <li class="nav-item mx-2">
                                 @if (auth()->check())
                                     <a class="nav-link fs-5 d-inline-block {{ $activeTab === 'home' ? 'activeTab' : '' }}"
-                                        href="{{ route('admin.index') }}">Home</a>
+                                        href="{{ route('admin.home.index') }}">Home</a>
                                 @else
                                     <a class="nav-link fs-5 d-inline-block"
                                         href="{{ route('admin.authentication.index') }}">Home</a>

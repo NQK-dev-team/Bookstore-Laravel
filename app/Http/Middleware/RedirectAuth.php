@@ -20,9 +20,9 @@ class RedirectAuth
     {
         if (Auth::check()) {
             if (str_contains($request->route()->getName(), 'admin'))
-                return redirect()->route('admin.index');
+                return redirect()->route('admin.home.index');
             else
-                return redirect()->route('customer.index');
+                return redirect()->route('customer.home.index');
         }
 
         return $next($request);

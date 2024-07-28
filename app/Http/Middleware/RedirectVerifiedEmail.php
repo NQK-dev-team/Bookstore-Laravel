@@ -20,7 +20,7 @@ class RedirectVerifiedEmail
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::check() && Gate::allows('isVerified'))
-            return redirect()->route('customer.index');
+            return redirect()->route('customer.home.index');
 
         return $next($request);
     }

@@ -21,11 +21,11 @@ class RedirectRole
     {
         if (str_contains($request->route()->getName(), 'admin')) {
             if (Auth::check() && !Gate::allows('isAdmin')) {
-                return redirect()->route('customer.index');
+                return redirect()->route('customer.home.index');
             }
         } else {
             if (Auth::check() && Gate::allows('isAdmin')) {
-                return redirect()->route('admin.index');
+                return redirect()->route('admin.home.index');
             }
         }
 
