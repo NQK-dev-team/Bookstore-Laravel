@@ -250,6 +250,23 @@
         </div>
     </div>
 
+    <div class="modal fade" id="infoUpdateModal" tabindex="-1" aria-labelledby="Password changed modal">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Notice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p>Your information has been updated successfully.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Okay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="passwordChangedModal" tabindex="-1" aria-labelledby="Password changed modal">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -302,6 +319,11 @@
 
         if ({{ session('password-changed') ? session('password-changed') : 0 }}) {
             const successModal = new bootstrap.Modal('#passwordChangedModal');
+            successModal.toggle();
+        }
+
+        if ({{ session('info-updated') ? session('info-updated') : 0 }}) {
+            const successModal = new bootstrap.Modal('#infoUpdateModal');
             successModal.toggle();
         }
     </script>

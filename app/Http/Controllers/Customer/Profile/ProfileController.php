@@ -57,6 +57,8 @@ class ProfileController extends Controller
             }
 
             $data->save();
+
+            session()->flash('info-updated', 1);
         });
 
         return redirect()->route('customer.profile.index', ['option' => 1]);
