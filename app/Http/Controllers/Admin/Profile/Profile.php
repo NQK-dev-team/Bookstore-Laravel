@@ -5,14 +5,12 @@ namespace App\Http\Controllers\Admin\Profile;
 use Carbon\Carbon;
 use App\Models\User;
 use voku\helper\AntiXSS;
-use App\Mail\PasswordChange;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
@@ -34,7 +32,7 @@ class Profile extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('customer.profile.index', ['option' => 1])->withErrors($validator)->withInput();
+            return redirect()->route('admin.profile.index', ['option' => 1])->withErrors($validator)->withInput();
         }
 
         $antiXss = new AntiXSS();
@@ -53,6 +51,8 @@ class Profile extends Controller
             }
 
             $data->save();
+
+            session()->flash('info-updated', 1);
         });
 
         return redirect()->route('admin.profile.index', ['option' => 1]);
@@ -83,7 +83,6 @@ class Profile extends Controller
                 'password' => Hash::make($antiXss->xss_clean($request->newPassword)),
             ]);
         });
-        Mail::to(Auth::user()->email)->queue(new PasswordChange(Auth::user()->name));
         session()->flash('password-changed', 1);
 
         return redirect()->route('admin.profile.index', ['option' => 2]);

@@ -1,0 +1,19 @@
+.block {
+    width: 95%;
+    height: 95%;
+}
+
+.custom_image {
+    max-width: 350px;
+    height: auto;
+}
+
+.selected {
+    color: #007bff;
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+}
+
+.hover-tab:hover {
+    color: #007bff;
+}

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Profile\Profile;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\VerifyEmail;
 use App\Http\Middleware\RedirectAuth;
@@ -13,7 +14,7 @@ use App\Http\Controllers\Authentication\Register;
 use App\Http\Controllers\Customer\Book\BookDetail;
 use App\Http\Controllers\Customer\Book\BookList;
 use App\Http\Controllers\Customer\Cart\CartController;
-use App\Http\Controllers\Customer\Home as CustomerHome;
+use App\Http\Controllers\Customer\Home\Home as CustomerHome;
 use App\Http\Controllers\Customer\Profile\ProfileController;
 use App\Http\Controllers\General\File;
 use App\Http\Middleware\XssSanitization;
@@ -77,9 +78,9 @@ Route::middleware(XssSanitization::class)->group(function () {
             });
 
             Route::prefix('profile')->name('profile.')->group(function () {
-                Route::get('/', function () {
-                    return view('admin.profile.index');
-                })->name('index');
+                Route::get('/', [Profile::class, 'show'])->name('index');
+                Route::post('update-profile', [Profile::class, 'updateProfile'])->name('update');
+                Route::post('change-password', [Profile::class, 'changePassword'])->name('change-password');
             });
 
             Route::post('authentication/logout', [Logout::class, 'adminLogout'])->name('authentication.logout');
