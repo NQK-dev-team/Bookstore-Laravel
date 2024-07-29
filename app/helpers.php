@@ -207,7 +207,7 @@ function recalculateOrderValue($id)
 
 		if ($fileOrder) {
 			foreach ($fileOrder->fileCopies as $fileCopy) {
-				$book = Book::find($physicalCopy->id);
+				$book = Book::find($fileCopy->id);
 				if ($book->status) {
 					$price = $fileCopy->price;
 					$discount = getBookBestDiscount(Book::find($fileCopy->id));

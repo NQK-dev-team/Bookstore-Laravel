@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Customer\Cart;
 use Exception;
 use App\Models\Book;
 use App\Models\User;
+use PhpParser\Error;
 use App\Models\Order;
 use App\Models\Discount;
 use App\Models\FileOrder;
+use App\Mail\PurchaseOrder;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\PhysicalOrder;
@@ -17,9 +19,9 @@ use App\Http\Controllers\Controller;
 use App\Models\PhysicalOrderContain;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Builder;
-use PhpParser\Error;
 
 class CartController extends Controller
 {
@@ -187,6 +189,7 @@ class CartController extends Controller
     public function purchase($customerID = null)
     {
         $result = true;
+        $orderID = null;
         try {
             DB::beginTransaction();
             $order = Order::with(['physicalOrder' => ['physicalCopies']])->where([
@@ -221,15 +224,22 @@ class CartController extends Controller
                 }
             }
 
-            if (!$customerID)
+            if (!$customerID) {
                 DB::commit();
+                Mail::to(Auth::user()->email)->queue(new PurchaseOrder($order->id));
+            } else {
+                $orderID = $order->id;
+            }
         } catch (Exception $e) {
-            if (!$customerID)
+            if (!$customerID) {
                 DB::rollback();
+            }
             $result = false;
         }
 
-        return $result;
+        if (!$customerID)
+            return $result;
+        return [$result, $orderID];
     }
 
     public function getPaypalAccessToken()
@@ -283,7 +293,7 @@ class CartController extends Controller
                 'name' => "{$book->name} - {$book->edition}",
                 'type' => 'Ebook',
                 'url' => route('customer.book.detail', ['id' => $book->id]),
-                'image_url' => 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg',
+                'image_url' => app()->environment(['production']) ? $book->image : 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg',
                 'quantity' => 1,
                 'unit_amount' => [
                     'currency_code' => $this->paypalCurrency,
@@ -303,7 +313,7 @@ class CartController extends Controller
                 'name' => "{$book->name} - {$book->edition}",
                 'type' => 'Hardcover',
                 'url' => route('customer.book.detail', ['id' => $book->id]),
-                'image_url' => 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg',
+                'image_url' => app()->environment(['production']) ? $book->image : 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg',
                 'quantity' => getAmount($cart->id, $book->id),
                 'unit_amount' => [
                     'currency_code' => $this->paypalCurrency,
@@ -325,7 +335,7 @@ class CartController extends Controller
                         'breakdown' => [
                             'item_total' => [
                                 'currency_code' => $this->paypalCurrency,
-                                'value' => $item_total,
+                                'value' => round($item_total,2),
                                 // 'value' => round($totalPrice + $totalDiscount, 2),
                             ],
                             'tax_total' => [
@@ -386,7 +396,8 @@ class CartController extends Controller
         }
 
         $customerID = $token->tokenable_id;
-        if (!$this->purchase($customerID)) {
+        [$result, $cartID] = $this->purchase($customerID);
+        if (!$result) {
             return response()->json(['message' => 'Failed to purchase cart.'], 500);
         }
 
@@ -400,6 +411,8 @@ class CartController extends Controller
 
         if ($response->status() === 201) {
             DB::commit();
+            $user = User::find($customerID);
+            Mail::to($user->email)->queue(new PurchaseOrder($cartID));
             // $customerID = $token->tokenable_id;
             // if (!$this->purchase($customerID)) {
             //     return response()->json(['message' => 'Failed to purchase cart.'], 500);
