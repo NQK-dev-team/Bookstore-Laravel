@@ -5,6 +5,7 @@
     <meta name="page creator" content="Nghia Duong">
     <meta name="description" content="Profile page of admins of NQK Bookstore">
     <link rel="stylesheet" href="{{ asset('assets/css/admin/profile/style.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     @livewireStyles
 @endsection
 

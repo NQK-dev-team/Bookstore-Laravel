@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\Manage\Book;
 use App\Http\Controllers\Admin\Profile\Profile;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\VerifyEmail;
@@ -41,9 +42,7 @@ Route::middleware(XssSanitization::class)->group(function () {
 
             Route::prefix('manage')->name('manage.')->group(function () {
                 Route::prefix('book')->name('book.')->group(function () {
-                    Route::get('/', function () {
-                        return view('admin.manage.book.index');
-                    })->name('index');
+                    Route::get('/', [Book::class, 'show'])->name('index');
                 });
 
                 Route::prefix('category')->name('category.')->group(function () {

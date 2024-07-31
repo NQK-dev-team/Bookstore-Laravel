@@ -1,0 +1,45 @@
+.book_image {
+    width: 100%;
+    max-width: 125px;
+    height: auto;
+    min-width: 80px;
+}
+
+.group_button {
+    max-width: 180px;
+}
+
+.pointer:hover {
+    cursor: pointer;
+}
+
+.truncate {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 10;
+    /* Number of lines to show before ellipsis */
+    -webkit-box-orient: vertical;
+}
+
+.dropdown-menu {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+}
+
+.dropdown-toggle::after {
+    content: none;
+}
+
+.btn-outline-info:hover {
+    color: white;
+}
+
+.dropdown-item:hover {
+    background-color: #007bff;
+    color: white;
+}
+
+::-webkit-scrollbar {
+    background: white;
+}
