@@ -31,7 +31,20 @@ class Book extends Controller
         if (!$author)
             return Author::get();
 
-        return Author::where('name', 'ilike', "%{$author}%")->get();
+        return Author::where('name', 'ilike', "%{$author}%")->get()->unique('name');
+    }
+
+    public function getBook( $category = null, $author = null, $publisher = null, $book = null, $offset = 0, $limit = 10)
+    {
+        return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
+            $query->where('name', 'like', $author);
+        })->whereHas('categories', function ($query) use ($category) {
+            $query->where('name', 'like', $category);
+        })->where([
+            ['name', 'ilike', '%' . $book . '%'],
+            ['publisher', 'like', $publisher],
+            ['status', '=', true],
+        ])->offset($offset * $limit)->limit($limit)->get();
     }
 
     public function show()

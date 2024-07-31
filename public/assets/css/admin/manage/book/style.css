@@ -43,3 +43,8 @@
 ::-webkit-scrollbar {
     background: white;
 }
+
+.selected{
+    color: #007bff;
+    font-weight: bold;
+}

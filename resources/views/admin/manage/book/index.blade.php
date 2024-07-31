@@ -10,12 +10,13 @@
 @endsection
 
 @section('page')
-    <div class="container-fluid h-100 d-flex flex-column">
+    <div class="container-fluid h-100 d-flex flex-column" x-data="">
         <h1 class='fs-2 mx-auto mt-3 mb-3'>Book List</h1>
         <div class="mb-2">
             <button class="btn btn-primary btn-sm"><strong>+</strong> Add New Book</button>
         </div>
-        <form class="d-flex align-items-center w-100" role="search">
+        <form class="d-flex align-items-center w-100" role="search"
+            x-on:submit.prevent="$dispatch('search-book',{search:document.getElementById('search_book').value});">
             <button title='Submit search form' class="p-0 border-0 position-absolute bg-transparent mb-1 ms-2"
                 type="submit">
                 <svg fill="#000000" width="20px" height="20px" viewBox="0 0 32 32" version="1.1"
@@ -30,8 +31,8 @@
                 </svg>
             </button>
 
-            <input id="search_book" class="form-control search_form" type="search"
-                placeholder="Search book by name" aria-label="Search for book by name">
+            <input id="search_book" class="form-control search_form" type="search" placeholder="Search book by name"
+                aria-label="Search for book by name">
         </form>
         <div class="mt-2 d-flex flex-md-row flex-column">
             @livewire('admin.manage.book.category')
@@ -42,7 +43,8 @@
             <div class="d-flex align-items-center">
                 <p class="mb-0 me-2">Show</p>
                 <div>
-                    <select id="entry_select" class="form-select form-select-sm pointer" aria-label="Entry selection">
+                    <select id="entry_select" class="form-select form-select-sm pointer" aria-label="Entry selection"
+                        x-on:change="$dispatch('select-limit',{limit:$el.value});">
                         <option value=10 selected>10</option>
                         <option value=25>25</option>
                         <option value=50>50</option>
