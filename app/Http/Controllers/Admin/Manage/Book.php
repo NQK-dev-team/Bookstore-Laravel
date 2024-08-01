@@ -34,17 +34,38 @@ class Book extends Controller
         return Author::where('name', 'ilike', "%{$author}%")->get()->unique('name');
     }
 
-    public function getBook( $category = null, $author = null, $publisher = null, $book = null, $offset = 0, $limit = 10)
+    public function getTotal($category = null, $author = null, $publisher = null, $search = null, $status = true)
     {
+        $category = $category ?? '%';
+        $author = $author ?? '%';
+        $publisher = $publisher ?? '%';
+        $search = $search ? '%' . $search . '%' : '%';
         return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
             $query->where('name', 'like', $author);
         })->whereHas('categories', function ($query) use ($category) {
             $query->where('name', 'like', $category);
         })->where([
-            ['name', 'ilike', '%' . $book . '%'],
+            ['name', 'ilike', $search],
             ['publisher', 'like', $publisher],
-            ['status', '=', true],
-        ])->offset($offset * $limit)->limit($limit)->get();
+            ['status', '=', $status],
+        ])->count();
+    }
+
+    public function getBook($category = null, $author = null, $publisher = null, $search = null, $status = true, $offset = 0, $limit = 10)
+    {
+        $category = $category ?? '%';
+        $author = $author ?? '%';
+        $publisher = $publisher ?? '%';
+        $search = $search ? '%' . $search . '%' : '%';
+        return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
+            $query->where('name', 'like', $author);
+        })->whereHas('categories', function ($query) use ($category) {
+            $query->where('name', 'like', $category);
+        })->where([
+            ['name', 'ilike', $search],
+            ['publisher', 'like', $publisher],
+            ['status', '=', $status],
+        ])->offset($offset * $limit)->limit($limit)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
     }
 
     public function show()

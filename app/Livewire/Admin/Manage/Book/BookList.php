@@ -15,6 +15,8 @@ class BookList extends Component
     public $offset;
     public $limit;
     public $books;
+    public $status;
+    public $total;
     private $controller;
 
     public function __construct()
@@ -25,6 +27,7 @@ class BookList extends Component
         $this->search = null;
         $this->offset = 0;
         $this->limit = 10;
+        $this->status = true;
         $this->controller = new Book();
     }
 
@@ -32,34 +35,52 @@ class BookList extends Component
     public function selectAuthor($author)
     {
         $this->author = $author;
+        $this->resetPagination();
     }
 
     #[On('select-category')]
     public function selectCategory($category)
     {
         $this->category = $category;
+        $this->resetPagination();
     }
 
     #[On('select-publisher')]
     public function selectPublisher($publisher)
     {
         $this->publisher = $publisher;
+        $this->resetPagination();
     }
 
-    #[On('select-limit')]
-    public function selectLimit($limit)
-    {
-        $this->limit = $limit;
-    }
-
-    #[On('search-book')]
     public function searchBook($search)
     {
         $this->search = ($search === '' || !$search) ? null : $search;
     }
 
+    public function previous()
+    {
+        if (!($this->offset <= 0))
+            $this->offset--;
+    }
+
+    public function next()
+    {
+        if (!(($this->offset + 1) * $this->limit >= $this->total))
+            $this->offset++;
+    }
+
+    public function resetPagination()
+    {
+        $this->offset = 0;
+    }
+
     public function render()
     {
+        $this->total = $this->controller->getTotal($this->category, $this->author, $this->publisher, $this->search, $this->status);
+        $this->books = $this->controller->getBook($this->category, $this->author, $this->publisher, $this->search, $this->status, $this->offset, $this->limit);
+        foreach ($this->books as &$book) {
+            refineBookData($book, false);
+        }
         return view('livewire.admin.manage.book.book-list');
     }
 }
