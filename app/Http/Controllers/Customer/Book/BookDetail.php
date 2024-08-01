@@ -38,7 +38,7 @@ class BookDetail extends Controller
             }
         )->where([
             ['customer_id', '=', auth()->id()],
-            ['status', '=', 'true']
+            ['status', '=', true]
         ])->exists();
 
         return $result;
@@ -143,7 +143,7 @@ class BookDetail extends Controller
 
         $order = Order::select('id')->where([
             ['customer_id', '=', auth()->id()],
-            ['status', '=', 'false']
+            ['status', '=', false]
         ])->first();
 
         DB::transaction(function () use ($id, $amount, $order) {
@@ -203,7 +203,7 @@ class BookDetail extends Controller
             }
         )->where([
             ['customer_id', '=', auth()->id()],
-            ['status', '=', 'true']
+            ['status', '=', true]
         ])->exists();
 
         if ($check)
@@ -216,7 +216,7 @@ class BookDetail extends Controller
             }
         )->where([
             ['customer_id', '=', auth()->id()],
-            ['status', '=', 'false']
+            ['status', '=', false]
         ])->exists();
 
         if ($check)
@@ -224,7 +224,7 @@ class BookDetail extends Controller
 
         $order = Order::select('id')->where([
             ['customer_id', '=', auth()->id()],
-            ['status', '=', 'false']
+            ['status', '=', false]
         ])->first();
 
         DB::transaction(function () use ($id, $order) {
