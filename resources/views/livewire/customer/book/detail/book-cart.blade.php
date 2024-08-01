@@ -1,6 +1,6 @@
 <form class='mt-3' x-data="{ radioOption: 0, }" wire:submit="addToCart(radioOption)">
     <div>
-        @if ($physicalPrice !== null)
+        @if ($physicalPrice !== null && $stock !== null)
             <input type="radio" id="hardcover" name="bookType" class="btn-check" autocomplete="off"
                 x-on:click="radioOption=1;">
             <label class="btn border border-1 border-dark" for="hardcover">Hardcover</label>
@@ -9,7 +9,8 @@
         @if ($filePrice !== null)
             <input type="radio" class="btn-check" name="bookType" id="ebook" autocomplete="off"
                 x-on:click="radioOption=2;">
-            <label class="btn border border-1 border-dark {{ $physicalPrice !== null ? 'ms-3' : '' }}"
+            <label
+                class="btn border border-1 border-dark {{ $physicalPrice !== null && $stock !== null ? 'ms-3' : '' }}"
                 for="ebook">Ebook</label>
         @endif
     </div>
@@ -53,7 +54,7 @@
     @endif
 
 
-    @if ($physicalPrice !== null)
+    @if ($physicalPrice !== null && $stock !== null)
         <div x-show="radioOption===1">
             <h5 class='mt-3 align-items-center mb-0 d-flex'>
                 <span class='fw-normal'>Price:</span><span
@@ -92,7 +93,7 @@
     @endif
 
 
-    @if ($physicalPrice !== null)
+    @if ($physicalPrice !== null && $stock !== null)
         <div x-show="radioOption===1">
             <div class='mt-3 align-items-center d-flex'>
                 <div class="btn-group" role="group">
@@ -115,7 +116,7 @@
         </div>
     @endif
 
-    @if ($physicalPrice !== null || $filePrice !== null)
+    @if (($physicalPrice !== null && $stock !== null) || $filePrice !== null)
         @if (auth()->check())
             <button type='submit' class='btn btn-primary mt-3' x-bind:disabled="radioOption === 0">
                 <i class='bi bi-cart4'></i>

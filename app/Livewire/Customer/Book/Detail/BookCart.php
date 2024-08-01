@@ -30,6 +30,8 @@ class BookCart extends Component
 
     public function decreaseAmount()
     {
+        if ($this->stock === null)
+            return;
         if ($this->quantity > 1) {
             $this->quantity--;
         }
@@ -37,6 +39,8 @@ class BookCart extends Component
 
     public function increaseAmount()
     {
+        if ($this->stock === null)
+            return;
         if ($this->quantity < $this->stock) {
             $this->quantity++;
         }
@@ -44,6 +48,8 @@ class BookCart extends Component
 
     public function checkAmount()
     {
+        if ($this->stock === null)
+            return;
         if ($this->quantity < 1) {
             $this->quantity = 1;
         }
@@ -58,17 +64,21 @@ class BookCart extends Component
         $failed = false;
         $bought = false;
         $inCart = false;
-        if ($option === 0) {
+        if ($this->stock === null)
             $failed = true;
-        } else if ($option === 1) {
-            $result = $this->controller->addPhysicalToCart($this->book_id, $this->quantity);
-        } else if ($option === 2) {
-            $result = $this->controller->addFileToCart($this->book_id);
+        else {
+            if ($option === 0) {
+                $failed = true;
+            } else if ($option === 1) {
+                $result = $this->controller->addPhysicalToCart($this->book_id, $this->quantity);
+            } else if ($option === 2) {
+                $result = $this->controller->addFileToCart($this->book_id);
 
-            if ($result === 1)
-                $bought = true;
-            else if ($result === 2)
-                $inCart = true;
+                if ($result === 1)
+                    $bought = true;
+                else if ($result === 2)
+                    $inCart = true;
+            }
         }
 
         if ($failed) {
@@ -95,17 +105,25 @@ class BookCart extends Component
     public function mount()
     {
         $this->book_id = request()->id;
-        $book = $this->controller->getBook($this->book_id);
-        $this->physicalPrice = $book->physicalCopy ? ($book->physicalCopy->price) : null;
-        $this->stock = $book->physicalCopy ? ($book->physicalCopy->quantity) : null;
-        $this->filePrice = $book->fileCopy ? ($book->fileCopy->price) : null;
-        $temp = getBookBestDiscount($book);
-        $this->discount = $temp ? $temp->discount : null;
-        $this->quantity = $this->stock ? 1 : 0;
+        $this->quantity = 1;
+        // $book = $this->controller->getBook($this->book_id);
+        // $this->physicalPrice = $book->physicalCopy ? ($book->physicalCopy->price) : null;
+        // $this->stock = $book->physicalCopy ? ($book->physicalCopy->quantity) : null;
+        // $this->filePrice = $book->fileCopy ? ($book->fileCopy->price) : null;
+        // $temp = getBookBestDiscount($book);
+        // $this->discount = $temp ? $temp->discount : null;
+        // $this->quantity = $this->stock ? 1 : 0;
     }
 
     public function render()
     {
+        $book = $this->controller->getBook($this->book_id);
+        $this->physicalPrice = $book->physicalCopy ? ($book->physicalCopy->price) : null;
+        $this->stock = $book->physicalCopy ? ($book->physicalCopy->quantity) : null;
+        $this->filePrice = $book->fileCopy && $book->fileCopy->path ? ($book->fileCopy->price) : null;
+        $temp = getBookBestDiscount($book);
+        $this->discount = $temp ? $temp->discount : null;
+        // $this->quantity = $this->stock ? 1 : 0;
         return view('livewire.customer.book.detail.book-cart');
     }
 }

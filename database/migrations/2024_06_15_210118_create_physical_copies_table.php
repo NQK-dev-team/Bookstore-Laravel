@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('physical_copies', function (Blueprint $table) {
             $table->string('id', 20)->primary();
             $table->double('price')->nullable();
-            $table->integer('quantity')->nullable(false)->default(0);
+            $table->integer('quantity')->nullable()->default(0);
             $table->timestamps();
             $table->softDeletes();
 
