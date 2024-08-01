@@ -1,7 +1,7 @@
-<div class="container-fluid h-100 d-flex flex-column">
+<div class="container-fluid h-100 d-flex flex-column" {{-- @alpine-reset-book-id="$wire.resetBookSelection();" --}} id="book-list-container">
     <h1 class='fs-2 mx-auto mt-3 mb-3'>Book List</h1>
     <div class="mb-2">
-        <button class="btn btn-primary btn-sm"><strong>+</strong> Add New Book</button>
+        <button class="btn btn-primary btn-sm">+ Add New Book</button>
     </div>
     <form class="d-flex align-items-center w-100" role="search"
         wire:submit="searchBook(document.getElementById('search_book').value)">
@@ -217,17 +217,48 @@
                         </td>
                         <td class="align-middle col-1">
                             <div class="d-flex flex-lg-row flex-column">
-                                <buton class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    data-bs-title="Detail" aria-label="Book Detail"
-                                    data-bs-original-title="Book Detail">
-                                    <i class="bi bi-info-circle text-white"></i>
-                                </buton>
-                                <button data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Deactivate"
-                                    class="btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm" aria-label="Deactivate book"
-                                    data-bs-original-title="Deactivate book">
-                                    <i class="bi bi-power text-white"></i>
-                                </button>
-
+                                <div data-bs-toggle="tooltip,modal" data-bs-target="#">
+                                    <buton
+                                        x-on:click=""
+                                        class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Detail" aria-label="Book Detail"
+                                        data-bs-original-title="Book Detail">
+                                        <i class="bi bi-info-circle text-white"></i>
+                                    </buton>
+                                </div>
+                                @if ($status)
+                                    <div data-bs-toggle="modal" data-bs-target="#deactivateModal">
+                                        <button
+                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            data-bs-title="Deactivate"
+                                            class="btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm"
+                                            aria-label="Deactivate book" data-bs-original-title="Deactivate book">
+                                            <i class="bi bi-power text-white"></i>
+                                        </button>
+                                    </div>
+                                @else
+                                    <div data-bs-toggle="modal" data-bs-target="#activateModal">
+                                        <button
+                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Activate"
+                                            class="btn btn-success ms-lg-2 mt-2 mt-lg-0 btn-sm"
+                                            aria-label="Activate book" data-bs-original-title="Activate book">
+                                            <i class="bi bi-power text-white"></i>
+                                        </button>
+                                    </div>
+                                @endif
+                                {{-- @if (!$book->isBought) --}}
+                                <div data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                    <button
+                                        x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
+                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete"
+                                        class='btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm' aria-label="Delete book"
+                                        data-bs-original-title="Delete book">
+                                        <i class="bi bi-trash text-white"></i>
+                                    </button>
+                                </div>
+                                {{-- @endif --}}
                             </div>
                         </td>
                     </tr>
@@ -255,8 +286,96 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="deactivateModal" tabindex="-1" aria-labelledby="Deactivate modal" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Notice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p>Are you sure you want to deactivate this book?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Deactivate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="activateModal" tabindex="-1" aria-labelledby="Activate modal" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Notice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p>Are you sure you want to activate this book?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Activate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="Delete modal" wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Notice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p>Are you sure you want to delete this book?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+        // On modals close dispatch a customer event
+        const deactivateModal = document.getElementById('deactivateModal');
+        deactivateModal.addEventListener('hidden.bs.modal', function(event) {
+            // document.getElementById('book-list-container').dispatchEvent(new CustomEvent(
+            //     'alpine-reset-book-id', {
+            //         bubbles: true
+            //     }));
+            window.dispatchEvent(new CustomEvent(
+                'reset-book-id', {
+                    bubbles: true
+                }));
+        });
+
+        const activateModal = document.getElementById('activateModal');
+        activateModal.addEventListener('hidden.bs.modal', function(event) {
+            // document.getElementById('book-list-container').dispatchEvent(new CustomEvent(
+            //     'alpine-reset-book-id', {
+            //         bubbles: true
+            //     }));
+            window.dispatchEvent(new CustomEvent(
+                'reset-book-id', {
+                    bubbles: true
+                }));
+        });
+
+        const deleteModal = document.getElementById('deleteModal');
+        deleteModal.addEventListener('hidden.bs.modal', function(event) {
+            // document.getElementById('book-list-container').dispatchEvent(new CustomEvent(
+            //     'alpine-reset-book-id', {
+            //         bubbles: true
+            //     }));
+            window.dispatchEvent(new CustomEvent(
+                'reset-book-id', {
+                    bubbles: true
+                }));
+        });
     </script>
 </div>

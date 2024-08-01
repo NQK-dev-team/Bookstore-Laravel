@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin\Manage;
 
-use App\Models\Book as BookModel;
+use App\Models\Order;
+use App\Models\Author;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\Book as BookModel;
 use App\Http\Controllers\Controller;
-use App\Models\Author;
+use Illuminate\Database\Eloquent\Builder;
 
 class Book extends Controller
 {
@@ -67,6 +69,20 @@ class Book extends Controller
             ['status', '=', $status],
         ])->offset($offset * $limit)->limit($limit)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
     }
+
+    // public function isBookBought($bookID)
+    // {
+    //     return Order::orWhereHas('physicalOrder.physicalCopies', function (Builder $query) use ($bookID) {
+    //         $query->where('physical_copies.id', $bookID);
+    //     })->orWhereHas(
+    //         'fileOrder.fileCopies',
+    //         function (Builder $query) use ($bookID) {
+    //             $query->where('file_copies.id', $bookID);
+    //         }
+    //     )->where([
+    //         ['status', '=', true]
+    //     ])->exists();
+    // }
 
     public function show()
     {

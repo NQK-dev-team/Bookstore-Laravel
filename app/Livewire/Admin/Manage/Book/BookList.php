@@ -17,6 +17,7 @@ class BookList extends Component
     public $books;
     public $status;
     public $total;
+    public $bookID;
     private $controller;
 
     public function __construct()
@@ -29,6 +30,7 @@ class BookList extends Component
         $this->limit = 10;
         $this->status = true;
         $this->controller = new Book();
+        $this->bookID = null;
     }
 
     #[On('select-author')]
@@ -74,12 +76,24 @@ class BookList extends Component
         $this->offset = 0;
     }
 
+    #[On('reset-book-id')]
+    public function resetBookSelection()
+    {
+        $this->bookID = null;
+    }
+
+    // public function setBookID($bookID)
+    // {
+    //     $this->bookID = $bookID;
+    // }
+
     public function render()
     {
         $this->total = $this->controller->getTotal($this->category, $this->author, $this->publisher, $this->search, $this->status);
         $this->books = $this->controller->getBook($this->category, $this->author, $this->publisher, $this->search, $this->status, $this->offset, $this->limit);
         foreach ($this->books as &$book) {
             refineBookData($book, false);
+            // $book->isBought= $this->controller->isBookBought($book->id);
         }
         return view('livewire.admin.manage.book.book-list');
     }
