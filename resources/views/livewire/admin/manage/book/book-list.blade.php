@@ -1,7 +1,8 @@
-<div class="container-fluid h-100 d-flex flex-column" {{-- @alpine-reset-book-id="$wire.resetBookSelection();" --}} id="book-list-container">
+<div class="container-fluid h-100 d-flex flex-column" {{-- @alpine-reset-book-id="$wire.resetBookSelection();" id="book-list-container" --}}>
     <h1 class='fs-2 mx-auto mt-3 mb-3'>Book List</h1>
     <div class="mb-2">
-        <button class="btn btn-primary btn-sm">+ Add New Book</button>
+        <button class="btn btn-primary btn-sm" x-on:click="$wire.openInfoModal=true; $wire.$refresh();">+ Add New
+            Book</button>
     </div>
     <form class="d-flex align-items-center w-100" role="search"
         wire:submit="searchBook(document.getElementById('search_book').value)">
@@ -217,15 +218,13 @@
                         </td>
                         <td class="align-middle col-1">
                             <div class="d-flex flex-lg-row flex-column">
-                                <div data-bs-toggle="tooltip,modal" data-bs-target="#">
-                                    <buton
-                                        x-on:click=""
-                                        class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        data-bs-title="Detail" aria-label="Book Detail"
-                                        data-bs-original-title="Book Detail">
-                                        <i class="bi bi-info-circle text-white"></i>
-                                    </buton>
-                                </div>
+                                <buton
+                                    x-on:click="$wire.bookID='{{ $book->id }}'; $wire.openInfoModal=true; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
+                                    class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    data-bs-title="Detail" aria-label="Book Detail"
+                                    data-bs-original-title="Book Detail">
+                                    <i class="bi bi-info-circle text-white"></i>
+                                </buton>
                                 @if ($status)
                                     <div data-bs-toggle="modal" data-bs-target="#deactivateModal">
                                         <button
@@ -337,6 +336,7 @@
             </div>
         </div>
     </div>
+    @livewire('admin.manage.book.book-info', ['bookID' => $bookID, 'openInfoModal' => $openInfoModal])
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

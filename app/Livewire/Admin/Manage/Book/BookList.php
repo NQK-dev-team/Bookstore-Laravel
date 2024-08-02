@@ -18,6 +18,7 @@ class BookList extends Component
     public $status;
     public $total;
     public $bookID;
+    public $openInfoModal;
     private $controller;
 
     public function __construct()
@@ -31,6 +32,7 @@ class BookList extends Component
         $this->status = true;
         $this->controller = new Book();
         $this->bookID = null;
+        $this->openInfoModal = false;
     }
 
     #[On('select-author')]
@@ -80,6 +82,7 @@ class BookList extends Component
     public function resetBookSelection()
     {
         $this->bookID = null;
+        $this->openInfoModal= false;
     }
 
     // public function setBookID($bookID)

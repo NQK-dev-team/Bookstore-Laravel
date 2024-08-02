@@ -70,6 +70,11 @@ class Book extends Controller
         ])->offset($offset * $limit)->limit($limit)->orderBy('name', 'asc')->orderBy('edition', 'asc')->get();
     }
 
+    public function getBookInfo($id)
+    {
+
+    }
+
     // public function isBookBought($bookID)
     // {
     //     return Order::orWhereHas('physicalOrder.physicalCopies', function (Builder $query) use ($bookID) {
