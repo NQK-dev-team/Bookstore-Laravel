@@ -33,7 +33,7 @@
             </div>
             <div class='mt-4'>
                 <h5>Description: </h5>
-                <p class="text-justify">{{ $book->description }}</p>
+                <p class="text-justify">{{ $book->description ? $book->description : 'N/A' }}</p>
             </div>
         </div>
         @livewire('customer.book.detail.rating')
