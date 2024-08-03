@@ -49,7 +49,7 @@
                                 <label
                                     class='btn btn-sm btn-light border border-dark mt-3 mx-auto {{ $errors->has('images') || $errors->has('images.0') ? 'is-invalid' : '' }}'>
                                     <input accept='image/jpeg, image/png' id="imageInput" type='file' class='d-none'
-                                        x-on:change="errorSignal=0;" name="image" onchange="setNewImage(event)"></input>
+                                        x-on:change="errorSignal=0;" name="images[]" onchange="setNewImage(event)"></input>
                                     Browse
                                 </label>
                                 @if ($errors->has('images'))
