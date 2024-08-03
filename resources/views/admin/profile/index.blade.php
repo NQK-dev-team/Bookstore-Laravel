@@ -10,7 +10,7 @@
 @endsection
 
 @section('page')
-    <div class='d-flex w-100 h-100 flex-column' x-data="{ option: {{ $option ? $option : 1 }}, errorSignal: {{ $errors->has('image') ? 1 : 0 }} }">
+    <div class='d-flex w-100 h-100 flex-column' x-data="{ option: {{ $option ? $option : 1 }}, errorSignal: {{ $errors->has('images') || $errors->has('images.0') ? 1 : 0 }} }">
         <div class='block bg-white border border-3 rounded m-auto d-flex flex-column p-3'>
             <div>
                 <h1 class='mb-3'>My account</h1>
@@ -34,21 +34,26 @@
                         <div class="col-lg-5 col-12 p-0">
                             <div class='w-100 d-flex flex-column h-100 justify-content-center'>
                                 <img class='custom_image w-100 mx-auto border-2 rounded'
-                                    alt="{{ $errors->has('image') ? 'Image too large' : auth()->user()->name . ' image' }}"
+                                    alt="{{ $errors->has('images') || $errors->has('images.0') ? 'Image too large' : auth()->user()->name . ' image' }}"
                                     id="userImage"
-                                    src="{{ $errors->has('image') ? '' : (auth()->user()->image ? route('temporary-url.image', ['path' => auth()->user()->image]) : asset('assets/images/default_profile_image.png')) }}"
+                                    src="{{ $errors->has('images') || $errors->has('images.0') ? '' : (auth()->user()->image ? route('temporary-url.image', ['path' => auth()->user()->image]) : asset('assets/images/default_profile_image.png')) }}"
                                     data-initial-src="{{ auth()->user()->image ? route('temporary-url.image', ['path' => auth()->user()->image]) : asset('assets/images/default_profile_image.png') }}"
-                                    data-error-signal="{{ $errors->has('image') ? 1 : 0 }}">
+                                    data-error-signal="{{ $errors->has('images') || $errors->has('images.0') ? 1 : 0 }}">
                                 </img>
                                 <label
-                                    class='btn btn-sm btn-light border border-dark mt-3 mx-auto {{ $errors->has('image') ? 'is-invalid' : '' }}'>
+                                    class='btn btn-sm btn-light border border-dark mt-3 mx-auto {{ $errors->has('images') || $errors->has('images.0') ? 'is-invalid' : '' }}'>
                                     <input accept='image/jpeg, image/png' id="imageInput" type='file' class='d-none'
-                                        x-on:change="errorSignal=0;" name="image" onchange="setNewImage(event)"></input>
+                                        x-on:change="errorSignal=0;" name="images[]" onchange="setNewImage(event)"></input>
                                     Browse
                                 </label>
-                                @if ($errors->has('image'))
+                                @if ($errors->has('images'))
                                     <div class="invalid-feedback text-center" x-show="errorSignal === 1">
-                                        {{ $errors->first('image') }}
+                                        {{ $errors->first('images') }}
+                                    </div>
+                                @endif
+                                @if ($errors->has('images.0'))
+                                    <div class="invalid-feedback text-center" x-show="errorSignal === 1">
+                                        {{ $errors->first('images.0') }}
                                     </div>
                                 @endif
                                 <p id="imageFileName" class='mx-auto mt-2'></p>

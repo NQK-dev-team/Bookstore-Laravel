@@ -32,9 +32,12 @@ class ProfileController extends Controller
             'dob' => ['required', 'date', 'before_or_equal:' . Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->subYears(18)->toDateString()],
             'gender' => 'required|in:M,F,O',
             'address' => 'nullable|string|max:1000',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'images' => 'max:1',
+            'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
         ], [
             'dob.before_or_equal' => 'You must be at least 18 years old.',
+            'images.*.mimes' => 'The image must be a file of type: jpeg, png, jpg.',
+            'images.*.max' => 'The image size must not be greater than 2MB.',
         ]);
 
         if ($validator->fails()) {
@@ -51,8 +54,8 @@ class ProfileController extends Controller
             $data->address = $antiXss->xss_clean($request->address);
             $data->dob = $antiXss->xss_clean($request->dob);
 
-            if ($request->hasFile('image')) {
-                $imagePath = Storage::putFileAs('files/images/users/customers/' . Auth::user()->id, $request->file('image'), date('YmdHis', time()) . '.' . $request->file('image')->extension());
+            if ($request->hasFile('images')) {
+                $imagePath = Storage::putFileAs('files/images/users/customers/' . Auth::user()->id, $request->file('images')[0], date('YmdHis', time()) . '.' . $request->file('images')[0]->extension());
                 $data->image = $imagePath;
             }
 
