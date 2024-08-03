@@ -1,4 +1,6 @@
- <div class='container-xl p-2 my-4 {{ count($topCategories) ? 'd-block' : 'd-none' }}'>
+ <div class='container-xl p-2 my-4 {{ count($topCategories) ? 'd-block' : 'd-none' }}' x-init="const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`)
+ const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(
+     tooltipTriggerEl))">
      <div class='mx-3 bg-white rounded pb-3 d-flex flex-column'>
          <div class='mb-0 text-center p-3 d-flex justify-content-center align-items-center'>
              <h4><svg width="28px" height="28px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -24,7 +26,8 @@
          <div class='d-flex overflow-x-auto px-4 pb-2'>
              @foreach ($topCategories as $category)
                  <p class="mb-0 pointer ms-3 me-3 tab-hover text-nowrap {{ $selectedCategory === $category ? 'tab-active' : '' }}"
-                     wire:click="selectCategory(`{{ $category }}`)">
+                     wire:click="selectCategory(`{{ $category }}`)" data-bs-toggle="tooltip" data-bs-placement="top"
+                     data-bs-title="{{ getCategoryDescription($category) }}">
                      {{ $category }}
                  </p>
              @endforeach

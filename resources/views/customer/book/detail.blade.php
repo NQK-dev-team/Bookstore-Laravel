@@ -12,7 +12,9 @@
 @endsection
 
 @section('page')
-    <div class='w-100 h-100 position-relative'>
+    <div class='w-100 h-100 position-relative' x-init="const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`)
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(
+        tooltipTriggerEl))">
         <div class="container bg-light rounded p-3 mt-3">
             <div class="row">
                 <div class="col-12 col-md-5 d-flex flex-column align-items-center px-3 mt-3">
@@ -24,7 +26,16 @@
                     <p class="fw-medium">{{ $book->edition }}</p>
                     <p>ISBN: {{ $book->isbn }}</p>
                     <p>Author: {{ $book->authors }}</p>
-                    <p>Category: {{ $book->categories }}</p>
+                    <p>Category:
+                        @php
+                            $categories = explode(', ', $book->categories);
+                        @endphp
+                        @foreach ($categories as $index => $category)
+                            <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                data-bs-title="{{ getCategoryDescription($category) }}">{{ $category }}{{ $index < count($categories) - 1 ? ', ' : '' }}
+                            </span>
+                        @endforeach
+                    </p>
                     <p>Publisher: {{ $book->publisher }} </p>
                     <p>Publication date: {{ $book->publication_date }}</p>
                     @livewire('customer.book.detail.average-rating')

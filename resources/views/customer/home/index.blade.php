@@ -10,7 +10,9 @@
 @endsection
 
 @section('page')
-    <div class='w-100 d-flex flex-column'>
+    <div class='w-100 d-flex flex-column' x-init="const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`)
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(
+        tooltipTriggerEl))">
         <div class='w-100 sales'>
             <div class='container-xl p-2'>
                 <div class='mx-3 bg-white rounded mt-3 py-2 px-2 px-sm-3 d-flex align-items-center'>
@@ -228,7 +230,16 @@
                                                 <p>{{ $book->edition }}</p>
                                                 <p>ISBN-13: {{ $book->isbn }}</p>
                                                 <p>Author: {{ $book->authors }}</p>
-                                                <p>Category: {{ $book->categories }}</p>
+                                                <p>Category:
+                                                    @php
+                                                        $categories = explode(', ', $book->categories);
+                                                    @endphp
+                                                    @foreach ($categories as $index => $category)
+                                                        <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-title="{{ getCategoryDescription($category) }}">{{ $category }}{{ $index < count($categories) - 1 ? ', ' : '' }}
+                                                        </span>
+                                                    @endforeach
+                                                </p>
                                                 <p>Publisher: {{ $book->publisher }}</p>
                                                 <p>Publish Date: {{ $book->publication_date }}</p>
                                                 <div class='mb-3 d-flex'>
@@ -268,7 +279,7 @@
                                             </div>
                                         </div>
                                         <h5 class='mt-3'>Description</h5>
-                                        <p class='text-justify'>{{ $book->description }}</p>
+                                        <p class='text-justify'>{{ $book->description ? $book->description : 'N/A' }}</p>
                                     </div>
                                 @else
                                     <div class='none' id='bestSellerDetail_{{ $index }}'
@@ -281,7 +292,16 @@
                                                 <p>{{ $book->edition }}</p>
                                                 <p>ISBN-13: {{ $book->isbn }}</p>
                                                 <p>Author: {{ $book->authors }}</p>
-                                                <p>Category: {{ $book->categories }}</p>
+                                                <p>Category:
+                                                    @php
+                                                        $categories = explode(', ', $book->categories);
+                                                    @endphp
+                                                    @foreach ($categories as $index => $category)
+                                                        <span data-bs-toggle="tooltip" data-bs-placement="top"
+                                                            data-bs-title="{{ getCategoryDescription($category) }}">{{ $category }}{{ $index < count($categories) - 1 ? ', ' : '' }}
+                                                        </span>
+                                                    @endforeach
+                                                </p>
                                                 <p>Publisher: {{ $book->publisher }}</p>
                                                 <p>Publish Date: {{ $book->publication_date }}</p>
                                                 <div class='mb-3 d-flex'>
@@ -321,7 +341,7 @@
                                             </div>
                                         </div>
                                         <h5 class='mt-3'>Description</h5>
-                                        <p class='text-justify'>{{ $book->description }}</p>
+                                        <p class='text-justify'>{{ $book->description ? $book->description : 'N/A' }}</p>
                                     </div>
                                 @endif
                             @endforeach

@@ -1,4 +1,6 @@
-<div class='d-flex'>
+<div class='d-flex' x-init="const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`)
+const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(
+    tooltipTriggerEl))">
     <div class='d-none d-xl-block'>
         <div class="panel border-2 me-4 bg-white p-3 rounded">
             <form wire:submit="searchCategory">
@@ -22,8 +24,12 @@
                 </div>
                 <div class='ps-2 mt-2 item-list'>
                     @foreach ($categories as $category)
-                        <p class="pointer {{ $selectedCategory === $category ? 'item-chosen' : '' }}"
-                            x-on:click="$wire.selectCategory(`{{ $category }}`)">{{ $category }}</p>
+                        <p>
+                            <span class="pointer {{ $selectedCategory === $category ? 'item-chosen' : '' }}"
+                                x-on:click="$wire.selectCategory(`{{ $category }}`)" data-bs-toggle="tooltip"
+                                data-bs-placement="top" data-bs-title="{{ getCategoryDescription($category) }}">
+                                {{ $category }}</span>
+                        </p>
                     @endforeach
                 </div>
             </form>
@@ -253,9 +259,13 @@
                         </div>
                         <div class='ps-2 mt-2'>
                             @foreach ($categories as $category)
-                                <p class="pointer {{ $selectedCategory === $category ? 'item-chosen' : '' }}"
-                                    x-on:click="$wire.selectCategory(`{{ $category }}`)">
-                                    {{ $category }}
+                                <p>
+                                    <span class="pointer {{ $selectedCategory === $category ? 'item-chosen' : '' }}"
+                                        x-on:click="$wire.selectCategory(`{{ $category }}`)"
+                                        data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="{{ getCategoryDescription($category) }}">
+                                        {{ $category }}
+                                    </span>
                                 </p>
                             @endforeach
                         </div>
