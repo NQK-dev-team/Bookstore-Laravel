@@ -84,10 +84,11 @@
                                 <div class="my-2 px-lg-5 px-3">
                                     <label for="phoneInput" class="form-label fw-medium">Phone:<span
                                             class='fw-bold text-danger'>&nbsp;*</span></label>
-                                    <input required maxlength="10" autocomplete="tel" type="tel" class="form-control"
+                                    <input required maxlength="10" minlength="10" autocomplete="tel" type="tel"
+                                        class="form-control"
                                         @if ($errors->has('phone')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
                                         id="phoneInput" value="{{ old('phone') ? old('phone') : auth()->user()->phone }}"
-                                        data-old-value="{{ auth()->user()->phone }}" name="phone"
+                                        pattern="[0-9]{10}" data-old-value="{{ auth()->user()->phone }}" name="phone"
                                         placeholder="Enter phone number">
                                     @if ($errors->has('phone'))
                                         <div class="invalid-feedback" x-show="!isInfoReset">
@@ -321,5 +322,18 @@
             newPasswordInput.value = '';
             confirmPasswordInput.value = '';
         }
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.getElementById('phoneInput');
+
+            phoneInput.addEventListener('input', function() {
+                if (phoneInput.validity.tooShort) {
+                    phoneInput.setCustomValidity('Phone number must be 10 characters long.');
+                } else {
+                    phoneInput.setCustomValidity('');
+                }
+            });
+        });
     </script>
 @endsection
