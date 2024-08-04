@@ -18,7 +18,6 @@ class BookList extends Component
     public $status;
     public $total;
     public $bookID;
-    public $openInfoModal;
     private $controller;
 
     public function __construct()
@@ -32,7 +31,6 @@ class BookList extends Component
         $this->status = true;
         $this->controller = new Book();
         $this->bookID = null;
-        $this->openInfoModal = false;
     }
 
     #[On('select-author')]
@@ -82,18 +80,12 @@ class BookList extends Component
     public function resetBookSelection()
     {
         $this->bookID = null;
-        $this->openInfoModal= false;
     }
-
-    // public function setBookID($bookID)
-    // {
-    //     $this->bookID = $bookID;
-    // }
 
     public function render()
     {
         $this->total = $this->controller->getTotal($this->category, $this->author, $this->publisher, $this->search, $this->status);
-        $this->books = $this->controller->getBook($this->category, $this->author, $this->publisher, $this->search, $this->status, $this->offset, $this->limit);
+        $this->books = $this->controller->getBooks($this->category, $this->author, $this->publisher, $this->search, $this->status, $this->offset, $this->limit);
         foreach ($this->books as &$book) {
             refineBookData($book, false);
             // $book->isBought= $this->controller->isBookBought($book->id);

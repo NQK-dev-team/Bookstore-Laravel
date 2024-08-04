@@ -42,7 +42,11 @@ Route::middleware(XssSanitization::class)->group(function () {
 
             Route::prefix('manage')->name('manage.')->group(function () {
                 Route::prefix('book')->name('book.')->group(function () {
-                    Route::get('/', [Book::class, 'show'])->name('index');
+                    Route::get('/', [Book::class, 'showList'])->name('index');
+                    Route::get('/add', [Book::class, 'showAdd'])->name('add');
+                    Route::post('/add', [Book::class, 'addBook'])->name('add');
+                    Route::get('/{id}', [Book::class, 'showDetail'])->name('detail');
+                    Route::post('/{id}', [Book::class, 'updateBook'])->name('update');
                 });
 
                 Route::prefix('category')->name('category.')->group(function () {

@@ -307,6 +307,12 @@ function getCategoryDescription($name)
 	return Category::where('name', $name)->first()->description;
 }
 
+function getCategoryName($id)
+{
+	return Category::where('id', $id)->first()->name;
+}
+
+
 function getAmount($orderID, $bookID)
 {
 	return PhysicalOrderContain::where([['order_id', '=', $orderID], ['book_id', '=', $bookID],])->first()->amount;

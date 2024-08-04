@@ -1,8 +1,8 @@
-<div class="container-fluid h-100 d-flex flex-column" {{-- @alpine-reset-book-id="$wire.resetBookSelection();" id="book-list-container" --}}>
+<div class="container-fluid h-100 d-flex flex-column">
     <h1 class='fs-2 mx-auto mt-3 mb-3'>Book List</h1>
     <div class="mb-2">
-        <button class="btn btn-primary btn-sm" x-on:click="$wire.openInfoModal=true; $wire.$refresh();">+ Add New
-            Book</button>
+        <a class="btn btn-primary btn-sm" href="{{ route('admin.manage.book.add') }}">+ Add New
+            Book</a>
     </div>
     <form class="d-flex align-items-center w-100" role="search"
         wire:submit="searchBook(document.getElementById('search_book').value)">
@@ -108,7 +108,8 @@
                             </div>
                         </td>
                         <td class="align-middle col-1">
-                            <div class="truncate" style="width:300px;">{{ $book->description }}</div>
+                            <div class="truncate" style="width:300px;">
+                                {{ $book->description ? $book->description : 'N/A' }}</div>
                         </td>
                         <td class="align-middle col-1 text-nowrap">
                             <span class='text-warning'>{!! displayRatingStars($book->average_rating) !!}</span></span
@@ -218,17 +219,19 @@
                         </td>
                         <td class="align-middle col-1">
                             <div class="d-flex flex-lg-row flex-column">
-                                <buton
-                                    x-on:click="$wire.bookID='{{ $book->id }}'; $wire.openInfoModal=true; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
-                                    class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
-                                    data-bs-title="Detail" aria-label="Book Detail"
-                                    data-bs-original-title="Book Detail">
-                                    <i class="bi bi-info-circle text-white"></i>
-                                </buton>
+                                <div class='text-center'>
+                                    <a href="{{ route('admin.manage.book.detail', ['id' => $book->id]) }}"
+                                        class="btn btn-info btn-sm" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        data-bs-title="Detail" aria-label="Book Detail"
+                                        data-bs-original-title="Book Detail">
+                                        <i class="bi bi-info-circle text-white"></i>
+                                    </a>
+                                </div>
                                 @if ($status)
-                                    <div data-bs-toggle="modal" data-bs-target="#deactivateModal">
+                                    <div class='text-center' data-bs-toggle="modal"
+                                        data-bs-target="#deactivateModal">
                                         <button
-                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
+                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();$wire.setBookID('{{ $book->id }}');"
                                             data-bs-toggle="tooltip" data-bs-placement="top"
                                             data-bs-title="Deactivate"
                                             class="btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm"
@@ -237,9 +240,9 @@
                                         </button>
                                     </div>
                                 @else
-                                    <div data-bs-toggle="modal" data-bs-target="#activateModal">
+                                    <div class='text-center' data-bs-toggle="modal" data-bs-target="#activateModal">
                                         <button
-                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
+                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();$wire.setBookID('{{ $book->id }}');"
                                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Activate"
                                             class="btn btn-success ms-lg-2 mt-2 mt-lg-0 btn-sm"
                                             aria-label="Activate book" data-bs-original-title="Activate book">
@@ -248,9 +251,9 @@
                                     </div>
                                 @endif
                                 {{-- @if (!$book->isBought) --}}
-                                <div data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                <div class='text-center' data-bs-toggle="modal" data-bs-target="#deleteModal">
                                     <button
-                                        x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh(); {{-- $wire.setBookID('{{ $book->id }}'); --}}"
+                                        x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();$wire.setBookID('{{ $book->id }}');"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete"
                                         class='btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm' aria-label="Delete book"
                                         data-bs-original-title="Delete book">
@@ -336,7 +339,6 @@
             </div>
         </div>
     </div>
-    @livewire('admin.manage.book.book-info', ['bookID' => $bookID, 'openInfoModal' => $openInfoModal])
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
@@ -344,10 +346,6 @@
         // On modals close dispatch a customer event
         const deactivateModal = document.getElementById('deactivateModal');
         deactivateModal.addEventListener('hidden.bs.modal', function(event) {
-            // document.getElementById('book-list-container').dispatchEvent(new CustomEvent(
-            //     'alpine-reset-book-id', {
-            //         bubbles: true
-            //     }));
             window.dispatchEvent(new CustomEvent(
                 'reset-book-id', {
                     bubbles: true
@@ -356,10 +354,6 @@
 
         const activateModal = document.getElementById('activateModal');
         activateModal.addEventListener('hidden.bs.modal', function(event) {
-            // document.getElementById('book-list-container').dispatchEvent(new CustomEvent(
-            //     'alpine-reset-book-id', {
-            //         bubbles: true
-            //     }));
             window.dispatchEvent(new CustomEvent(
                 'reset-book-id', {
                     bubbles: true
@@ -368,10 +362,6 @@
 
         const deleteModal = document.getElementById('deleteModal');
         deleteModal.addEventListener('hidden.bs.modal', function(event) {
-            // document.getElementById('book-list-container').dispatchEvent(new CustomEvent(
-            //     'alpine-reset-book-id', {
-            //         bubbles: true
-            //     }));
             window.dispatchEvent(new CustomEvent(
                 'reset-book-id', {
                     bubbles: true

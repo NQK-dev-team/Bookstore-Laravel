@@ -37,14 +37,56 @@
 
 .dropdown-item:hover {
     background-color: #007bff;
-    color: white;
+    color: white !important;
 }
 
 ::-webkit-scrollbar {
     background: white;
 }
 
-.selected{
+.selected {
     color: #007bff;
     font-weight: bold;
+}
+
+.category-modal {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.check_box {
+    width: 50%;
+}
+
+.book-image {
+    width: 300px;
+}
+
+.block {
+    width: 95%;
+    height: 95%;
+}
+
+@media only screen and (max-width: 767px) {
+    .category-modal {
+        max-height: 350px;
+    }
+
+    .book-image {
+        width: 250px;
+    }
+}
+
+@media only screen and (max-width: 575px) {
+    .check_box {
+        width: 100%;
+    }
+
+    .book-image {
+        width: 200px;
+    }
+
+    .block {
+        width: 98%;
+    }
 }
