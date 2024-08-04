@@ -330,6 +330,8 @@
             phoneInput.addEventListener('input', function() {
                 if (phoneInput.validity.tooShort) {
                     phoneInput.setCustomValidity('Phone number must be 10 characters long.');
+                } else if (phoneInput.validity.patternMismatch) {
+                    phoneInput.setCustomValidity('Phone number must contain only numbers.');
                 } else {
                     phoneInput.setCustomValidity('');
                 }
