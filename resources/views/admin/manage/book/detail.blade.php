@@ -19,9 +19,22 @@
             $categoryIds[] = $category->id;
         }
     @endphp
+    @php
+        $oldCategoryIds = [];
+        $oldCategoryNames = [];
+        if (old('bookCategories')) {
+            $temp = explode(',', old('bookCategories'));
+            foreach ($temp as $category) {
+                $oldCategoryIds[] = $category;
+                $oldCategoryNames[] = getCategoryName($category);
+            }
+        }
+    @endphp
     <div class='d-flex w-100 h-100 flex-column' x-data="{
-        categoryNames: {{ json_encode($categoryNames) }},
-        categoryIds: {{ json_encode($categoryIds) }},
+        categoryNames: {{ old('bookCategories') ? json_encode($oldCategoryNames) : json_encode($categoryNames) }},
+        categoryIds: {{ old('bookCategories') ? json_encode($oldCategoryIds) : json_encode($categoryIds) }},
+        oldCategoryNames: {{ json_encode($categoryNames) }},
+        oldCategoryIds: {{ json_encode($categoryIds) }},
         removeFile: false,
         imageErrorSignal: {{ $errors->has('bookImages') || $errors->has('bookImages.0') ? 1 : 0 }},
         fileErrorSignal: {{ $errors->has('pdfFiles') || $errors->has('pdfFiles.0') ? 1 : 0 }},
@@ -38,9 +51,11 @@
                         <div class="mt-xl-auto my-2 mt-3">
                             <label for="bookNameInput" class="form-label">Book Name:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input type="text"
-                                class="form-control fs-4 {{ $errors->has('bookName') ? 'is-invalid' : '' }}"
-                                id="bookNameInput" name="bookName" value="{{ $book->name }}" required>
+                            <input type="text" class="form-control fs-4"
+                                @if ($errors->has('bookName')) x-bind:class="{ 'is-invalid': !isReset }" @endif
+                                id="bookNameInput" name="bookName"
+                                value="{{ old('bookName') ? old('bookName') : $book->name }}"
+                                data-old-value="{{ $book->name }}" required>
                             @if ($errors->has('bookName'))
                                 <div class="invalid-feedback" x-show="!isReset">
                                     {{ $errors->first('bookName') }}
@@ -51,13 +66,13 @@
                             <p class='mb-0 fs-5' id='bookImagePlaceHolder'>Book image<span
                                     class='fw-bold text-danger'>&nbsp;*</span></p>
                             <img class='book-image' id="bookImage" alt="Book image"
-                                src="{{ route('temporary-url.image', ['path' => $book->image]) }}"
+                                src="{{ $errors->has('bookImages') || $errors->has('bookImages.0') ? 'https://cdn1.polaris.com/globalassets/pga/accessories/my20-orv-images/no_image_available6.jpg' : route('temporary-url.image', ['path' => $book->image]) }}"
                                 data-initial-src="{{ route('temporary-url.image', ['path' => $book->image]) }}">
                             </img>
                             <label
                                 class='btn btn-sm btn-light border border-dark mt-3 mx-auto d-flex position-relative justify-content-center {{ $errors->has('bookImages') || $errors->has('bookImages.0') ? 'is-invalid' : '' }}'>
                                 <input accept='image/jpeg,image/png' id="imageInput" type='file'
-                                    style="opacity: 0; width:1px;" name="bookImages[]" required class='position-absolute'
+                                    style="opacity: 0; width:1px;" name="bookImages[]" class='position-absolute'
                                     x-on:change="setNewImage(event); imageErrorSignal=0;"></input>
                                 <span>Browse</span>
                             </label>
@@ -78,11 +93,11 @@
                 <div class="col-xl-7 col-12">
                     <div class='d-flex flex-column ps-xl-5 w-100 h-100'>
                         <div class="mt-auto mb-2 px-xl-5 px-3">
-                            <label for="editionInput"
-                                class="form-control {{ $errors->has('bookEdition') ? 'is-invalid' : '' }}">Edition:<span
+                            <label for="editionInput" class="form-label">Edition:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
                             <input type="number" class="form-control" id="editionInput" name="bookEdition"
-                                value="{{ $book->edition }}" required>
+                                value="{{ old('bookEdition') ? old('bookEdition') : $book->edition }}"
+                                data-old-value="{{ $book->edition }}" required>
                             @if ($errors->has('bookEdition'))
                                 <div class="invalid-feedback" x-show="!isReset">
                                     {{ $errors->first('bookEdition') }}
@@ -92,9 +107,11 @@
                         <div class="my-2 px-xl-5 px-3">
                             <label for="isbnInput" class="form-label">ISBN-13:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input type="text" class="form-control {{ $errors->has('bookIsbn') ? 'is-invalid' : '' }}"
-                                id="isbnInput" name="bookIsbn" value="{{ $book->isbn }}" minlength="13" maxlength="13"
-                                required>
+                            <input type="text" class="form-control"
+                                @if ($errors->has('bookIsbn')) x-bind:class="{ 'is-invalid': !isReset }" @endif
+                                id="isbnInput" name="bookIsbn"
+                                value="{{ old('bookIsbn') ? old('bookIsbn') : $book->isbn }}" minlength="13" maxlength="13"
+                                pattern="[0-9]{13}" data-old-value="{{ $book->isbn }}" required>
                             @if ($errors->has('bookIsbn'))
                                 <div class="invalid-feedback" x-show="!isReset">
                                     {{ $errors->first('bookIsbn') }}
@@ -104,10 +121,11 @@
                         <div class="my-2 px-xl-5 px-3">
                             <label for="authorInput" class="form-label">Author:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input type="text"
-                                class="form-control {{ $errors->has('bookAuthors') ? 'is-invalid' : '' }}" id="authorInput"
-                                name="bookAuthors" value="{{ implode(', ', $book->authors->pluck('name')->toArray()) }}"
-                                required>
+                            <input type="text" class="form-control" id="authorInput"
+                                @if ($errors->has('bookAuthors')) x-bind:class="{ 'is-invalid': !isReset }" @endif
+                                name="bookAuthors"
+                                value="{{ old('bookAuthors') ? implode(', ', explode(',', old('bookAuthors'))) : implode(', ', $book->authors->pluck('name')->toArray()) }}"
+                                data-old-value="{{ implode(', ', $book->authors->pluck('name')->toArray()) }}" required>
                             <small class="form-text text-muted">You can enter multiple authors with each
                                 seperated by a comma</small>
                             @if ($errors->has('bookAuthors'))
@@ -120,7 +138,8 @@
                             <label for="categoryInput" class="form-label">Category:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
                             <textarea rows="4" x-on:click="new bootstrap.Modal(document.getElementById('categoryModal')).toggle();"
-                                class="form-control pointer readonly {{ $errors->has('bookCategories') ? 'is-invalid' : '' }}" id="categoryInput"
+                                class="form-control pointer readonly" id="categoryInput"
+                                @if ($errors->has('bookCategories')) x-bind:class="{ 'is-invalid': !isReset }" @endif
                                 x-bind:value="categoryNames.join('\n')" required style="caret-color: transparent;"></textarea>
                             <textarea rows="1" hidden id="categoryIds" name="bookCategories" x-bind:value="categoryIds"></textarea>
                             @if ($errors->has('bookCategories'))
@@ -132,9 +151,11 @@
                         <div class="my-2 px-xl-5 px-3">
                             <label for="publisherInput" class="form-label">Publisher:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input type="text"
-                                class="form-control {{ $errors->has('bookPublisher') ? 'is-invalid' : '' }}"
-                                id="publisherInput" name="bookPublisher" value="{{ $book->publisher }}" required>
+                            <input type="text" class="form-control"
+                                @if ($errors->has('bookPublisher')) x-bind:class="{ 'is-invalid': !isReset }" @endif
+                                id="publisherInput" name="bookPublisher"
+                                value="{{ old('bookPublisher') ? old('bookPublisher') : $book->publisher }}"
+                                data-old-value="{{ $book->publisher }}" required>
                             @if ($errors->has('bookPublisher'))
                                 <div class="invalid-feedback" x-show="!isReset">
                                     {{ $errors->first('bookPublisher') }}
@@ -144,10 +165,11 @@
                         <div class="my-2 px-xl-5 px-3">
                             <label for="publishDateInput" class="form-label">Publish Date:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input type="date"
-                                class="form-control {{ $errors->has('bookPublicationDate') ? 'is-invalid' : '' }}"
-                                id="publishDateInput" name="bookPublicationDate" value="{{ $book->publication_date }}"
-                                required>
+                            <input type="date" class="form-control"
+                                @if ($errors->has('bookPublicationDate')) x-bind:class="{ 'is-invalid': !isReset }" @endif
+                                id="publishDateInput" name="bookPublicationDate"
+                                value="{{ old('bookPublicationDate') ? old('bookPublicationDate') : $book->publication_date }}"
+                                data-old-value="{{ $book->publication_date }}" required>
                             @if ($errors->has('bookPublicationDate'))
                                 <div class="invalid-feedback" x-show="!isReset">
                                     {{ $errors->first('bookPublicationDate') }}
@@ -156,8 +178,9 @@
                         </div>
                         <div class="my-2 px-xl-5 px-3">
                             <label for="descriptionInput" class="form-label">Description:</label>
-                            <textarea rows="5" class="form-control {{ $errors->has('bookDescription') ? 'is-invalid' : '' }}"
-                                id="descriptionInput" maxlength='2000' name="bookDescription">{{ $book->description }}</textarea>
+                            <textarea rows="5" class="form-control"
+                                @if ($errors->has('bookDescription')) x-bind:class="{ 'is-invalid': !isReset }" @endif id="descriptionInput"
+                                maxlength='2000' name="bookDescription" data-old-value="{{ $book->description }}">{{ old('bookDescription') ? old('bookDescription') : $book->description }}</textarea>
                             @if ($errors->has('bookDescription'))
                                 <div class="invalid-feedback" x-show="!isReset">
                                     {{ $errors->first('bookDescription') }}
@@ -168,10 +191,11 @@
                             <div class='col'>
                                 <label for="physicalPriceInput" class="form-label">Hardcover Price
                                     ($):</label>
-                                <input step="any" type="number"
-                                    class="form-control {{ $errors->has('physicalPrice') ? 'is-invalid' : '' }}"
+                                <input step="any" type="number" class="form-control"
+                                    @if ($errors->has('physicalPrice')) x-bind:class="{ 'is-invalid': !isReset }" @endif
                                     id="physicalPriceInput" placeholder="Enter price" name="physicalPrice"
-                                    @if ($book->physicalCopy) value="{{ $book->physicalCopy->price }}" @endif>
+                                    @if ($book->physicalCopy) value="{{ old('physicalPrice') ? old('physicalPrice') : $book->physicalCopy->price }}"
+                                    data-old-value="{{ $book->physicalCopy->price }}" @endif>
                                 @if ($errors->has('physicalPrice'))
                                     <div class="invalid-feedback" x-show="!isReset">
                                         {{ $errors->first('physicalPrice') }}
@@ -180,10 +204,11 @@
                             </div>
                             <div class="ms-md-5 mt-2 mt-md-0 col">
                                 <label for="inStockInput" class="form-label">In Stock:</label>
-                                <input type="number"
-                                    class="form-control {{ $errors->has('physicalQuantity') ? 'is-invalid' : '' }}"
+                                <input type="number" class="form-control"
+                                    @if ($errors->has('physicalQuantity')) x-bind:class="{ 'is-invalid': !isReset }" @endif
                                     id="inStockInput" name="physicalQuantity" placeholder="Enter number"
-                                    @if ($book->physicalCopy) value="{{ $book->physicalCopy->quantity }}" @endif>
+                                    @if ($book->physicalCopy) value="{{ old('physicalQuantity') ? old('physicalQuantity') : $book->physicalCopy->quantity }}"
+                                    data-old-value="{{ $book->physicalCopy->quantity }}" @endif>
                                 @if ($errors->has('physicalQuantity'))
                                     <div class="invalid-feedback" x-show="!isReset">
                                         {{ $errors->first('physicalQuantity') }}
@@ -195,10 +220,11 @@
                             <div class='col mb-3'>
                                 <label for="filePriceInput" class="form-label">E-book
                                     Price ($):</label>
-                                <input step="any" type="number"
-                                    class="form-control {{ $errors->has('filePrice') ? 'is-invalid' : '' }}"
+                                <input step="any" type="number" class="form-control"
+                                    @if ($errors->has('filePrice')) x-bind:class="{ 'is-invalid': !isReset }" @endif
                                     name="filePrice" id="filePriceInput" placeholder="Enter price"
-                                    @if ($book->fileCopy) value="{{ $book->fileCopy->price }}" @endif>
+                                    @if ($book->fileCopy) value="{{ old('filePrice') ? old('filePrice') : $book->fileCopy->price }}"
+                                    data-old-value="{{ $book->fileCopy->price }}" @endif>
                                 @if ($errors->has('filePrice'))
                                     <div class="invalid-feedback" x-show="!isReset">
                                         {{ $errors->first('filePrice') }}
@@ -259,10 +285,18 @@
             </div>
             <hr>
             <div class='mb-5 d-flex justify-content-end'>
-                <button type="reset" class="btn btn-secondary me-2 mb-5 mb-xl-3"
-                    x-on:click="setNewImage(null); setNewFile(null); imageErrorSignal=0; fileErrorSignal=0; isReset=1;">Reset</button>
+                <button type="button" class="btn btn-secondary me-2 mb-5 mb-xl-3"
+                    x-on:click="setNewImage(null); setNewFile(null); imageErrorSignal=0;
+                    fileErrorSignal=0; isReset=1; resetFields();
+                    categoryNames=oldCategoryNames; categoryIds=oldCategoryIds;
+                    (function() {
+                        const checkboxes = document.querySelectorAll(`input[name='category_checkboxes']`);
+                        checkboxes.forEach(checkbox=> {
+                        checkbox.checked = oldCategoryIds.includes(checkbox.value);
+                        });
+                    })();">Reset</button>
                 <button class="btn btn-primary mb-5 mb-xl-3"
-                    x-bind:disabled="imageErrorSignal === 1 || fileErrorSignal === 1">Add</button>
+                    x-bind:disabled="imageErrorSignal === 1 || fileErrorSignal === 1">Update</button>
             </div>
         </form>
     </div>
@@ -296,6 +330,8 @@
             isbnInput.addEventListener('input', function() {
                 if (isbnInput.validity.tooShort) {
                     isbnInput.setCustomValidity('The ISBN must be 13 characters long.');
+                } else if (isbnInput.validity.patternMismatch) {
+                    isbnInput.setCustomValidity('The ISBN must contain only numbers.');
                 } else {
                     isbnInput.setCustomValidity('');
                 }
@@ -376,6 +412,31 @@
         function setNewFile(e) {
             const file = e ? e.target.files : [];
             document.getElementById('pdfFileName').textContent = file.length === 1 ? file[0].name : '';
+        }
+
+        function resetFields() {
+            document.getElementById('bookNameInput').value = document.getElementById('bookNameInput').getAttribute(
+                'data-old-value');
+            document.getElementById('editionInput').value = document.getElementById('editionInput').getAttribute(
+                'data-old-value');
+            document.getElementById('isbnInput').value = document.getElementById('isbnInput').getAttribute(
+                'data-old-value');
+            document.getElementById('authorInput').value = document.getElementById('authorInput').getAttribute(
+                'data-old-value');
+            document.getElementById('publisherInput').value = document.getElementById('publisherInput').getAttribute(
+                'data-old-value');
+            document.getElementById('publishDateInput').value = document.getElementById('publishDateInput').getAttribute(
+                'data-old-value');
+            document.getElementById('descriptionInput').value = document.getElementById('descriptionInput').getAttribute(
+                'data-old-value');
+            document.getElementById('physicalPriceInput').value = document.getElementById('physicalPriceInput')
+                .getAttribute('data-old-value');
+            document.getElementById('inStockInput').value = document.getElementById('inStockInput').getAttribute(
+                'data-old-value');
+            document.getElementById('filePriceInput').value = document.getElementById('filePriceInput').getAttribute(
+                'data-old-value');
+            document.getElementById('imageInput').value = '';
+            document.getElementById('filePathInput').value = '';
         }
     </script>
 @endsection

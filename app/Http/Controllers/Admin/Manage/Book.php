@@ -85,7 +85,7 @@ class Book extends Controller
     public function addBook(Request $request)
     {
         $categories = explode(',', $request->bookCategories);
-        $temp = explode(', ', $request->bookAuthors);
+        $temp = explode(',', $request->bookAuthors);
         $authors = [];
         foreach ($temp as $author) {
             $author = trim($author);
@@ -108,11 +108,11 @@ class Book extends Controller
             'bookImages' => $request->file('bookImages'),
             'pdfFiles' => $request->file('pdfFiles'),
         ], [
-            'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($request) {
-                return $query->where('edition', $request->bookEdition);
-            })],
             'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($request) {
                 return $query->where('name', $request->bookName);
+            })],
+            'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($request) {
+                return $query->where('edition', is_numeric($request->bookEdition) ? $request->bookEdition : -1);
             })],
             'bookIsbn' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/', Rule::unique('books', 'isbn')->whereNull('deleted_at')],
             'bookCategories' => 'required|array|min:1',
@@ -144,6 +144,62 @@ class Book extends Controller
 
     public function updateBook(Request $request)
     {
+        $categories = explode(',', $request->bookCategories);
+        $temp = explode(',', $request->bookAuthors);
+        $authors = [];
+        foreach ($temp as $author) {
+            $author = trim($author);
+            if ($author) {
+                $authors[] = $author;
+            }
+        }
+        $validator = Validator::make([
+            'bookName' => $request->bookName,
+            'bookEdition' => $request->bookEdition,
+            'bookIsbn' => $request->bookIsbn,
+            'bookCategories' => $categories,
+            'bookAuthors' => $authors,
+            'bookPublisher' => $request->bookPublisher,
+            'bookPublicationDate' => $request->bookPublicationDate,
+            'bookDescription' => $request->bookDescription,
+            'physicalPrice' => $request->physicalPrice,
+            'physicalQuantity' => $request->physicalQuantity,
+            'filePrice' => $request->filePrice,
+            'bookImages' => $request->file('bookImages'),
+            'pdfFiles' => $request->file('pdfFiles'),
+        ], [
+            'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($request) {
+                return $query->where('name', $request->bookName);
+            })->whereNot('id', $request->id)],
+            'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($request) {
+                return $query->where('edition', is_numeric($request->bookEdition) ? $request->bookEdition : -1);
+            })->whereNot('id', $request->id)],
+            'bookIsbn' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/', Rule::unique('books', 'isbn')->whereNull('deleted_at')->whereNot('id', $request->id)],
+            'bookCategories' => 'required|array|min:1',
+            'bookCategories.*' => 'required|string|exists:categories,id',
+            'bookAuthors' => 'required|array|min:1',
+            'bookPublisher' => 'required|string|max:255',
+            'bookPublicationDate' => 'required|date',
+            'bookDescription' => 'nullable|string|max:2000',
+            'physicalPrice' => 'nullable|numeric|min:0',
+            'physicalQuantity'  => 'nullable|numeric|min:0',
+            'filePrice' => 'nullable|numeric|min:0',
+            'bookImages' => 'max:1',
+            'bookImages.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'pdfFiles' => 'max:1',
+            'pdfFiles.*' => ['nullable', 'mimes:pdf', 'max:512000'],
+        ], [
+            'bookImages.*.mimes' => 'The image must be a file of type: jpeg, png, jpg.',
+            'bookImages.*.max' => 'The image size must not be greater than 2MB.',
+            'pdfFiles.*.mimes' => 'The file must be a file of type: pdf.',
+            'pdfFiles.*.max' => 'The file size must not be greater than 500MB.',
+            'bookName.unique' => 'The book name and edition have already been taken.',
+            'bookEdition.unique' => 'The book name and edition have already been taken.',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.manage.book.detail', ["id" => $request->id])->withErrors($validator)->withInput();
+        }
     }
 
     // public function isBookBought($bookID)

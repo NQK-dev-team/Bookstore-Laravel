@@ -98,7 +98,7 @@
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
                             <input type="text" class="form-control"
                                 @if ($errors->has('bookIsbn')) x-bind:class="{ 'is-invalid': !isReset }" @endif
-                                id="isbnInput" name="bookIsbn" required minlength="13" maxlength="13"
+                                id="isbnInput" name="bookIsbn" required minlength="13" maxlength="13" pattern="[0-9]{13}"
                                 @if (old('bookIsbn')) value="{{ old('bookIsbn') }}" @endif>
                             @if ($errors->has('bookIsbn'))
                                 <div class="invalid-feedback" x-show="!isReset">
@@ -287,6 +287,8 @@
             isbnInput.addEventListener('input', function() {
                 if (isbnInput.validity.tooShort) {
                     isbnInput.setCustomValidity('The ISBN must be 13 characters long.');
+                } else if (isbnInput.validity.patternMismatch) {
+                    isbnInput.setCustomValidity('The ISBN must contain only numbers.');
                 } else {
                     isbnInput.setCustomValidity('');
                 }
