@@ -10,7 +10,7 @@
 @endsection
 
 @section('page')
-    <div class='d-flex w-100 h-100 flex-column' x-data="{ option: {{ $option ? $option : 1 }}, errorSignal: {{ $errors->has('images') || $errors->has('images.0') ? 1 : 0 }} }">
+    <div class='d-flex w-100 h-100 flex-column' x-data="{ option: {{ $option ? $option : 1 }}, errorSignal: {{ $errors->has('images') || $errors->has('images.0') ? 1 : 0 }}, isInfoReset: 0, isPasswordReset: 0 }">
         <div class='block bg-white border border-3 rounded m-auto d-flex flex-column p-3'>
             <div>
                 <h1 class='mb-3'>My account</h1>
@@ -64,12 +64,13 @@
                                 <div class="mt-auto mb-2 px-lg-5 px-3">
                                     <label for="nameInput" class="form-label fw-medium">Name:<span
                                             class='fw-bold text-danger'>&nbsp;*</span></label>
-                                    <input required autocomplete="name" type="text"
-                                        class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}" id="nameInput"
-                                        value="{{ $errors->has('name') ? old('name') : auth()->user()->name }}"
-                                        name="name" placeholder="Enter name">
+                                    <input required autocomplete="name" type="text" class="form-control" id="nameInput"
+                                        @if ($errors->has('name')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
+                                        value="{{ old('name') ? old('name') : auth()->user()->name }}"
+                                        data-old-value="{{ auth()->user()->name }}" name="name"
+                                        placeholder="Enter name">
                                     @if ($errors->has('name'))
-                                        <div class="invalid-feedback">
+                                        <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('name') }}
                                         </div>
                                     @endif
@@ -83,13 +84,13 @@
                                 <div class="my-2 px-lg-5 px-3">
                                     <label for="phoneInput" class="form-label fw-medium">Phone:<span
                                             class='fw-bold text-danger'>&nbsp;*</span></label>
-                                    <input required maxlength="10" autocomplete="tel" type="tel"
-                                        class="form-control {{ $errors->has('phone') ? 'is-invalid' : '' }}"
-                                        id="phoneInput"
-                                        value="{{ $errors->has('phone') ? old('phone') : auth()->user()->phone }}"
-                                        name="phone" placeholder="Enter phone number">
+                                    <input required maxlength="10" autocomplete="tel" type="tel" class="form-control"
+                                        @if ($errors->has('phone')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
+                                        id="phoneInput" value="{{ old('phone') ? old('phone') : auth()->user()->phone }}"
+                                        data-old-value="{{ auth()->user()->phone }}" name="phone"
+                                        placeholder="Enter phone number">
                                     @if ($errors->has('phone'))
-                                        <div class="invalid-feedback">
+                                        <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('phone') }}
                                         </div>
                                     @endif
@@ -97,12 +98,13 @@
                                 <div class="my-2 px-lg-5 px-3">
                                     <label for="dobInput" class="form-label fw-medium">Date Of Birth:<span
                                             class='fw-bold text-danger'>&nbsp;*</span></label>
-                                    <input required autocomplete="bday" type="date"
-                                        class="form-control {{ $errors->has('dob') ? 'is-invalid' : '' }}" id="dobInput"
-                                        value="{{ $errors->has('dob') ? old('dob') : auth()->user()->dob }}"
-                                        name="dob">
+                                    <input required autocomplete="bday" type="date" class="form-control"
+                                        id="dobInput"
+                                        @if ($errors->has('dob')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
+                                        value="{{ old('dob') ? old('dob') : auth()->user()->dob }}"
+                                        data-old-value="{{ auth()->user()->dob }}" name="dob">
                                     @if ($errors->has('dob'))
-                                        <div class="invalid-feedback">
+                                        <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('dob') }}
                                         </div>
                                     @endif
@@ -110,11 +112,11 @@
                                 <div class="my-2 px-lg-5 px-3">
                                     <label for="genderInput" class="form-label fw-medium">Gender:<span
                                             class='fw-bold text-danger'>&nbsp;*</span></label>
-                                    <select required autocomplete="sex"
-                                        class="form-select {{ $errors->has('gender') ? 'is-invalid' : '' }}"
+                                    <select required autocomplete="sex" class="form-select"
+                                        @if ($errors->has('gender')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
                                         aria-label="Select gender" id='genderInput'
-                                        value="{{ $errors->has('gender') ? old('gender') : auth()->user()->gender }}"
-                                        name="gender">
+                                        value="{{ old('gender') ? old('gender') : auth()->user()->gender }}"
+                                        data-old-value="{{ auth()->user()->gender }}" name="gender">
                                         <option value="">Choose your gender</option>
                                         <option {{ auth()->user()->gender === 'M' ? 'selected' : '' }} value="M">Male
                                         </option>
@@ -125,7 +127,7 @@
                                         </option>
                                     </select>
                                     @if ($errors->has('gender'))
-                                        <div class="invalid-feedback">
+                                        <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('gender') }}
                                         </div>
                                     @endif
@@ -133,13 +135,14 @@
                                 <div class="mb-auto mt-2 px-lg-5 px-3">
                                     <label for="addressInput" class="form-label fw-medium">Address:<span
                                             class='fw-bold text-danger'>&nbsp;*</span></label>
-                                    <input required autocomplete="off" type="text"
-                                        class="form-control {{ $errors->has('address') ? 'is-invalid' : '' }}"
+                                    <input required autocomplete="off" type="text" class="form-control"
+                                        @if ($errors->has('address')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
                                         id="addressInput"
-                                        value="{{ $errors->has('address') ? old('address') : auth()->user()->address }}"
-                                        name="address" placeholder="Enter address">
+                                        value="{{ old('address') ? old('address') : auth()->user()->address }}"
+                                        data-old-value="{{ auth()->user()->address }}" name="address"
+                                        placeholder="Enter address">
                                     @if ($errors->has('address'))
-                                        <div class="invalid-feedback">
+                                        <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('address') }}
                                         </div>
                                     @endif
@@ -150,8 +153,8 @@
                     <div class='mt-5'></div>
                     <hr class='mt-auto'>
                     <div class='d-flex justify-content-end pb-4 mb-5 pb-lg-0'>
-                        <button class='btn btn-secondary me-2' type='reset'
-                            x-on:click="setNewImage(null); errorSignal=0;">Reset</button>
+                        <button class='btn btn-secondary me-2' type='button'
+                            x-on:click="setNewImage(null); errorSignal=0; resetInfoFields(); isInfoReset=1;">Reset</button>
                         <button class='btn btn-primary ms-2' type='submit'
                             x-bind:disabled="errorSignal === 1">Save</button>
                     </div>
@@ -168,12 +171,12 @@
                         <div class="my-2">
                             <label for="currentPasswordInput" class="form-label fw-medium">Current Password:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input required name="currentPassword" type="password"
-                                class="form-control {{ $errors->has('currentPassword') ? 'is-invalid' : '' }}"
+                            <input required name="currentPassword" type="password" class="form-control"
+                                @if ($errors->has('currentPassword')) x-bind:class="{ 'is-invalid': !isPasswordReset }" @endif
                                 value="{{ old('currentPassword') }}" id="currentPasswordInput"
                                 placeholder="Enter current password" autocomplete="current-password">
                             @if ($errors->has('currentPassword'))
-                                <div class="invalid-feedback">
+                                <div class="invalid-feedback" x-show="!isPasswordReset">
                                     {{ $errors->first('currentPassword') }}
                                 </div>
                             @endif
@@ -181,13 +184,13 @@
                         <div class="my-2">
                             <label for="newPasswordInput" class="form-label fw-medium">New Password:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input required name="newPassword" type="password"
-                                class="form-control {{ $errors->has('newPassword') ? 'is-invalid' : '' }}"
+                            <input required name="newPassword" type="password" class="form-control"
+                                @if ($errors->has('newPassword')) x-bind:class="{ 'is-invalid': !isPasswordReset }" @endif
                                 id="newPasswordInput" placeholder="Enter new password" autocomplete="new-password"
                                 value="{{ old('newPassword') }}" data-bs-toggle="tooltip" data-bs-placement="top"
                                 data-bs-title="New password must contain at least one uppercase letter, one lowercase letter, one number, one special character and is at least 8 characters long.">
                             @if ($errors->has('newPassword'))
-                                <div class="invalid-feedback">
+                                <div class="invalid-feedback" x-show="!isPasswordReset">
                                     {{ $errors->first('newPassword') }}
                                 </div>
                             @endif
@@ -195,12 +198,12 @@
                         <div class="my-2">
                             <label for="confirmPasswordInput" class="form-label fw-medium">Confirm New Password:<span
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
-                            <input required name="confirmPassword" type="password"
-                                class="form-control {{ $errors->has('confirmPassword') ? 'is-invalid' : '' }}"
+                            <input required name="confirmPassword" type="password" class="form-control"
+                                @if ($errors->has('confirmPassword')) x-bind:class="{ 'is-invalid': !isPasswordReset }" @endif
                                 value="{{ old('confirmPassword') }}" id="confirmPasswordInput"
                                 placeholder="Confirm new password" autocomplete="new-password">
                             @if ($errors->has('confirmPassword'))
-                                <div class="invalid-feedback">
+                                <div class="invalid-feedback" x-show="!isPasswordReset">
                                     {{ $errors->first('confirmPassword') }}
                                 </div>
                             @endif
@@ -208,7 +211,8 @@
                     </div>
                     <hr class='mt-auto'>
                     <div class='d-flex justify-content-end pb-4 mb-5 pb-lg-0'>
-                        <button class='btn btn-secondary me-2' type='reset'>Reset</button>
+                        <button class='btn btn-secondary me-2' type='button'
+                            x-on:click="isPasswordReset=1; resetPasswordFields();">Reset</button>
                         <button class='btn btn-primary ms-2' type='submit'>Save</button>
                     </div>
                 </form>
@@ -291,6 +295,31 @@
         if ({{ session('info-updated') ? session('info-updated') : 0 }}) {
             const successModal = new bootstrap.Modal('#infoUpdateModal');
             successModal.toggle();
+        }
+    </script>
+    <script>
+        function resetInfoFields() {
+            const nameInput = document.getElementById('nameInput');
+            const phoneInput = document.getElementById('phoneInput');
+            const dobInput = document.getElementById('dobInput');
+            const genderInput = document.getElementById('genderInput');
+            const addressInput = document.getElementById('addressInput');
+
+            nameInput.value = nameInput.getAttribute('data-old-value');
+            phoneInput.value = phoneInput.getAttribute('data-old-value');
+            dobInput.value = dobInput.getAttribute('data-old-value');
+            genderInput.value = genderInput.getAttribute('data-old-value');
+            addressInput.value = addressInput.getAttribute('data-old-value');
+        }
+
+        function resetPasswordFields() {
+            const currentPasswordInput = document.getElementById('currentPasswordInput');
+            const newPasswordInput = document.getElementById('newPasswordInput');
+            const confirmPasswordInput = document.getElementById('confirmPasswordInput');
+
+            currentPasswordInput.value = '';
+            newPasswordInput.value = '';
+            confirmPasswordInput.value = '';
         }
     </script>
 @endsection
