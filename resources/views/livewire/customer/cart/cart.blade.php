@@ -17,7 +17,7 @@
         wire:poll.10s="$refresh"
         @endif id="pay_form">
         <h1 class='mt-2 fs-2'>Shopping Cart</h1>
-        <small>Note: Some time, you will experience a 404 error pop-up, if that happens, simply refresh the page to fix
+        <small>Note: Some time, you will experience a constant 404 error pop-ups, if that happens, simply refresh the page to fix
             it.</small>
         <hr>
         <div class='row flex-grow-1'>
