@@ -150,11 +150,11 @@ function displayRatingStars($avgRating)
 	return $stars;
 }
 
-function recalculateOrderValue($id)
+function recalculateOrderValue($id, $customerID = null)
 {
-	if (!auth()->check()) return false;
+	if (!auth()->check() && $customerID === null) return false;
 
-	DB::transaction(function () use ($id) {
+	DB::transaction(function () use ($id, $customerID) {
 		$totalBooks = 0;
 		$totalPrice = 0;
 		// $totalDiscount = 0;
@@ -252,8 +252,8 @@ function recalculateOrderValue($id)
 			return;
 		}
 
-		$customerDiscount = Discount::whereHas('customerDiscount', function (Builder $query) {
-			$query->where('point', '<=', auth()->user()->points);
+		$customerDiscount = Discount::whereHas('customerDiscount', function (Builder $query) use ($customerID) {
+			$query->where('point', '<=', $customerID ? User::find($customerID)->points : auth()->user()->points);
 		})->where('status', true)->orderBy('discount', 'desc')->first();
 
 		if ($customerDiscount) {
@@ -266,8 +266,8 @@ function recalculateOrderValue($id)
 			]);
 		}
 
-		$referrerDiscount = Discount::whereHas('referrerDiscount', function (Builder $query) {
-			$query->where('number_of_people', '<=', User::where('referrer_id', auth()->id())->count());
+		$referrerDiscount = Discount::whereHas('referrerDiscount', function (Builder $query) use ($customerID) {
+			$query->where('number_of_people', '<=', User::where('referrer_id', $customerID ?? auth()->id())->count());
 		})->where('status', true)->orderBy('discount', 'desc')->first();
 
 		if ($referrerDiscount) {
