@@ -100,7 +100,7 @@ function getBookBestDiscount($book)
 }
 
 // Objects are passed by reference in PHP
-function refineBookData(Book $book, bool $removeFilePath = true)
+function refineBookData(Book $book, bool $removeFilePath = false)
 {
 	$book->edition = convertToOrdinal($book->edition) . ' Edition';
 	$book->image = route('temporary-url.image', ['path' => $book->image]);

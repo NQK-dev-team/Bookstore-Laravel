@@ -64,21 +64,17 @@ class BookCart extends Component
         $failed = false;
         $bought = false;
         $inCart = false;
-        if ($this->stock === null)
+        if ($option === 0 || ($this->stock === null && $option === 1)) {
             $failed = true;
-        else {
-            if ($option === 0) {
-                $failed = true;
-            } else if ($option === 1) {
-                $result = $this->controller->addPhysicalToCart($this->book_id, $this->quantity);
-            } else if ($option === 2) {
-                $result = $this->controller->addFileToCart($this->book_id);
+        } else if ($option === 1) {
+            $result = $this->controller->addPhysicalToCart($this->book_id, $this->quantity);
+        } else if ($option === 2) {
+            $result = $this->controller->addFileToCart($this->book_id);
 
-                if ($result === 1)
-                    $bought = true;
-                else if ($result === 2)
-                    $inCart = true;
-            }
+            if ($result === 1)
+                $bought = true;
+            else if ($result === 2)
+                $inCart = true;
         }
 
         if ($failed) {

@@ -335,7 +335,7 @@ class CartController extends Controller
                         'breakdown' => [
                             'item_total' => [
                                 'currency_code' => $this->paypalCurrency,
-                                'value' => round($item_total,2),
+                                'value' => round($item_total, 2),
                                 // 'value' => round($totalPrice + $totalDiscount, 2),
                             ],
                             'tax_total' => [
