@@ -39,7 +39,7 @@
         imageErrorSignal: {{ $errors->has('bookImages') || $errors->has('bookImages.0') ? 1 : 0 }},
         fileErrorSignal: {{ $errors->has('pdfFiles') || $errors->has('pdfFiles.0') || $errors->has('removeFile') ? 1 : 0 }},
         isReset: 0,
-    }" id="alpine-data-container"
+    }" id="alpine-data-container" x-init="if ({{ session('info-updated') ? 1 : 0 }}) $dispatch('update-success');"
         @alpine-add-category="categoryNames.push($event.detail.name); categoryIds.push($event.detail.id)"
         @alpine-remove-category="categoryNames = categoryNames.filter((_, index) => index !== categoryIds.indexOf($event.detail.id)); categoryIds = categoryIds.filter(id => id !== $event.detail.id)">
         <form class='block bg-white border border-3 rounded m-auto d-flex flex-column p-3' enctype="multipart/form-data"
@@ -269,20 +269,17 @@
                                         </label>
                                     </div>
                                     @if ($errors->has('pdfFiles'))
-                                        <div class="invalid-feedback text-center"
-                                            x-bind:class="{ 'd-block': fileErrorSignal }">
+                                        <div class="invalid-feedback" x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles') }}
                                         </div>
                                     @endif
                                     @if ($errors->has('pdfFiles.0'))
-                                        <div class="invalid-feedback text-center"
-                                            x-bind:class="{ 'd-block': fileErrorSignal }">
+                                        <div class="invalid-feedback" x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles.0') }}
                                         </div>
                                     @endif
                                     @if ($errors->has('removeFile'))
-                                        <div class="invalid-feedback text-center"
-                                            x-bind:class="{ 'd-block': fileErrorSignal }">
+                                        <div class="invalid-feedback" x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('removeFile') }}
                                         </div>
                                     @endif
@@ -374,9 +371,9 @@
             new bootstrap.Modal(document.getElementById('updateSuccess')).toggle();
         });
 
-        document.getElementById('updateSuccess').addEventListener('hidden.bs.modal', function() {
-            window.location.href = '{{ route('admin.manage.book.index') }}';
-        });
+        // document.getElementById('updateSuccess').addEventListener('hidden.bs.modal', function() {
+        //     window.location.href = '{{ route('admin.manage.book.index') }}';
+        // });
 
         window.addEventListener('add-category', event => {
             document.getElementById('alpine-data-container').dispatchEvent(new CustomEvent('alpine-add-category', {

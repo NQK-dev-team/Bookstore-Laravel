@@ -232,13 +232,13 @@
                                         </label>
                                     </div>
                                     @if ($errors->has('pdfFiles'))
-                                        <div class="invalid-feedback text-center"
+                                        <div class="invalid-feedback"
                                             x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles') }}
                                         </div>
                                     @endif
                                     @if ($errors->has('pdfFiles.0'))
-                                        <div class="invalid-feedback text-center"
+                                        <div class="invalid-feedback"
                                             x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles.0') }}
                                         </div>
@@ -261,23 +261,6 @@
     </div>
 
     @livewire('admin.manage.book.category-modal', ['preSelectedCategories' => []])
-
-    <div class="modal fade" id="createSuccess" tabindex="-1" aria-labelledby="Create success modal">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title fs-5">Notice</h2>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body d-flex flex-column">
-                    <p>New book added.</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                </div>
-            </div>
-        </div>
-    </div>
 @endsection
 
 @section('postloads')
@@ -319,14 +302,6 @@
         });
     </script>
     <script>
-        window.addEventListener('create-success', event => {
-            new bootstrap.Modal(document.getElementById('createSuccess')).toggle();
-        });
-
-        document.getElementById('createSuccess').addEventListener('hidden.bs.modal', function() {
-            window.location.href = '{{ route('admin.manage.book.index') }}';
-        });
-
         window.addEventListener('add-category', event => {
             document.getElementById('alpine-data-container').dispatchEvent(new CustomEvent('alpine-add-category', {
                 detail: {

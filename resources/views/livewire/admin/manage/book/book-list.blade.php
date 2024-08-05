@@ -43,8 +43,8 @@
         </div>
         <div class="mt-2">
             <div class="form-check form-switch">
-                <label class="form-check-label" for="statusSwitch">Choose
-                    active books</label>
+                <label class="form-check-label {{ $status ? 'text-success' : 'text-danger' }}"
+                    for="statusSwitch">{{ $status ? 'Choose active books' : 'Choose inactive books' }}</label>
                 <input title='Book status' class="form-check-input pointer" type="checkbox" role="switch"
                     id="statusSwitch" wire:model.live="status" wire:change="resetPagination()">
             </div>
@@ -233,8 +233,7 @@
                                 @if ($status)
                                     <div class='text-center' data-bs-toggle="modal"
                                         data-bs-target="#deactivateModal">
-                                        <button
-                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();$wire.setBookID('{{ $book->id }}');"
+                                        <button x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();"
                                             data-bs-toggle="tooltip" data-bs-placement="top"
                                             data-bs-title="Deactivate"
                                             class="btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm"
@@ -244,8 +243,7 @@
                                     </div>
                                 @else
                                     <div class='text-center' data-bs-toggle="modal" data-bs-target="#activateModal">
-                                        <button
-                                            x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();$wire.setBookID('{{ $book->id }}');"
+                                        <button x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();"
                                             data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Activate"
                                             class="btn btn-success ms-lg-2 mt-2 mt-lg-0 btn-sm"
                                             aria-label="Activate book" data-bs-original-title="Activate book">
@@ -255,8 +253,7 @@
                                 @endif
                                 {{-- @if (!$book->isBought) --}}
                                 <div class='text-center' data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    <button
-                                        x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();$wire.setBookID('{{ $book->id }}');"
+                                    <button x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();"
                                         data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete"
                                         class='btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm' aria-label="Delete book"
                                         data-bs-original-title="Delete book">
@@ -303,7 +300,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Deactivate</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        wire:click="deactivateBook()">Deactivate</button>
                 </div>
             </div>
         </div>
@@ -316,11 +314,12 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body d-flex flex-column">
-                    <p>Are you sure you want to activate this book?</p>
+                    <p>Are you sure you want to reactivate this book?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-success" data-bs-dismiss="modal">Activate</button>
+                    <button type="button" class="btn btn-success" data-bs-dismiss="modal"
+                        wire:click="reactivateBook()">Activate</button>
                 </div>
             </div>
         </div>
@@ -337,7 +336,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Delete</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"
+                        wire:click="deleteBook()">Delete</button>
                 </div>
             </div>
         </div>

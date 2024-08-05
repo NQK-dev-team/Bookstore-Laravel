@@ -82,6 +82,27 @@ class BookList extends Component
         $this->bookID = null;
     }
 
+    public function reactivateBook()
+    {
+        if ($this->bookID) {
+            $this->controller->reactivateBook($this->bookID);
+        }
+    }
+
+    public function deactivateBook()
+    {
+        if ($this->bookID) {
+            $this->controller->deactivateBook($this->bookID);
+        }
+    }
+
+    public function deleteBook()
+    {
+        if ($this->bookID) {
+            $this->controller->deleteBook($this->bookID);
+        }
+    }
+
     public function render()
     {
         $this->total = $this->controller->getTotal($this->category, $this->author, $this->publisher, $this->search, $this->status);
