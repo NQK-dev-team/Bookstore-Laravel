@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\Manage\Book;
+use App\Http\Controllers\Admin\Manage\Category;
+use App\Http\Controllers\Admin\Manage\Request;
 use App\Http\Controllers\Admin\Profile\Profile;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\VerifyEmail;
@@ -50,9 +52,7 @@ Route::middleware(XssSanitization::class)->group(function () {
                 });
 
                 Route::prefix('category')->name('category.')->group(function () {
-                    Route::get('/', function () {
-                        return view('admin.manage.category.index');
-                    })->name('index');
+                    Route::get('/', [Category::class, 'show'])->name('index');
                 });
 
                 Route::prefix('customer')->name('customer.')->group(function () {
@@ -68,9 +68,7 @@ Route::middleware(XssSanitization::class)->group(function () {
                 });
 
                 Route::prefix('request')->name('request.')->group(function () {
-                    Route::get('/', function () {
-                        return view('admin.manage.request.index');
-                    })->name('index');
+                    Route::get('/', [Request::class, 'show'])->name('index');
                 });
             });
 

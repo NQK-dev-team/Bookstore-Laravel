@@ -21,7 +21,7 @@
                 <input type="text" class="form-control" id="book_author" placeholder="Enter author name"
                     wire:model="author" data-bs-toggle="tooltip" data-bs-placement="top"
                     data-bs-custom-class="text-small"
-                    data-bs-title="You can enter multiple authors with each seperated by comma">
+                    data-bs-title="You can enter multiple authors seperated by commas">
                 <div class='text-danger'>
                     @error('author')
                         {{ $message }}
