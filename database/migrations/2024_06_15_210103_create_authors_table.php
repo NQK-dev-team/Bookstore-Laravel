@@ -12,13 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('authors', function (Blueprint $table) {
-            $table->string('id', 20)->primary();
+            $table->id()->primary();
             $table->string('name', 255)->nullable(false);
             $table->timestamps();
             $table->string('book_id', 20)->nullable(false);
 
             // Real primary key
-            $table->unique(['id', 'book_id']);
+            $table->unique(['name', 'book_id']);
 
             // Foregin keys
             $table->foreign('book_id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');

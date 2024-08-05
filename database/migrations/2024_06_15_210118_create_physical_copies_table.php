@@ -17,7 +17,6 @@ return new class extends Migration
             $table->double('price')->nullable();
             $table->integer('quantity')->nullable()->default(0);
             $table->timestamps();
-            $table->softDeletes();
 
             // Foreign keys
             $table->foreign('id')->references('id')->on('books')->onDelete('cascade')->onUpdate('cascade');

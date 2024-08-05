@@ -2,15 +2,24 @@
 
 namespace App\Http\Controllers\Admin\Manage;
 
+use Closure;
+use DateTime;
+use DateTimeZone;
 use App\Models\Order;
 use App\Models\Author;
+use App\Models\Belong;
 use App\Models\Category;
+use App\Models\FileCopy;
+use App\Models\PhyiscalCopy;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use App\Models\Book as BookModel;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Validator;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class Book extends Controller
 {
@@ -140,6 +149,58 @@ class Book extends Controller
         if ($validator->fails()) {
             return redirect()->route('admin.manage.book.add')->withErrors($validator)->withInput();
         }
+
+        DB::transaction(function () use ($request, $categories, $authors) {
+            $id = IdGenerator::generate(['table' => 'books', 'length' => 20, 'prefix' => 'B-']);
+            $date = new DateTime('now', new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')));
+
+            $book = new BookModel();
+            $book->id = $id;
+            $book->name = $request->bookName;
+            $book->edition = $request->bookEdition;
+            $book->isbn = $request->bookIsbn;
+            $book->publisher = $request->bookPublisher;
+            $book->publication_date = $request->bookPublicationDate;
+            $book->description = $request->bookDescription;
+            $imagePath = Storage::putFileAs('files/images/books/' . $id, $request->file('bookImages')[0], $date->format('YmdHis') . '.' . $request->file('bookImages')[0]->extension());
+            $book->image = $imagePath;
+            $book->save();
+
+            foreach ($categories as $category) {
+                $belongs = new Belong();
+                $belongs->book_id = $id;
+                $belongs->category_id = $category;
+                $belongs->save();
+            }
+
+            foreach ($authors as $author) {
+                $authorModel = new Author();
+                $authorModel->book_id = $id;
+                $authorModel->name = $author;
+                $authorModel->save();
+            }
+
+            if ($request->physicalPrice || $request->physicalQuantity) {
+                $physicalCopy = new PhyiscalCopy();
+                $physicalCopy->id = $id;
+                $physicalCopy->price = $request->physicalPrice ?? null;
+                $physicalCopy->quantity = $request->physicalQuantity ?? null;
+                $physicalCopy->save();
+            }
+
+            if ($request->filePrice || $request->hasFile('pdfFiles')) {
+                $fileCopy = new FileCopy();
+                $fileCopy->id = $id;
+                $fileCopy->price = $request->filePrice ?? null;
+                if ($request->hasFile('pdfFiles')) {
+                    $pdfPath = Storage::putFileAs('files/pdfs/books/' . $id, $request->file('pdfFiles')[0], $date->format('YmdHis') . '.' . $request->file('pdfFiles')[0]->extension());
+                    $fileCopy->path = $pdfPath;
+                }
+                $fileCopy->save();
+            }
+        });
+
+        return redirect()->route('admin.manage.book.index');
     }
 
     public function updateBook(Request $request)
@@ -165,6 +226,7 @@ class Book extends Controller
             'physicalPrice' => $request->physicalPrice,
             'physicalQuantity' => $request->physicalQuantity,
             'filePrice' => $request->filePrice,
+            'removeFile' => $request->removeFile,
             'bookImages' => $request->file('bookImages'),
             'pdfFiles' => $request->file('pdfFiles'),
         ], [
@@ -188,6 +250,22 @@ class Book extends Controller
             'bookImages.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'pdfFiles' => 'max:1',
             'pdfFiles.*' => ['nullable', 'mimes:pdf', 'max:512000'],
+            'removeFile' => [
+                function (string $attribute, mixed $value, Closure $fail)
+                use ($request) {
+                    if ($value) {
+                        if (Order::whereHas(
+                            'fileOrder.fileCopies',
+                            function (Builder $query) use ($request) {
+                                $query->where('file_copies.id', $request->id);
+                            }
+                        )->where([
+                            ['status', '=', true]
+                        ])->exists())
+                            $fail('Ebook has been bought by the customer(s).');
+                    }
+                }
+            ],
         ], [
             'bookImages.*.mimes' => 'The image must be a file of type: jpeg, png, jpg.',
             'bookImages.*.max' => 'The image size must not be greater than 2MB.',
@@ -200,6 +278,85 @@ class Book extends Controller
         if ($validator->fails()) {
             return redirect()->route('admin.manage.book.detail', ["id" => $request->id])->withErrors($validator)->withInput();
         }
+
+        DB::transaction(function () use ($request, $categories, $authors) {
+            $id = $request->id;
+            $date = new DateTime('now', new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')));
+
+            $book = BookModel::find($id);
+            $book->name = $request->bookName;
+            $book->edition = $request->bookEdition;
+            $book->isbn = $request->bookIsbn;
+            $book->publisher = $request->bookPublisher;
+            $book->publication_date = $request->bookPublicationDate;
+            $book->description = $request->bookDescription;
+            if ($request->hasFile('bookImages')) {
+                $imagePath = Storage::putFileAs('files/images/books/' . $id, $request->file('bookImages')[0], $date->format('YmdHis') . '.' . $request->file('bookImages')[0]->extension());
+                $book->image = $imagePath;
+            }
+            $book->save();
+
+            Belong::where('book_id', $id)->delete();
+            foreach ($categories as $category) {
+                $belongs = new Belong();
+                $belongs->book_id = $id;
+                $belongs->category_id = $category;
+                $belongs->save();
+            }
+
+            Author::where('book_id', $id)->delete();
+            foreach ($authors as $author) {
+                $authorModel = new Author();
+                $authorModel->book_id = $id;
+                $authorModel->name = $author;
+                $authorModel->save();
+            }
+
+            $physicalCopy = PhyiscalCopy::find($id);
+            if ($physicalCopy) {
+                $physicalCopy->price = $request->physicalPrice ?? null;
+                $physicalCopy->quantity = $request->physicalQuantity ?? null;
+                $physicalCopy->save();
+
+                if (!$physicalCopy->quantity && !$physicalCopy->price) {
+                    $physicalCopy->delete();
+                }
+            } else if ($request->physicalPrice || $request->physicalQuantity) {
+                $physicalCopy = new PhyiscalCopy();
+                $physicalCopy->id = $id;
+                $physicalCopy->price = $request->physicalPrice ?? null;
+                $physicalCopy->quantity = $request->physicalQuantity ?? null;
+                $physicalCopy->save();
+            }
+
+            $fileCopy = FileCopy::find($id);
+            if ($fileCopy) {
+                if ($request->removeFile) {
+                    $fileCopy->path = null;
+                }
+                $fileCopy->price = $request->filePrice ?? null;
+                if ($request->hasFile('pdfFiles')) {
+                    $pdfPath = Storage::putFileAs('files/pdfs/books/' . $id, $request->file('pdfFiles')[0], $date->format('YmdHis') . '.' . $request->file('pdfFiles')[0]->extension());
+                    $fileCopy->path = $pdfPath;
+                }
+                $fileCopy->save();
+
+                if (!$fileCopy->price && !$fileCopy->path) {
+                    $fileCopy->delete();
+                }
+            } else if ($request->filePrice || ($request->hasFile('pdfFiles') && !$request->removeFile)) {
+                $fileCopy = new FileCopy();
+                $fileCopy->id = $id;
+                $fileCopy->price = $request->filePrice ?? null;
+                if ($request->hasFile('pdfFiles')) {
+                    $pdfPath = Storage::putFileAs('files/pdfs/books/' . $id, $request->file('pdfFiles')[0], $date->format('YmdHis') . '.' . $request->file('pdfFiles')[0]->extension());
+                    $fileCopy->path = $pdfPath;
+                }
+                $fileCopy->save();
+            }
+        });
+
+        return redirect()->route('admin.manage.book.index');
     }
 
     // public function isBookBought($bookID)

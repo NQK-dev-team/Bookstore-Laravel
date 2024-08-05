@@ -68,7 +68,8 @@
                     <th scope="col">Action</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody x-init="const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`);
+            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));">
                 @foreach ($books as $index => $book)
                     <tr>
                         <td class="align-middle">{{ $offset * $limit + $index + 1 }}</td>
@@ -97,7 +98,9 @@
                                 @foreach ($categories as $category)
                                     <p class="my-1">{{ $category }} <i class="bi bi-question-circle help"
                                             data-bs-toggle="tooltip" data-bs-placement="top"
-                                            data-bs-title="{{ getCategoryDescription($category) }}"></i></p>
+                                            data-bs-title="{{ getCategoryDescription($category) }}"
+                                            x-init="const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`);
+                                            const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));"></i></p>
                                 @endforeach
                             </div>
                         </td>
@@ -340,9 +343,6 @@
         </div>
     </div>
     <script>
-        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-
         // On modals close dispatch a customer event
         const deactivateModal = document.getElementById('deactivateModal');
         deactivateModal.addEventListener('hidden.bs.modal', function(event) {

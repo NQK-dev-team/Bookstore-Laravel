@@ -224,7 +224,7 @@
                                     </span>
                                     <div class="d-flex align-items-center">
                                         <label
-                                            class='btn btn-sm btn-light border border-dark {{ $errors->has('pdfFiles') || $errors->has('pdfFiles.0') ? 'is-invalid' : '' }}'>
+                                            class='btn btn-sm btn-light border border-dark'>
                                             <input type="file" class="form-control d-none" id="filePathInput"
                                                 name="pdfFiles[]" accept='.pdf'
                                                 x-on:change="setNewFile(event); fileErrorSignal=0;">
@@ -232,12 +232,14 @@
                                         </label>
                                     </div>
                                     @if ($errors->has('pdfFiles'))
-                                        <div class="invalid-feedback text-center" x-show="fileErrorSignal === 1">
+                                        <div class="invalid-feedback text-center"
+                                            x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles') }}
                                         </div>
                                     @endif
                                     @if ($errors->has('pdfFiles.0'))
-                                        <div class="invalid-feedback text-center" x-show="fileErrorSignal === 1">
+                                        <div class="invalid-feedback text-center"
+                                            x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles.0') }}
                                         </div>
                                     @endif

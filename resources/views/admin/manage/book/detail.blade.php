@@ -35,9 +35,9 @@
         categoryIds: {{ old('bookCategories') ? json_encode($oldCategoryIds) : json_encode($categoryIds) }},
         oldCategoryNames: {{ json_encode($categoryNames) }},
         oldCategoryIds: {{ json_encode($categoryIds) }},
-        removeFile: false,
+        removeFile: {{ old('removeFile') ? 1 : 0 }},
         imageErrorSignal: {{ $errors->has('bookImages') || $errors->has('bookImages.0') ? 1 : 0 }},
-        fileErrorSignal: {{ $errors->has('pdfFiles') || $errors->has('pdfFiles.0') ? 1 : 0 }},
+        fileErrorSignal: {{ $errors->has('pdfFiles') || $errors->has('pdfFiles.0') || $errors->has('removeFile') ? 1 : 0 }},
         isReset: 0,
     }" id="alpine-data-container"
         @alpine-add-category="categoryNames.push($event.detail.name); categoryIds.push($event.detail.id)"
@@ -251,15 +251,17 @@
                                         @endif
                                     </div>
                                     <div class="d-flex align-items-center">
-                                        <div class="me-3">
-                                            <input x-on:change="removeFile = $event.target.checked; setNewFile(null);"
-                                                type="checkbox" class="btn-check" id="removeFile">
-                                            <label class="btn btn-outline-danger btn-sm" for="removeFile">Remove
-                                                file</label>
-                                        </div>
-                                        <label
-                                            class='btn btn-sm btn-light border border-dark {{ $errors->has('pdfFiles') || $errors->has('pdfFiles.0') ? 'is-invalid' : '' }}'
-                                            x-show="!removeFile">
+                                        @if ($book->fileCopy && $book->fileCopy->path)
+                                            <div class="me-3">
+                                                <input
+                                                    x-on:change="removeFile = $event.target.checked; setNewFile(null); fileErrorSignal=0;"
+                                                    type="checkbox" class="btn-check" id="removeFile" name="removeFile"
+                                                    @if (old('removeFile')) checked @endif>
+                                                <label class="btn btn-outline-danger btn-sm" for="removeFile">Remove
+                                                    file</label>
+                                            </div>
+                                        @endif
+                                        <label class='btn btn-sm btn-light border border-dark' x-show="!removeFile">
                                             <input type="file" class="form-control d-none" id="filePathInput"
                                                 name="pdfFiles[]" accept='.pdf'
                                                 x-on:change="setNewFile(event); fileErrorSignal=0;">
@@ -267,13 +269,21 @@
                                         </label>
                                     </div>
                                     @if ($errors->has('pdfFiles'))
-                                        <div class="invalid-feedback text-center" x-show="fileErrorSignal === 1">
+                                        <div class="invalid-feedback text-center"
+                                            x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles') }}
                                         </div>
                                     @endif
                                     @if ($errors->has('pdfFiles.0'))
-                                        <div class="invalid-feedback text-center" x-show="fileErrorSignal === 1">
+                                        <div class="invalid-feedback text-center"
+                                            x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles.0') }}
+                                        </div>
+                                    @endif
+                                    @if ($errors->has('removeFile'))
+                                        <div class="invalid-feedback text-center"
+                                            x-bind:class="{ 'd-block': fileErrorSignal }">
+                                            {{ $errors->first('removeFile') }}
                                         </div>
                                     @endif
                                     <p class="mt-1" id="pdfFileName"></p>
