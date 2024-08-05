@@ -269,7 +269,7 @@
                 <h4>Price Detail</h4>
                 <div class='border border-3 rounded py-2 px-3 mb-5'>
                     <p>Total Before Discount Coupons:&nbsp;<span
-                            class='fw-medium'>{{ $cartDetail ? '$' . $cartDetail->total_discount + $cartDetail->total_price : 0 }}</span>
+                            class='fw-medium'>${{ $cartDetail ? $cartDetail->total_discount + $cartDetail->total_price : 0 }}</span>
                     </p>
                     <p>Total After Discount Coupons:&nbsp;<span class='fw-medium'>
                             @php
@@ -277,15 +277,15 @@
                                 $result = $loyalty ? round(($result * 100) / (100.0 - $loyalty), 2) : $result;
                                 $result = $refer ? round(($result * 100) / (100.0 - $refer), 2) : $result;
                             @endphp
-                            {{ $result }}
+                            ${{ $result }}
                         </span></p>
-                    <p>Loyalty Discount:&nbsp;<span class='fw-medium'>{{ $loyalty ? $loyalty . '%' : 0 }}</span></p>
-                    <p>Referrer Discount:&nbsp;<span class='fw-medium'>{{ $refer ? $refer . '%' : 0 }}</span></p>
+                    <p>Loyalty Discount:&nbsp;<span class='fw-medium'>{{ $loyalty ? $loyalty : 0 }}%</span></p>
+                    <p>Referrer Discount:&nbsp;<span class='fw-medium'>{{ $refer ? $refer : 0 }}%</span></p>
                     <p>Total Discount:&nbsp;<span
-                            class='fw-medium'>{{ $cartDetail ? '$' . $cartDetail->total_discount : 0 }}</span>
+                            class='fw-medium'>${{ $cartDetail ? $cartDetail->total_discount : 0 }}</span>
                     </p>
                     <h4>Final Price:&nbsp;<span
-                            class='fw-medium'>{{ $cartDetail ? '$' . $cartDetail->total_price : 0 }}</span></h4>
+                            class='fw-medium'>${{ $cartDetail ? $cartDetail->total_price : 0 }}</span></h4>
                     <hr>
                     <button type="{{ $cartDetail ? 'submit' : 'button' }}"
                         class="btn btn-primary customized-button text-white mb-2 w-100 mt-3 fs-4"
