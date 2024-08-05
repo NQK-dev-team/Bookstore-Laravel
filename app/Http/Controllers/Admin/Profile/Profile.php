@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Profile;
 
+use Closure;
+use DateTime;
+use DateTimeZone;
 use Carbon\Carbon;
 use App\Models\User;
 use voku\helper\AntiXSS;
@@ -14,7 +17,6 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
-use Closure;
 
 class Profile extends Controller
 {
@@ -49,7 +51,8 @@ class Profile extends Controller
             $data->dob = $antiXss->xss_clean($request->dob);
 
             if ($request->hasFile('images')) {
-                $imagePath = Storage::putFileAs('files/images/users/admins/' . Auth::user()->id, $request->file('images')[0], date('YmdHis', time()) . '.' . $request->file('images')[0]->extension());
+                $date = new DateTime('now', new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')));
+                $imagePath = Storage::putFileAs('files/images/users/admins/' . Auth::user()->id, $request->file('images')[0], $date->format('YmdHis') . '.' . $request->file('images')[0]->extension());
                 $data->image = $imagePath;
             }
 
