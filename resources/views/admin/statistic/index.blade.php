@@ -2,6 +2,7 @@
 
 @section('preloads')
     <title>I'm sorry, I was lazzy...</title>
+        <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
 @endsection
 
 @section('page')

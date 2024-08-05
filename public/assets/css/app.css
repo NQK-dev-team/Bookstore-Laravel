@@ -135,3 +135,12 @@ body {
 .search_form {
   padding-left: 35px !important;
 }
+
+.dropdown-item:hover {
+  background-color: #007bff;
+  color: white !important;
+}
+
+.nav-link:hover {
+  color: #007bff !important;
+}
