@@ -325,7 +325,7 @@ class Book extends Controller
                 $physicalCopy->save();
 
                 if ($physicalCopy->quantity === null && $physicalCopy->price === null) {
-                    $physicalCopy->delete();
+                    // $physicalCopy->delete();
                     $this->removeBookFromCarts($id);
                 } else if ($physicalCopy->quantity === null || $physicalCopy->price === null) {
                     $this->removeBookFromCarts($id, 1);
@@ -351,7 +351,7 @@ class Book extends Controller
                 $fileCopy->save();
 
                 if ($fileCopy->price === null && $fileCopy->path === null) {
-                    $fileCopy->delete();
+                    // $fileCopy->delete();
                     $this->removeBookFromCarts($id);
                 } else if ($fileCopy->price === null || $fileCopy->path === null) {
                     $this->removeBookFromCarts($id, 2);
@@ -431,8 +431,8 @@ class Book extends Controller
         DB::transaction(function () use ($bookID) {
             $this->removeBookFromCarts($bookID);
             BookModel::where('id', $bookID)->delete();
-            PhyiscalCopy::where('id', $bookID)->delete();
-            FileCopy::where('id', $bookID)->delete();
+            // PhyiscalCopy::where('id', $bookID)->delete();
+            // FileCopy::where('id', $bookID)->delete();
         });
     }
 
