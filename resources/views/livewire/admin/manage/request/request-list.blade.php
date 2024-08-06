@@ -16,7 +16,7 @@
         </div>
     </div>
     <div class="w-100 overflow-x-auto">
-        <table class="table table-hover border-2 table-bordered mt-2 w-100">
+        <table class="table table-hover border-2 table-bordered mt-4 w-100">
             <thead>
                 <tr>
                     <th scope="col">#</th>
