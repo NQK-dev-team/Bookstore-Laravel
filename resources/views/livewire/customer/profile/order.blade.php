@@ -44,7 +44,9 @@
                     <tr>
                         <td class='align-middle'>{{ $index + 1 }}</td>
                         <td class='align-middle'>{{ splitOrderCode($order->code) }}</td>
-                        <td class='align-middle'>{{ date('F j, Y H:i:s', strtotime($order->updated_at)) }}</td>
+                        <td class='align-middle'>
+                            {{ (new DateTime($order->updated_at))->setTimezone(new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')))->format('F j, Y H:i:s') }}
+                        </td>
                         <td class='align-middle'>${{ $order->total_price }}</td>
                         <td class='align-middle'>${{ $order->total_discount }}</td>
                         <td class='align-middle col-4'>
