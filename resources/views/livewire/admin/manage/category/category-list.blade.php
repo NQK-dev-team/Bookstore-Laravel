@@ -144,7 +144,7 @@
                 }));
         });
 
-        window.addEventListener('dismiss-info-modal', function(event) {
+        window.addEventListener('dismiss-category-info-modal', function(event) {
             document.getElementById('close_modal_btn').click();
         });
     </script>

@@ -37,7 +37,7 @@ class CategoryForm extends Component
         ]);
 
         $this->controller->updateCategory($this->selectedCategory, $this->categoryName, $this->categoryDescription);
-        $this->dispatch('dismiss-info-modal');
+        $this->dispatch('dismiss-category-info-modal');
     }
 
     public function createCategory()
@@ -48,7 +48,7 @@ class CategoryForm extends Component
         ]);
 
         $this->controller->createCategory($this->categoryName, $this->categoryDescription);
-        $this->dispatch('dismiss-info-modal');
+        $this->dispatch('dismiss-category-info-modal');
     }
 
     public function render()
