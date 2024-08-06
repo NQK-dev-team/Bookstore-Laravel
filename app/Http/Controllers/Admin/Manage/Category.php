@@ -17,13 +17,16 @@ class Category extends Controller
         return CategoryModel::where('name', 'ilike', '%' . $search . '%')
             ->limit($limit)
             ->offset($offset * $limit)
-            ->orderBy('name','asc')
+            ->orderBy('name', 'asc')
             ->get();
     }
 
-    public function getTotalCategories()
+    public function getTotalCategories($search)
     {
-        return CategoryModel::count();
+        if (!$search)
+            $search = '';
+        return CategoryModel::where('name', 'ilike', '%' . $search . '%')->count();
+        // return CategoryModel::count();
     }
 
     public function updateCategory($categoryID, $categoryName, $categoryDescription)

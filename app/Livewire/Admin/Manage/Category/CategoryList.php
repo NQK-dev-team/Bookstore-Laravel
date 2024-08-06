@@ -71,7 +71,7 @@ class CategoryList extends Component
 
     public function render()
     {
-        $this->total = $this->controller->getTotalCategories();
+        $this->total = $this->controller->getTotalCategories($this->search);
         $this->categories = $this->controller->getCategories($this->search, $this->limit, $this->offset);
         return view('livewire.admin.manage.category.category-list');
     }
