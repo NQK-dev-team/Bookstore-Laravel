@@ -236,7 +236,7 @@ class BookList extends Controller
             $category = trim($category);
         else
             $category = '';
-        return Category::select('name')->where('name', 'like', '%' . $category . '%')->distinct()->get();
+        return Category::select('name')->where('name', 'ilike', '%' . $category . '%')->distinct()->get();
     }
 
     public function searchPublisher($publisher)
@@ -245,7 +245,7 @@ class BookList extends Controller
             $publisher = trim($publisher);
         else
             $publisher = '';
-        return Book::select('publisher')->where('publisher', 'like', '%' . $publisher . '%')->where('status', true)->distinct()->get();
+        return Book::select('publisher')->where('publisher', 'ilike', '%' . $publisher . '%')->where('status', true)->distinct()->get();
     }
 
     public function searchAuthor($author)
@@ -254,7 +254,7 @@ class BookList extends Controller
             $author = trim($author);
         else
             $author = '';
-        return Author::select('name')->where('name', 'like', '%' . $author . '%')->distinct()->get();
+        return Author::select('name')->where('name', 'ilike', '%' . $author . '%')->distinct()->get();
     }
 
     public function searchBook($option, $author, $category, $publisher, $book, $offset, $limit)
