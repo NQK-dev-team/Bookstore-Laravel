@@ -123,10 +123,10 @@ class Book extends Controller
         ], [
             'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($request) {
                 return $query->where('name', $request->bookName);
-            })],
+            })->whereNull('deleted_at')],
             'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($request) {
                 return $query->where('edition', is_numeric($request->bookEdition) ? $request->bookEdition : -1);
-            })],
+            })->whereNull('deleted_at')],
             'bookIsbn' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/', Rule::unique('books', 'isbn')->whereNull('deleted_at')],
             'bookCategories' => 'required|array|min:1',
             'bookCategories.*' => 'required|string|exists:categories,id',
@@ -238,10 +238,10 @@ class Book extends Controller
         ], [
             'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($request) {
                 return $query->where('name', $request->bookName);
-            })->whereNot('id', $request->id)],
+            })->whereNot('id', $request->id)->whereNull('deleted_at')],
             'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($request) {
                 return $query->where('edition', is_numeric($request->bookEdition) ? $request->bookEdition : -1);
-            })->whereNot('id', $request->id)],
+            })->whereNot('id', $request->id)->whereNull('deleted_at')],
             'bookIsbn' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/', Rule::unique('books', 'isbn')->whereNull('deleted_at')->whereNot('id', $request->id)],
             'bookCategories' => 'required|array|min:1',
             'bookCategories.*' => 'required|string|exists:categories,id',
