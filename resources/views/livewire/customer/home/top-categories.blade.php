@@ -84,10 +84,10 @@
                                  <div class='d-flex mt-3'>
                                      <p class='text-nowrap'>Hardcover:</p>
                                      <p
-                                         class='{{ $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                         {{ $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
+                                         class='{{ $book->physicalCopy && $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                         {{ $book->physicalCopy && $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
                                      </p>
-                                     @if ($book->physicalCopy->price && $book->discount)
+                                     @if ($book->physicalCopy && $book->physicalCopy->price && $book->discount)
                                          <p class='fw-medium'>
                                              ${{ round(($book->physicalCopy->price * (100.0 - $book->discount)) / 100, 2) }}
                                          </p>
@@ -96,10 +96,10 @@
                                  <div class='d-flex'>
                                      <p class='text-nowrap'>E-book:</p>
                                      <p
-                                         class='{{ $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                         {{ $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
+                                         class='{{ $book->fileCopy && $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                         {{ $book->fileCopy && $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
                                      </p>
-                                     @if ($book->fileCopy->price && $book->discount)
+                                     @if ($book->fileCopy && $book->fileCopy->price && $book->discount)
                                          <p class='fw-medium'>
                                              ${{ round(($book->fileCopy->price * (100.0 - $book->discount)) / 100, 2) }}
                                          </p>
@@ -122,10 +122,10 @@
                                  <div class='d-flex mt-3'>
                                      <p class='text-nowrap'>Hardcover:</p>
                                      <p
-                                         class='{{ $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                         {{ $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
+                                         class='{{ $book->physicalCopy && $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                         {{ $book->physicalCopy && $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
                                      </p>
-                                     @if ($book->physicalCopy->price && $book->discount)
+                                     @if ($book->physicalCopy && $book->physicalCopy->price && $book->discount)
                                          <p class='fw-medium'>
                                              ${{ round(($book->physicalCopy->price * (100.0 - $book->discount)) / 100, 2) }}
                                          </p>
@@ -134,10 +134,10 @@
                                  <div class='d-flex'>
                                      <p class='text-nowrap'>E-book:</p>
                                      <p
-                                         class='{{ $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                         {{ $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
+                                         class='{{ $book->fileCopy && $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                         {{ $book->fileCopy && $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
                                      </p>
-                                     @if ($book->fileCopy->price && $book->discount)
+                                     @if ($book->fileCopy && $book->fileCopy->price && $book->discount)
                                          <p class='fw-medium'>
                                              ${{ round(($book->fileCopy->price * (100.0 - $book->discount)) / 100, 2) }}
                                          </p>
@@ -160,10 +160,10 @@
                                  <div class='d-flex mt-3'>
                                      <p class='text-nowrap'>Hardcover:</p>
                                      <p
-                                         class='{{ $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                         {{ $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
+                                         class='{{ $book->physicalCopy && $book->physicalCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                         {{ $book->physicalCopy && $book->physicalCopy->price ? '$' . $book->physicalCopy->price : 'N/A' }}
                                      </p>
-                                     @if ($book->physicalCopy->price && $book->discount)
+                                     @if ($book->physicalCopy && $book->physicalCopy->price && $book->discount)
                                          <p class='fw-medium'>
                                              ${{ round(($book->physicalCopy->price * (100.0 - $book->discount)) / 100, 2) }}
                                          </p>
@@ -172,10 +172,10 @@
                                  <div class='d-flex'>
                                      <p class='text-nowrap'>E-book:</p>
                                      <p
-                                         class='{{ $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
-                                         {{ $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
+                                         class='{{ $book->fileCopy && $book->fileCopy->price && $book->discount ? 'text-decoration-line-through' : '' }} mx-2 fw-medium'>
+                                         {{ $book->fileCopy && $book->fileCopy->price ? '$' . $book->fileCopy->price : 'N/A' }}
                                      </p>
-                                     @if ($book->fileCopy->price && $book->discount)
+                                     @if ($book->fileCopy && $book->fileCopy->price && $book->discount)
                                          <p class='fw-medium'>
                                              ${{ round(($book->fileCopy->price * (100.0 - $book->discount)) / 100, 2) }}
                                          </p>
