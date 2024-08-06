@@ -1,6 +1,6 @@
 <form class="modal-content" wire:submit="{{ $selectedCategory ? ' updateCategory()' : 'createCategory()' }}">
     <div class="modal-header">
-        <h2 class="modal-title fs-5">{{ $selectedCategory ? 'Update Category' : 'Add New Category' }}</h2>
+        <h2 class="modal-title fs-5">{{ $selectedCategory ? 'Category Details' : 'Add New Category' }}</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close_modal_btn"></button>
     </div>
     <div class="modal-body d-flex flex-column">
