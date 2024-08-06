@@ -71,7 +71,7 @@
         modal.toggle();
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\'tooltip\']');
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-
+        
         document.addEventListener('click', function(e) {
             const dialog = document.getElementById('orderModalDialog');
             if (dialog && !dialog.contains(e.target)) {
@@ -95,8 +95,10 @@
                     </div>
                     <div class="modal-body
                             d-flex flex-column">
-                        <p>Order Time:&nbsp;<span
-                                class='fw-medium'>{{ date('F j, Y H:i:s', strtotime($orderDetail->updated_at)) }}</span>
+                        <p>Order Time:&nbsp;
+                            <span class='fw-medium'>
+                                {{ (new DateTime($orderDetail->updated_at))->setTimezone(new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')))->format('F j, Y H:i:s') }}
+                            </span>
                         </p>
                         <p>Total Discount:&nbsp;<span class='fw-medium'>${{ $orderDetail->total_discount }}</span></p>
                         <p>Total Price:&nbsp;<span class='fw-medium'>${{ $orderDetail->total_price }}</span></p>
