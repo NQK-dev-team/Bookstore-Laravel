@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Manage\Book;
 use App\Http\Controllers\Admin\Manage\Category;
+use App\Http\Controllers\Admin\Manage\Customer;
 use App\Http\Controllers\Admin\Manage\Request;
 use App\Http\Controllers\Admin\Profile\Profile;
 use App\Http\Middleware\CheckAuth;
@@ -56,9 +57,7 @@ Route::middleware(XssSanitization::class)->group(function () {
                 });
 
                 Route::prefix('customer')->name('customer.')->group(function () {
-                    Route::get('/', function () {
-                        return view('admin.manage.customer.index');
-                    })->name('index');
+                    Route::get('/', [Customer::class, 'show'])->name('index');
                 });
 
                 Route::prefix('coupon')->name('coupon.')->group(function () {
