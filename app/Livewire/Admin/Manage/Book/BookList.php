@@ -109,7 +109,7 @@ class BookList extends Component
         $this->books = $this->controller->getBooks($this->category, $this->author, $this->publisher, $this->search, $this->status, $this->offset, $this->limit);
         foreach ($this->books as &$book) {
             refineBookData($book, false);
-            // $book->isBought= $this->controller->isBookBought($book->id);
+            $book->isBought = $this->controller->isBookBought($book->id);
         }
         return view('livewire.admin.manage.book.book-list');
     }

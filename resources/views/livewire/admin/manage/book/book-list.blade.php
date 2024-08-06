@@ -251,16 +251,16 @@
                                         </button>
                                     </div>
                                 @endif
-                                {{-- @if (!$book->isBought) --}}
-                                <div class='text-center' data-bs-toggle="modal" data-bs-target="#deleteModal">
-                                    <button x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();"
-                                        data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete"
-                                        class='btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm' aria-label="Delete book"
-                                        data-bs-original-title="Delete book">
-                                        <i class="bi bi-trash text-white"></i>
-                                    </button>
-                                </div>
-                                {{-- @endif --}}
+                                @if (!$book->isBought)
+                                    <div class='text-center' data-bs-toggle="modal" data-bs-target="#deleteModal">
+                                        <button x-on:click="$wire.bookID='{{ $book->id }}'; $wire.$refresh();"
+                                            data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Delete"
+                                            class='btn btn-danger ms-lg-2 mt-2 mt-lg-0 btn-sm'
+                                            aria-label="Delete book" data-bs-original-title="Delete book">
+                                            <i class="bi bi-trash text-white"></i>
+                                        </button>
+                                    </div>
+                                @endif
                             </div>
                         </td>
                     </tr>

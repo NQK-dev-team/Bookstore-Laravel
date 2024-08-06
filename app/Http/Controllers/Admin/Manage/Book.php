@@ -428,6 +428,9 @@ class Book extends Controller
 
     public function deleteBook($bookID)
     {
+        if ($this->isBookBought($bookID))
+            abort(400);
+
         DB::transaction(function () use ($bookID) {
             $this->removeBookFromCarts($bookID);
             BookModel::where('id', $bookID)->delete();
@@ -436,19 +439,19 @@ class Book extends Controller
         });
     }
 
-    // public function isBookBought($bookID)
-    // {
-    //     return Order::orWhereHas('physicalOrder.physicalCopies', function (Builder $query) use ($bookID) {
-    //         $query->where('physical_copies.id', $bookID);
-    //     })->orWhereHas(
-    //         'fileOrder.fileCopies',
-    //         function (Builder $query) use ($bookID) {
-    //             $query->where('file_copies.id', $bookID);
-    //         }
-    //     )->where([
-    //         ['status', '=', true]
-    //     ])->exists();
-    // }
+    public function isBookBought($bookID)
+    {
+        return Order::orWhereHas('physicalOrder.physicalCopies', function (Builder $query) use ($bookID) {
+            $query->where('physical_copies.id', $bookID);
+        })->orWhereHas(
+            'fileOrder.fileCopies',
+            function (Builder $query) use ($bookID) {
+                $query->where('file_copies.id', $bookID);
+            }
+        )->where([
+            ['status', '=', true]
+        ])->exists();
+    }
 
     public function showList()
     {
