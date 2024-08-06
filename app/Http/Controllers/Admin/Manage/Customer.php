@@ -26,6 +26,8 @@ class Customer extends Controller
     {
         if (!$search)
             $search = '';
+        else
+            $search = trim($search);
         return User::where('is_admin', false)
             ->where([
                 ['name', 'ilike', '%' . $search . '%', 'or'],
@@ -39,6 +41,8 @@ class Customer extends Controller
     {
         if (!$search)
             $search = '';
+        else
+            $search = trim($search);
         return User::where('is_admin', false)
             ->where([
                 ['name', 'ilike', '%' . $search . '%', 'or'],
@@ -118,6 +122,7 @@ class Customer extends Controller
 
         if ($searchCode) {
             $searchCode = str_replace('-', '', $searchCode);
+            $searchCode = str_replace(' ', '', $searchCode);
             $conditions[] = ['code', 'ilike', '%' . $searchCode . '%'];
         }
 

@@ -14,6 +14,8 @@ class Category extends Controller
     {
         if (!$search)
             $search = '';
+        else
+            $search = trim($search);
         return CategoryModel::where('name', 'ilike', '%' . $search . '%')
             ->limit($limit)
             ->offset($offset * $limit)
@@ -25,6 +27,8 @@ class Category extends Controller
     {
         if (!$search)
             $search = '';
+        else
+            $search = trim($search);
         return CategoryModel::where('name', 'ilike', '%' . $search . '%')->count();
         // return CategoryModel::count();
     }

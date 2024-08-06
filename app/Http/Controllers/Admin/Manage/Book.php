@@ -61,7 +61,7 @@ class Book extends Controller
         $category = $category ?? '%';
         $author = $author ?? '%';
         $publisher = $publisher ?? '%';
-        $search = $search ? '%' . $search . '%' : '%';
+        $search = $search ? '%' . trim($search) . '%' : '%';
         return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
             $query->where('name', 'like', $author);
         })->whereHas('categories', function ($query) use ($category) {
@@ -78,7 +78,7 @@ class Book extends Controller
         $category = $category ?? '%';
         $author = $author ?? '%';
         $publisher = $publisher ?? '%';
-        $search = $search ? '%' . $search . '%' : '%';
+        $search = $search ? '%' . trim($search) . '%' : '%';
         return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
             $query->where('name', 'like', $author);
         })->whereHas('categories', function ($query) use ($category) {

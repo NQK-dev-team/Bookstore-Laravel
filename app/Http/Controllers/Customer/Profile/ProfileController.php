@@ -133,6 +133,7 @@ class ProfileController extends Controller
 
         if ($searchCode) {
             $searchCode = str_replace('-', '', $searchCode);
+            $searchCode = str_replace(' ', '', $searchCode);
             $conditions[] = ['code', 'ilike', '%' . $searchCode . '%'];
         }
 

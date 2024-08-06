@@ -124,7 +124,7 @@ class BookList extends Controller
                 })
                 ->where([
                     ['id', '=', $id],
-                    ['name', 'ilike', '%' . $bookParam . '%'],
+                    ['name', 'ilike', '%' . ($bookParam ? trim($bookParam) : '') . '%'],
                     ['publisher', 'like', $publisher],
                     ['status', '=', true],
                 ])->first();
@@ -232,16 +232,28 @@ class BookList extends Controller
 
     public function searchCategory($category)
     {
+        if ($category)
+            $category = trim($category);
+        else
+            $category = '';
         return Category::select('name')->where('name', 'like', '%' . $category . '%')->distinct()->get();
     }
 
     public function searchPublisher($publisher)
     {
+        if ($publisher)
+            $publisher = trim($publisher);
+        else
+            $publisher = '';
         return Book::select('publisher')->where('publisher', 'like', '%' . $publisher . '%')->where('status', true)->distinct()->get();
     }
 
     public function searchAuthor($author)
     {
+        if ($author)
+            $author = trim($author);
+        else
+            $author = '';
         return Author::select('name')->where('name', 'like', '%' . $author . '%')->distinct()->get();
     }
 
@@ -254,7 +266,7 @@ class BookList extends Controller
                 })->whereHas('categories', function ($query) use ($category) {
                     $query->where('name', 'like',  $category);
                 })->where([
-                    ['name', 'ilike', '%' . $book . '%'],
+                    ['name', 'ilike', '%' . ($book ? trim($book) : '') . '%'],
                     ['publisher', 'like',  $publisher],
                     ['status', '=', true],
                 ])->offset($offset * $limit)->limit($limit)->get();
@@ -274,7 +286,7 @@ class BookList extends Controller
                             })
                             ->where([
                                 ['id', '=', $id],
-                                ['name', 'ilike', '%' . $book . '%'],
+                                ['name', 'ilike', '%' . ($book ? trim($book) : '') . '%'],
                                 ['publisher', 'like', $publisher],
                                 ['status', '=', true],
                             ])->first();
@@ -290,7 +302,7 @@ class BookList extends Controller
                         $query->where('name', 'like',  $category);
                     })
                     ->where([
-                        ['name', 'ilike', '%' . $book . '%'],
+                        ['name', 'ilike', '%' . ($book ? trim($book) : '') . '%'],
                         ['publisher', 'like',  $publisher],
                         ['status', '=', true],
                     ])
@@ -309,7 +321,7 @@ class BookList extends Controller
                         $query->where('name', 'like', '%' . $category . '%');
                     })
                     ->where([
-                        ['name', 'ilike', '%' . $book . '%'],
+                        ['name', 'ilike', '%' . ($book ? trim($book) : '') . '%'],
                         ['publisher', 'like', '%' . $publisher . '%'],
                         ['status', '=', true],
                     ])
