@@ -29,14 +29,16 @@ class BookDetail extends Controller
         if (!auth()->check()) {
             return false;
         }
-        $result = Order::orWhereHas('physicalOrder.physicalCopies', function (Builder $query) use ($id) {
-            $query->where('physical_copies.id', $id);
-        })->orWhereHas(
-            'fileOrder.fileCopies',
-            function (Builder $query) use ($id) {
-                $query->where('file_copies.id', $id);
-            }
-        )->where([
+        $result = Order::where(function (Builder $query) use ($id) {
+            $query->orWhereHas('physicalOrder.physicalCopies', function (Builder $sub_query) use ($id) {
+                $sub_query->where('physical_copies.id', $id);
+            })->orWhereHas(
+                'fileOrder.fileCopies',
+                function (Builder $sub_query) use ($id) {
+                    $sub_query->where('file_copies.id', $id);
+                }
+            );
+        })->where([
             ['customer_id', '=', auth()->id()],
             ['status', '=', true]
         ])->exists();

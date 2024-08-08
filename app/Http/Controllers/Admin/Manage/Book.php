@@ -376,17 +376,17 @@ class Book extends Controller
     public function removeBookFromCarts($bookID, $mode = 3)
     {
         $orders = Order::with(['physicalOrder' => ['physicalCopies'], 'fileOrder' => ['fileCopies']])
-            ->orWhereHas('physicalOrder.physicalCopies', function (Builder $query) use ($bookID) {
-                $query->where('physical_copies.id', $bookID);
-            })->orWhereHas(
-                'fileOrder.fileCopies',
-                function (Builder $query) use ($bookID) {
-                    $query->where('file_copies.id', $bookID);
-                }
-            )
-            ->where([
-                ['status', '=', false]
-            ])->get();
+            ->where(function (Builder $query) use ($bookID) {
+                $query->orWhereHas('physicalOrder.physicalCopies', function (Builder $sub_query) use ($bookID) {
+                    $sub_query->where('physical_copies.id', $bookID);
+                })->orWhereHas(
+                    'fileOrder.fileCopies',
+                    function (Builder $sub_query) use ($bookID) {
+                        $sub_query->where('file_copies.id', $bookID);
+                    }
+                );
+            })
+            ->where('status', '=', false)->get();
 
         foreach ($orders as $order) {
             if ($order->physicalOrder && ($mode === 3  || $mode === 1)) {
@@ -441,14 +441,16 @@ class Book extends Controller
 
     public function isBookBought($bookID)
     {
-        return Order::orWhereHas('physicalOrder.physicalCopies', function (Builder $query) use ($bookID) {
-            $query->where('physical_copies.id', $bookID);
-        })->orWhereHas(
-            'fileOrder.fileCopies',
-            function (Builder $query) use ($bookID) {
-                $query->where('file_copies.id', $bookID);
-            }
-        )->where([
+        return Order::where(function (Builder $query) use ($bookID) {
+            $query->orWhereHas('physicalOrder.physicalCopies', function (Builder $sub_query) use ($bookID) {
+                $sub_query->where('physical_copies.id', $bookID);
+            })->orWhereHas(
+                'fileOrder.fileCopies',
+                function (Builder $sub_query) use ($bookID) {
+                    $sub_query->where('file_copies.id', $bookID);
+                }
+            );
+        })->where([
             ['status', '=', true]
         ])->exists();
     }
