@@ -179,16 +179,17 @@ function recalculateOrderValue($id, $customerID = null)
 					if ($discount) {
 						$totalPrice += round(($price * (100.0 - $discount->discount)) / 100, 2) * $amount;
 						// $totalDiscount += round(($price * $discount->discount) / 100.0, 2) * $amount;
-
 						if (
 							!DiscountApply::where([
-								['discount_id', '=', $discount->id]
+								['discount_id', '=', $discount->id],
+								['order_id', '=', $id]
 							])->exists()
-						)
+						) {
 							DiscountApply::create([
 								'order_id' => $id,
 								'discount_id' => $discount->id,
 							]);
+						}
 					} else {
 						$totalPrice += round($price * $amount, 2);
 					}
@@ -220,7 +221,8 @@ function recalculateOrderValue($id, $customerID = null)
 
 						if (
 							!DiscountApply::where([
-								['discount_id', '=', $discount->id]
+								['discount_id', '=', $discount->id],
+								['order_id', '=', $id]
 							])->exists()
 						)
 							DiscountApply::create([
