@@ -105,8 +105,8 @@ class BookList extends Component
 
     public function render()
     {
-        $this->total = $this->controller->getTotal($this->category, $this->author, $this->publisher, $this->search, $this->status);
-        $this->books = $this->controller->getBooks($this->category, $this->author, $this->publisher, $this->search, $this->status, $this->offset, $this->limit);
+        $this->total = $this->controller->getTotal($this->category, $this->author, $this->publisher, $this->search, $this->status) ?? 0;
+        $this->books = $this->controller->getBooks($this->category, $this->author, $this->publisher, $this->search, $this->status, $this->offset, $this->limit) ?? [];
         foreach ($this->books as &$book) {
             refineBookData($book, false);
             $book->isBought = $this->controller->isBookBought($book->id);

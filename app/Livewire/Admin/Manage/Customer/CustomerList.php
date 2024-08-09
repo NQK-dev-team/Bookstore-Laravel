@@ -69,8 +69,8 @@ class CustomerList extends Component
 
     public function render()
     {
-        $this->total = $this->controller->getTotalCustomers($this->search);
-        $this->customers = $this->controller->getCustomers($this->search, $this->limit, $this->offset);
+        $this->total = $this->controller->getTotalCustomers($this->search) ?? 0;
+        $this->customers = $this->controller->getCustomers($this->search, $this->limit, $this->offset) ?? [];
         return view('livewire.admin.manage.customer.customer-list');
     }
 }

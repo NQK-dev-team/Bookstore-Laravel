@@ -53,8 +53,8 @@ class RequestList extends Component
 
     public function render()
     {
-        $this->total = $this->controller->getTotalRequests();
-        $this->requests = $this->controller->getRequests($this->limit, $this->offset);
+        $this->total = $this->controller->getTotalRequests() ?? 0;
+        $this->requests = $this->controller->getRequests($this->limit, $this->offset) ?? [];
         return view('livewire.admin.manage.request.request-list');
     }
 }
