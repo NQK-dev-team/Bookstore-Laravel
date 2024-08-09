@@ -21,7 +21,7 @@
         </button>
 
         <input id="search_category" class="form-control search_form" type="search"
-            placeholder="Search category by name" style="max-width:900px;" aria-label="Search for category by name">
+            placeholder="Search category by name" style="max-width:900px;" aria-label="Search category by name">
     </form>
     <div class="mt-2">
         <div class="d-flex align-items-center">
