@@ -44,7 +44,7 @@
         <div class="mt-2">
             <div class="form-check form-switch">
                 <label class="form-check-label {{ $status ? 'text-success' : 'text-danger' }}"
-                    for="statusSwitch">{{ $status ? 'Choose active books' : 'Choose inactive books' }}</label>
+                    for="statusSwitch">{{ $status ? 'Active books' : 'Inactive books' }}</label>
                 <input title='Book status' class="form-check-input pointer" type="checkbox" role="switch"
                     id="statusSwitch" wire:model.live="status" wire:change="resetPagination()">
             </div>
