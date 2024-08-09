@@ -1,14 +1,17 @@
 @extends('components.layouts.admin')
 
 @section('preloads')
-    <title>
-        Welcome to Laravel
-    </title>
+    <title>Manage Discount Coupons</title>
+    <meta name="page creator" content="Nghia Duong">
+    <meta name="description" content="Manage discount coupons of NQK Bookstore">
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+    @livewireStyles
 @endsection
 
 @section('page')
-    <h1>Haiiii</h1>
+    @livewire('admin.manage.coupon.coupon-list')
 @endsection
 
 @section('postloads')
+    @livewireScripts
 @endsection

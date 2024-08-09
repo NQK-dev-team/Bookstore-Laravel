@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\Manage\Book;
 use App\Http\Controllers\Admin\Manage\Category;
+use App\Http\Controllers\Admin\Manage\Coupon;
 use App\Http\Controllers\Admin\Manage\Customer;
 use App\Http\Controllers\Admin\Manage\Request;
 use App\Http\Controllers\Admin\Profile\Profile;
@@ -61,9 +62,7 @@ Route::middleware(XssSanitization::class)->group(function () {
                 });
 
                 Route::prefix('coupon')->name('coupon.')->group(function () {
-                    Route::get('/', function () {
-                        return view('admin.manage.coupon.index');
-                    })->name('index');
+                    Route::get('/', [Coupon::class, 'show'])->name('index');
                 });
 
                 Route::prefix('request')->name('request.')->group(function () {
