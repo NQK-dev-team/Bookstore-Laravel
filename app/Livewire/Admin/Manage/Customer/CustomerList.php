@@ -29,6 +29,7 @@ class CustomerList extends Component
     public function searchCustomer($search)
     {
         $this->search = $search;
+        $this->resetPagination();
     }
 
     public function previous()

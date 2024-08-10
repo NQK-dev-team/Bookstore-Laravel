@@ -57,6 +57,7 @@ class BookList extends Component
     public function searchBook($search)
     {
         $this->search = ($search === '' || !$search) ? null : $search;
+        $this->resetPagination();
     }
 
     public function previous()

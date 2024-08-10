@@ -29,6 +29,7 @@ class CategoryList extends Component
     public function searchCategory($search)
     {
         $this->search = $search;
+        $this->resetPagination();
     }
 
     public function previous()
