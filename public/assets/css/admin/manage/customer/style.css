@@ -30,10 +30,10 @@
     -webkit-box-orient: vertical;
 }
 
-.modal:nth-of-type(even) {
-    z-index: 1062 !important;
+/* .modal:nth-of-type(even) {
+  z-index: 1062 !important;
 }
 
 .modal-backdrop.show:nth-of-type(even) {
-    z-index: 1061 !important;
-}
+  z-index: 1061 !important;
+} */
