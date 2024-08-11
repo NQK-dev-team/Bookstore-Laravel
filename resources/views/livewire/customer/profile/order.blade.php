@@ -52,8 +52,10 @@
                         <td class='align-middle col-4'>
                             <div class='d-flex flex-column books pe-3'>
                                 @foreach ($order->books as $book)
-                                    <p class='my-2 text-nowrap'>{{ $book['name'] }} -
-                                        {{ $book['edition'] }}</p>
+                                    <a class='my-2 text-nowrap text-decoration-none d-block'
+                                        href="{{ route('customer.book.detail', ['id' => $book['id']]) }}">
+                                        {{ $book['name'] }} -
+                                        {{ $book['edition'] }}</a>
                                 @endforeach
                             </div>
                         </td>
@@ -73,7 +75,7 @@
         modal.toggle();
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\'tooltip\']');
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-        
+
         document.addEventListener('click', function(e) {
             const dialog = document.getElementById('orderModalDialog');
             if (dialog && !dialog.contains(e.target)) {

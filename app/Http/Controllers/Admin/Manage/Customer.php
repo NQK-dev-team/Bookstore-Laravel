@@ -158,7 +158,7 @@ class Customer extends Controller
             $books = [];
             foreach ($temp as $elem) {
                 $refinedData = refineBookData(Book::withTrashed()->find($elem));
-                $books[] = ['name' => $refinedData->name, 'edition' => $refinedData->edition];
+                $books[] = ['name' => $refinedData->name, 'edition' => $refinedData->edition, "id" => $refinedData->id];
             }
             usort($books, function ($a, $b) {
                 return strcmp($a['name'], $b['name']) ?: strcmp($a['edition'], $b['edition']);

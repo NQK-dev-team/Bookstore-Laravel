@@ -54,8 +54,10 @@
                             <td class='align-middle col-4'>
                                 <div class='d-flex flex-column books pe-3'>
                                     @foreach ($order->books as $book)
-                                        <p class='my-2 text-nowrap'>{{ $book['name'] }} -
-                                            {{ $book['edition'] }}</p>
+                                        <a class='my-2 text-nowrap text-decoration-none d-block'
+                                            href="{{ route('admin.manage.book.detail', ['id' => $book['id']]) }}">{{ $book['name'] }}
+                                            -
+                                            {{ $book['edition'] }}</a>
                                     @endforeach
                                 </div>
                             </td>
