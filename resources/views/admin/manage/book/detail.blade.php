@@ -53,7 +53,7 @@
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
                             <input type="text" class="form-control fs-4"
                                 @if ($errors->has('bookName')) x-bind:class="{ 'is-invalid': !isReset }" @endif
-                                id="bookNameInput" name="bookName"
+                                id="bookNameInput" name="bookName" maxlength="255"
                                 value="{{ old('bookName') ? old('bookName') : $book->name }}"
                                 data-old-value="{{ $book->name }}" required>
                             @if ($errors->has('bookName'))

@@ -43,7 +43,7 @@
                         <p class="text-danger mb-0 ms-1 align-middle text-center fs-4 fw-bold">*</p>
                     </div>
                     <input required id="inputName" type="text"
-                        class="form-control @if ($errors->has('name')) {{ 'is-invalid' }} @endif"
+                        class="form-control @if ($errors->has('name')) {{ 'is-invalid' }} @endif" maxlength="255"
                         placeholder="Enter name" name="name" autocomplete="name" value="{{ session('name') }}">
                     @if ($errors->has('name'))
                         <div class="invalid-feedback">

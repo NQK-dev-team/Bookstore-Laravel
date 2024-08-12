@@ -68,7 +68,7 @@
                                         @if ($errors->has('name')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
                                         value="{{ old('name') ? old('name') : auth()->user()->name }}"
                                         data-old-value="{{ auth()->user()->name }}" name="name"
-                                        placeholder="Enter name">
+                                        placeholder="Enter name" maxlength="255">
                                     @if ($errors->has('name'))
                                         <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('name') }}
@@ -138,7 +138,7 @@
                                             class='fw-bold text-danger'>&nbsp;*</span></label>
                                     <input required autocomplete="off" type="text" class="form-control"
                                         @if ($errors->has('address')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
-                                        id="addressInput"
+                                        id="addressInput" maxlength="1000"
                                         value="{{ old('address') ? old('address') : auth()->user()->address }}"
                                         data-old-value="{{ auth()->user()->address }}" name="address"
                                         placeholder="Enter address">

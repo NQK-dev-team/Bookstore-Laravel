@@ -68,13 +68,12 @@ function getBookBestDiscount($book)
 			['apply_for_all_books', '=', false],
 			['start_time', '<=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
 			['end_time', '>=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
-			['status', '=', true],
 		])->whereHas('booksApplied', function (Builder $query) use ($book) {
 			$query->where([
 				['book_id', '=', $book->id]
 			]);
 		});
-	})->orderBy('discount', 'desc')->first();
+	})->where('status', true)->orderBy('discount', 'desc')->first();
 
 	$allDiscount = Discount::whereHas('eventDiscount', function (Builder $query) {
 		$query->where([
@@ -82,7 +81,7 @@ function getBookBestDiscount($book)
 			['start_time', '<=', now()],
 			['end_time', '>=', now()],
 		]);
-	})->orderBy('discount', 'desc')->first();
+	})->where('status', true)->orderBy('discount', 'desc')->first();
 
 	if ($specficDiscount && $allDiscount) {
 		if ($specficDiscount->discount > $allDiscount->discount) {

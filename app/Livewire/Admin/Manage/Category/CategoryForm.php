@@ -32,8 +32,8 @@ class CategoryForm extends Component
     public function updateCategory()
     {
         $this->validate([
-            'categoryName' => 'required|unique:categories,name,' . $this->selectedCategory,
-            'categoryDescription' => 'required',
+            'categoryName' => 'required|string|max:255|unique:categories,name,' . $this->selectedCategory,
+            'categoryDescription' => 'required|string|max:500',
         ]);
 
         $this->controller->updateCategory($this->selectedCategory, $this->categoryName, $this->categoryDescription);
@@ -43,8 +43,8 @@ class CategoryForm extends Component
     public function createCategory()
     {
         $this->validate([
-            'categoryName' => 'required|unique:categories,name',
-            'categoryDescription' => 'required',
+            'categoryName' => 'required|string|max:255|unique:categories,name',
+            'categoryDescription' => 'required|string|max:500',
         ]);
 
         $this->controller->createCategory($this->categoryName, $this->categoryDescription);

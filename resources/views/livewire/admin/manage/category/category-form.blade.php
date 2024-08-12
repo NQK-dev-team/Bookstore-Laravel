@@ -6,7 +6,7 @@
     <div class="modal-body d-flex flex-column">
         <label class='form-label'>Category Name:<span class='fw-bold text-danger'>&nbsp;*</span></label>
         <input type="text" class='form-control {{ $errors->has('categoryName') ? 'is-invalid' : '' }}' required
-            wire:model="categoryName">
+            maxlength="255" wire:model="categoryName">
         @if ($errors->has('categoryName'))
             <div class="invalid-feedback">
                 {{ $errors->first('categoryName') }}
@@ -14,7 +14,7 @@
         @endif
         <label class='form-label mt-3'>Description:<span class='fw-bold text-danger'>&nbsp;*</span></label>
         <textarea rows="5" class='form-control {{ $errors->has('categoryDescription') ? 'is-invalid' : '' }}' required
-            wire:model="categoryDescription"></textarea>
+            maxlength="500" wire:model="categoryDescription"></textarea>
         @if ($errors->has('categoryDescription'))
             <div class="invalid-feedback">
                 {{ $errors->first('categoryDescription') }}

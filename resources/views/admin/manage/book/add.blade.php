@@ -42,7 +42,7 @@
                                     class='fw-bold text-danger'>&nbsp;*</span></label>
                             <input type="text" class="form-control fs-4"
                                 @if ($errors->has('bookName')) x-bind:class="{ 'is-invalid': !isReset }" @endif
-                                id="bookNameInput" name="bookName" required
+                                id="bookNameInput" name="bookName" required maxlength="255"
                                 @if (old('bookName')) value="{{ old('bookName') }}" @endif>
                             @if ($errors->has('bookName'))
                                 <div class="invalid-feedback" x-show="!isReset">

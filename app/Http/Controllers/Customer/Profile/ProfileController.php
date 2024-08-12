@@ -73,7 +73,7 @@ class ProfileController extends Controller
     public function changePassword(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'currentPassword' => ['required', function (string $attribute, mixed $value, Closure $fail) {
+            'currentPassword' => ['required', 'string', function (string $attribute, mixed $value, Closure $fail) {
                 if (!Hash::check($value, Auth::user()->password)) {
                     $fail('The current password is incorrect.');
                 }

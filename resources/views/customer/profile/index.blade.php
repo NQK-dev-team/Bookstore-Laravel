@@ -74,7 +74,7 @@
                                         @if ($errors->has('name')) x-bind:class="{ 'is-invalid': !isInfoReset }" @endif
                                         value="{{ old('name') ? old('name') : auth()->user()->name }}"
                                         data-old-value="{{ auth()->user()->name }}" name="name"
-                                        placeholder="Enter name">
+                                        placeholder="Enter name" maxlength="255">
                                     @if ($errors->has('name'))
                                         <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('name') }}
@@ -147,7 +147,7 @@
                                         id="addressInput"
                                         value="{{ old('address') ? old('address') : auth()->user()->address }}"
                                         data-old-value="{{ auth()->user()->address }}" name="address"
-                                        placeholder="Enter address">
+                                        placeholder="Enter address" maxlength="1000">
                                     @if ($errors->has('address'))
                                         <div class="invalid-feedback" x-show="!isInfoReset">
                                             {{ $errors->first('address') }}
