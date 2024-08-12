@@ -93,11 +93,35 @@ class Coupon extends Controller
 
     public function activateDiscount($couponID)
     {
-        DB::transaction(function () use ($couponID) {
+        $result = 0;
+        DB::transaction(function () use ($couponID, &$result) {
             $coupon = Discount::find($couponID);
+            if (Discount::where([['name', '=', $coupon->name], ['status', '=', true],])->whereNot('id', $couponID)->exists()) {
+                $result = 1;
+                return;
+            }
+
+            if ($discount = Discount::whereHas('customerDiscount')->where('id', $couponID)->first()) {
+                if (Discount::where('status', true)->whereNot('id', $couponID)->whereHas('customerDiscount', function (Builder $query) use ($discount) {
+                    $query->where('point', $discount->customerDiscount->point);
+                })->whereNull('deleted_at')->exists() || Discount::whereHas('customerDiscount')->where('status', true)->where('discount', $discount->discount)->whereNot('id', $couponID)->whereNull('deleted_at')->exists()) {
+                    $result = 1;
+                    return;
+                }
+            } else if ($discount = Discount::whereHas('referrerDiscount')->where('id', $couponID)->first()) {
+                if (Discount::where('status', true)->whereNot('id', $couponID)->whereHas('referrerDiscount', function (Builder $query) use ($discount) {
+                    $query->where('number_of_people', $discount->referrerDiscount->number_of_people);
+                })->whereNull('deleted_at')->exists() || Discount::whereHas('referrerDiscount')->where('status', true)->where('discount', $discount->discount)->whereNot('id', $couponID)->whereNull('deleted_at')->exists()) {
+                    $result = 1;
+                    return;
+                }
+            }
+
             $coupon->status = true;
             $coupon->save();
         });
+
+        return $result;
     }
 
     public function deactivateDiscount($couponID)
@@ -113,6 +137,8 @@ class Coupon extends Controller
     {
         DB::transaction(function () use ($couponID) {
             $coupon = Discount::find($couponID);
+            $coupon->status = false;
+            $coupon->save();
             $coupon->delete();
         });
     }

@@ -60,7 +60,9 @@ class CouponList extends Component
 
     public function reactivateCoupon()
     {
-        $this->controller->activateDiscount($this->couponID);
+        if ($this->controller->activateDiscount($this->couponID)) {
+            $this->dispatch('activate-error-modal');
+        }
     }
 
     #[On('reset-coupon-id')]

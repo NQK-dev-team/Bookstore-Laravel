@@ -16,6 +16,8 @@ class CouponInfo extends Component
     public $couponID;
     #[Reactive]
     public $couponType;
+    #[Reactive]
+    public $status;
     public $couponName;
     public $couponDiscount;
     public $numberOfPeople;
@@ -66,50 +68,53 @@ class CouponInfo extends Component
     {
         if ((int)$this->couponType === 1) {
         } else if ((int)$this->couponType === 2) {
+            $nameRules = ['required', 'string', 'max:255'];
+            $discountRules = ['required', 'numeric', 'min:0', 'max:100'];
+            $pointRules = ['required', 'numeric', 'min:0'];
+            if ($this->status) {
+                $nameRules[] = Rule::unique('discounts', 'name')->where('status', true)->whereNot('id', $this->couponID)->whereNull('deleted_at');
+                $discountRules[] = function (string $attribute, mixed $value, Closure $fail) {
+                    if (Discount::whereHas('customerDiscount')->where([['status', '=', true], ['discount', '=', $value], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()) {
+                        $fail('The discount percentage milestone has been used!');
+                    }
+                };
+                $pointRules[] = function (string $attribute, mixed $value, Closure $fail) {
+                    if (Discount::whereHas('customerDiscount', function (Builder $query) use ($value) {
+                        $query->where([['point', '=', $value],]);
+                    })->where([['status', '=', true], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()) {
+                        $fail('The accumulated point milestone has been used!');
+                    }
+                };
+            }
             $this->validate([
-                'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNot('id', $this->couponID)->whereNull('deleted_at')],
-                'couponDiscount' => [
-                    'required',
-                    'numeric',
-                    'min:0',
-                    'max:100',
-                    function (string $attribute, mixed $value, Closure $fail) {
-                        if (Discount::whereHas('customerDiscount')->where([['status', '=', true], ['discount', '=', $value], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()) {
-                            $fail('The discount percentage milestone has been used!');
-                        }
-                    }
-                ],
-                'point' => [
-                    'required',
-                    'numeric',
-                    'min:0',
-                    function (string $attribute, mixed $value, Closure $fail) {
-                        if (
-                            Discount::whereHas('customerDiscount', function (Builder $query) use ($value) {
-                                $query->where([['point', '=', $value],]);
-                            })->where([['status', '=', true], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()
-                        ) {
-                            $fail('The accumulated point milestone has been used!');
-                        }
-                    }
-                ],
+                'couponName' => $nameRules,
+                'couponDiscount' => $discountRules,
+                'point' => $pointRules,
             ]);
             $this->controller->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->point);
         } else if ((int)$this->couponType === 3) {
-            $this->validate([
-                'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNot('id', $this->couponID)->whereNull('deleted_at')],
-                'couponDiscount' => ['required', 'numeric', 'min:0', 'max:100', function (string $attribute, mixed $value, Closure $fail) {
+            $nameRules = ['required', 'string', 'max:255'];
+            $discountRules = ['required', 'numeric', 'min:0', 'max:100'];
+            $peopleRules = ['required', 'numeric', 'min:0'];
+            if ($this->status) {
+                $nameRules[] = Rule::unique('discounts', 'name')->where('status', true)->whereNot('id', $this->couponID)->whereNull('deleted_at');
+                $discountRules[] = function (string $attribute, mixed $value, Closure $fail) {
                     if (Discount::whereHas('referrerDiscount')->where([['status', '=', true], ['discount', '=', $value], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()) {
                         $fail('The discount percentage milestone has been used!');
                     }
-                }],
-                'numberOfPeople' => ['required', 'numeric', 'min:0', function (string $attribute, mixed $value, Closure $fail) {
+                };
+                $peopleRules[] = function (string $attribute, mixed $value, Closure $fail) {
                     if (Discount::whereHas('referrerDiscount', function (Builder $query) use ($value) {
                         $query->where([['number_of_people', '=', $value],]);
                     })->where([['status', '=', true], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()) {
                         $fail('The number of people milestone has been used!');
                     }
-                }],
+                };
+            }
+            $this->validate([
+                'couponName' => $nameRules,
+                'couponDiscount' => $discountRules,
+                'numberOfPeople' => $peopleRules,
             ]);
             $this->controller->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->numberOfPeople);
         }

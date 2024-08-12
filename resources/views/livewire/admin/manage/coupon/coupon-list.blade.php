@@ -211,7 +211,7 @@
 
     <div class="modal fade" id="infoModal" tabindex="-1" aria-labelledby="Coupon information modal">
         <div class="modal-dialog modal-dialog-centered">
-            @livewire('admin.manage.coupon.coupon-info', ['couponType' => $couponType])
+            @livewire('admin.manage.coupon.coupon-info', ['couponType' => $couponType, 'status' => $status])
         </div>
     </div>
 
@@ -270,6 +270,23 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="activateErrorModal" tabindex="-1" aria-labelledby="Activate modal"
+        wire:ignore.self>
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Notice</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body d-flex flex-column">
+                    <p>Some of the values in the discount coupon has already been used by another coupon.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const deleteModal = document.getElementById('deleteModal');
@@ -307,6 +324,10 @@
     <script>
         window.addEventListener('dismiss-coupon-info-modal', function(event) {
             document.getElementById('close_modal_btn').click();
+        });
+
+        window.addEventListener('activate-error-modal', function(event) {
+            new bootstrap.Modal('#activateErrorModal').toggle();
         });
     </script>
 </div>
