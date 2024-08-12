@@ -27,22 +27,27 @@ class Recovery extends Controller
 
     function sendResetLink(Request $request)
     {
-        session()->flash('email', $request->email);
-        $request->validate(['email' => 'required|email']);
+        $email = trim($request->email);
+        session()->flash('email', $email);
 
-        $validator = Validator::make($request->all(), []);
+        $validator = Validator::make(['email' => $email], [
+            'email' => 'required|email',
+        ]);
+        if ($validator->fails()) {
+            return back()->withErrors($validator->errors());
+        }
 
-        $user = User::where('email', $request->email)->first();
-        if ((!$user || $user->is_admin) && $request->user_type == 'customer') {
+        $user = User::where('email', $email)->first();
+        if ((!$user || $user->is_admin) && $request->user_type === 'customer') {
             $validator->errors()->add('email', 'We can\'t find a user with that email address.');
             return back()->withErrors($validator->errors());
-        } else if ((!$user || !$user->is_admin) && $request->user_type == 'admin') {
+        } else if ((!$user || !$user->is_admin) && $request->user_type === 'admin') {
             $validator->errors()->add('email', 'We can\'t find an admin with that email address.');
             return back()->withErrors($validator->errors());
         }
 
         $status = Password::sendResetLink(
-            $request->only('email')
+            ['email' => $email]
         );
 
         return $status === Password::RESET_LINK_SENT
@@ -53,23 +58,42 @@ class Recovery extends Controller
     function showNewPasswordForm(Request $request)
     {
         if (str_contains($request->route()->getName(), 'admin')) {
-            return view('admin.authentication.reset-password', ['token' => $request->token, 'email' => $request->email]);
+            return view('admin.authentication.reset-password', ['token' => trim($request->token), 'email' => trim($request->email)]);
         }
-        return view('customer.authentication.reset-password', ['token' => $request->token, 'email' => $request->email]);
+        return view('customer.authentication.reset-password', ['token' => trim($request->token), 'email' => trim($request->email)]);
     }
 
     function setNewPassword(Request $request)
     {
-        $request->validate([
+        $token = trim($request->token);
+        $email = trim($request->email);
+        $password = trim($request->password);
+        $confirmPassword = trim($request->confirmPassword);
+
+        $validator = Validator::make([
+            'email' => $email,
+            'password' => $password,
+            'confirmPassword' => $confirmPassword,
+            'token' => $token,
+        ], [
             'token' => 'required',
             'email' => 'required',
             'password' => ['required', 'string', PasswordRule::min(8)->mixedCase()->numbers()->symbols()],
             'confirmPassword' => 'required|same:password',
         ]);
 
-        $credentials = $request->only('password', 'password_confirmation', 'token');
+        if ($validator->fails()) {
+            return back()->withErrors($validator->errors());
+        }
+
+        $credentials = [
+            'password' => $password,
+            'password_confirmation' => $confirmPassword,
+            'token' => $token,
+        ];
+
         try {
-            $email = Crypt::decryptString($request->email);
+            $email = Crypt::decryptString($email);
             $credentials['email'] = $email;
         } catch (DecryptException $e) {
             return back()->withErrors(['error' => ['Invalid encrypted email.']]);
@@ -88,10 +112,10 @@ class Recovery extends Controller
 
                 $userName = $user->name;
 
-                // Signal to the application that a user's password has been reset
-                // and allowing any other parts of the application that are listening
-                // for this event to react accordingly.
-                event(new PasswordReset($user));
+                // // Signal to the application that a user's password has been reset
+                // // and allowing any other parts of the application that are listening
+                // // for this event to react accordingly.
+                // event(new PasswordReset($user));
             }
         );
 

@@ -29,17 +29,37 @@ class Register extends Controller
 
     public function register(Request $request)
     {
-        session()->flash('name', $request->name);
-        session()->flash('email', $request->email);
-        session()->flash('phone', $request->phone);
-        session()->flash('gender', $request->gender);
-        session()->flash('dob', $request->dob);
-        session()->flash('address', $request->address);
-        session()->flash('password', $request->password);
-        session()->flash('confirmPassword', $request->confirmPassword);
-        session()->flash('refEmail', $request->refEmail);
+        $name = trim($request->name);
+        $email = trim($request->email);
+        $phone = trim($request->phone);
+        $gender = trim($request->gender);
+        $dob = trim($request->dob);
+        $address = trim($request->address);
+        $password = trim($request->password);
+        $confirmPassword = trim($request->confirmPassword);
+        $refEmail = trim($request->refEmail);
 
-        $request->validate([
+        session()->flash('name', $name);
+        session()->flash('email', $email);
+        session()->flash('phone', $phone);
+        session()->flash('gender', $gender);
+        session()->flash('dob', $dob);
+        session()->flash('address', $address);
+        session()->flash('password', $password);
+        session()->flash('confirmPassword', $confirmPassword);
+        session()->flash('refEmail', $refEmail);
+
+        $validator = Validator::make([
+            'name' => $name,
+            'email' => $email,
+            'phone' => $phone,
+            'gender' => $gender,
+            'dob' => $dob,
+            'address' => $address,
+            'password' => $password,
+            'confirmPassword' => $confirmPassword,
+            'refEmail' => $refEmail,
+        ], [
             'name' => 'required|string|max:255',
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->whereNull('deleted_at')],
             'phone' => ['required', 'numeric', 'digits:10', Rule::unique('users', 'phone')->whereNull('deleted_at')],
@@ -53,25 +73,28 @@ class Register extends Controller
             'dob.before_or_equal' => 'You must be at least 18 years old to register.',
         ]);
 
-        // Create user, login and redirect to email verification page
-        $refID = $request->refEmail ? (User::where('email', $request->refEmail)->first()->id) : null;
+        if ($validator->fails()) {
+            return back()->withErrors($validator->errors());
+        }
 
-        DB::transaction(function () use ($request, $refID) {
+        // Create user, login and redirect to email verification page
+        $refID = $refEmail ? (User::where('email', $refEmail)->first()->id) : null;
+
+        DB::transaction(function () use ($name, $email, $phone, $dob, $address, $gender, $password, $refID) {
             User::create([
                 'id' => IdGenerator::generate(['table' => 'users', 'length' => 20, 'prefix' => 'U-C-', 'reset_on_prefix_change' => true]),
-                'name' => $request->name,
-                'email' => $request->email,
-                'phone' => $request->phone,
-                'dob' => $request->dob,
-                'address' => $request->address,
-                'gender' => $request->gender,
-                'password' =>  Hash::make($request->password),
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'dob' => $dob,
+                'address' => $address,
+                'gender' => $gender,
+                'password' =>  Hash::make($password),
                 'referrer_id' => $refID,
             ]);
         });
 
-        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' => 0])) { {
-                $validator = Validator::make($request->all(), []);
+        if (!Auth::attempt(['email' => $email, 'password' => $password, 'is_admin' => 0])) { {
                 $validator->errors()->add('error_message', 'Error while logging in with new account. Please try again.');
                 return back()->withErrors($validator->errors());
             }
@@ -101,11 +124,16 @@ class Register extends Controller
 
     public function requestVerification(Request $request)
     {
-        $request->validate([
+        $email = trim($request->email);
+
+        $validator = Validator::make(["email" => $email], [
             'email' => 'required|email|exists:users,email',
         ]);
 
-        $email = $request->email;
+        if ($validator->fails()) {
+            return back()->withErrors($validator->errors());
+        }
+
         $result = DB::table('email_verify_tokens')->where('email', $email)->first();
         $token = Str::random(32);
         while (DB::table('email_verify_tokens')->where('token', Hash::make($token))->first()) {
@@ -125,8 +153,8 @@ class Register extends Controller
     public function verifyEmail(Request $request)
     {
         try {
-            $email = Crypt::decryptString($request->email);
-            $token = $request->token;
+            $email = Crypt::decryptString(trim($request->email));
+            $token = trim($request->token);
 
             $result = DB::table('email_verify_tokens')->where('email', $email)->first();
 

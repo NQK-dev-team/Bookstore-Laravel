@@ -31,6 +31,8 @@ class Book extends Controller
     {
         if (!$category)
             return Category::get();
+        else
+            $category = trim($category);
 
         return Category::where('name', 'ilike', "%{$category}%")->get();
     }
@@ -44,6 +46,8 @@ class Book extends Controller
     {
         if (!$publisher)
             return BookModel::select('publisher')->get()->unique('publisher');
+        else
+            $publisher = trim($publisher);
 
         return BookModel::select('publisher')->where('publisher', 'ilike', "%{$publisher}%")->get()->unique('publisher');
     }
@@ -52,15 +56,17 @@ class Book extends Controller
     {
         if (!$author)
             return Author::get();
+        else
+            $author = trim($author);
 
         return Author::where('name', 'ilike', "%{$author}%")->get()->unique('name');
     }
 
     public function getTotal($category = null, $author = null, $publisher = null, $search = null, $status = true)
     {
-        $category = $category ?? '%';
-        $author = $author ?? '%';
-        $publisher = $publisher ?? '%';
+        $category = trim($category) ?? '%';
+        $author = trim($author) ?? '%';
+        $publisher = trim($publisher) ?? '%';
         $search = $search ? '%' . trim($search) . '%' : '%';
         return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
             $query->where('name', 'like', $author);
@@ -75,9 +81,9 @@ class Book extends Controller
 
     public function getBooks($category = null, $author = null, $publisher = null, $search = null, $status = true, $offset = 0, $limit = 10)
     {
-        $category = $category ?? '%';
-        $author = $author ?? '%';
-        $publisher = $publisher ?? '%';
+        $category = trim($category) ?? '%';
+        $author = trim($author) ?? '%';
+        $publisher = trim($publisher) ?? '%';
         $search = $search ? '%' . trim($search) . '%' : '%';
         return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
             $query->where('name', 'like', $author);
@@ -106,26 +112,36 @@ class Book extends Controller
                 $authors[] = $author;
             }
         }
+        $bookName = trim($request->bookName);
+        $bookEdition = trim($request->bookEdition);
+        $bookIsbn = trim($request->bookIsbn);
+        $bookPublisher = trim($request->bookPublisher);
+        $bookPublicationDate = trim($request->bookPublicationDate);
+        $bookDescription = $request->bookDescription ? trim($request->bookDescription) : null;
+        $physicalPrice = $request->bookPhysicalPrice ? trim($request->bookPhysicalPrice) : null;
+        $physicalQuantity = $request->bookPhysicalQuantity ? trim($request->bookPhysicalQuantity) : null;
+        $filePrice = $request->filePrice ? trim($request->filePrice) : null;
+
         $validator = Validator::make([
-            'bookName' => $request->bookName,
-            'bookEdition' => $request->bookEdition,
-            'bookIsbn' => $request->bookIsbn,
+            'bookName' => $bookName,
+            'bookEdition' => $bookEdition,
+            'bookIsbn' => $bookIsbn,
             'bookCategories' => $categories,
             'bookAuthors' => $authors,
-            'bookPublisher' => $request->bookPublisher,
-            'bookPublicationDate' => $request->bookPublicationDate,
-            'bookDescription' => $request->bookDescription,
-            'physicalPrice' => $request->physicalPrice,
-            'physicalQuantity' => $request->physicalQuantity,
-            'filePrice' => $request->filePrice,
+            'bookPublisher' => $bookPublisher,
+            'bookPublicationDate' => $bookPublicationDate,
+            'bookDescription' => $bookDescription,
+            'physicalPrice' => $physicalPrice,
+            'physicalQuantity' => $physicalQuantity,
+            'filePrice' => $filePrice,
             'bookImages' => $request->file('bookImages'),
             'pdfFiles' => $request->file('pdfFiles'),
         ], [
-            'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($request) {
-                return $query->where('name', $request->bookName);
+            'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($bookName) {
+                return $query->where('name', $bookName);
             })->whereNull('deleted_at')],
-            'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($request) {
-                return $query->where('edition', is_numeric($request->bookEdition) ? $request->bookEdition : -1);
+            'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($bookEdition) {
+                return $query->where('edition', is_numeric($bookEdition) ? $bookEdition : -1);
             })->whereNull('deleted_at')],
             'bookIsbn' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/', Rule::unique('books', 'isbn')->whereNull('deleted_at')],
             'bookCategories' => 'required|array|min:1',
@@ -154,18 +170,18 @@ class Book extends Controller
             return redirect()->route('admin.manage.book.add')->withErrors($validator)->withInput();
         }
 
-        DB::transaction(function () use ($request, $categories, $authors) {
+        DB::transaction(function () use ($bookName, $bookEdition, $bookIsbn, $bookPublisher, $bookPublicationDate, $bookDescription, $physicalPrice, $physicalQuantity, $filePrice, $request, $categories, $authors) {
             $id = IdGenerator::generate(['table' => 'books', 'length' => 20, 'prefix' => 'B-']);
             $date = new DateTime('now', new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')));
 
             $book = new BookModel();
             $book->id = $id;
-            $book->name = $request->bookName;
-            $book->edition = $request->bookEdition;
-            $book->isbn = $request->bookIsbn;
-            $book->publisher = $request->bookPublisher;
-            $book->publication_date = $request->bookPublicationDate;
-            $book->description = $request->bookDescription;
+            $book->name = $bookName;
+            $book->edition = $bookEdition;
+            $book->isbn = $bookIsbn;
+            $book->publisher = $bookPublisher;
+            $book->publication_date = $bookPublicationDate;
+            $book->description = $bookDescription;
             $imagePath = Storage::putFileAs('files/images/books/' . $id, $request->file('bookImages')[0], $date->format('YmdHis') . '.' . $request->file('bookImages')[0]->extension());
             $book->image = $imagePath;
             $book->save();
@@ -184,18 +200,18 @@ class Book extends Controller
                 $authorModel->save();
             }
 
-            if ($request->physicalPrice !== null || $request->physicalQuantity !== null) {
+            if ($physicalPrice !== null || $physicalQuantity !== null) {
                 $physicalCopy = new PhyiscalCopy();
                 $physicalCopy->id = $id;
-                $physicalCopy->price = $request->physicalPrice !== null ? $request->physicalPrice : null;
-                $physicalCopy->quantity = $request->physicalQuantity !== null ? $request->physicalQuantity : null;
+                $physicalCopy->price = $physicalPrice !== null ? $physicalPrice : null;
+                $physicalCopy->quantity = $physicalQuantity !== null ? $physicalQuantity : null;
                 $physicalCopy->save();
             }
 
-            if ($request->filePrice !== null || $request->hasFile('pdfFiles')) {
+            if ($filePrice !== null || $request->hasFile('pdfFiles')) {
                 $fileCopy = new FileCopy();
                 $fileCopy->id = $id;
-                $fileCopy->price = $request->filePrice !== null ? $request->filePrice : null;
+                $fileCopy->price = $filePrice !== null ? $filePrice : null;
                 if ($request->hasFile('pdfFiles')) {
                     $pdfPath = Storage::putFileAs('files/pdfs/books/' . $id, $request->file('pdfFiles')[0], $date->format('YmdHis') . '.' . $request->file('pdfFiles')[0]->extension());
                     $fileCopy->path = $pdfPath;
@@ -220,27 +236,38 @@ class Book extends Controller
                 $authors[] = $author;
             }
         }
+        $bookName = trim($request->bookName);
+        $bookEdition = trim($request->bookEdition);
+        $bookIsbn = trim($request->bookIsbn);
+        $bookPublisher = trim($request->bookPublisher);
+        $bookPublicationDate = trim($request->bookPublicationDate);
+        $bookDescription = $request->bookDescription ? trim($request->bookDescription) : null;
+        $physicalPrice = $request->bookPhysicalPrice ? trim($request->bookPhysicalPrice) : null;
+        $physicalQuantity = $request->bookPhysicalQuantity ? trim($request->bookPhysicalQuantity) : null;
+        $filePrice = $request->filePrice ? trim($request->filePrice) : null;
+        $removeFile = boolval($request->removeFile);
+
         $validator = Validator::make([
-            'bookName' => $request->bookName,
-            'bookEdition' => $request->bookEdition,
-            'bookIsbn' => $request->bookIsbn,
+            'bookName' => $bookName,
+            'bookEdition' => $bookEdition,
+            'bookIsbn' => $bookIsbn,
             'bookCategories' => $categories,
             'bookAuthors' => $authors,
-            'bookPublisher' => $request->bookPublisher,
-            'bookPublicationDate' => $request->bookPublicationDate,
-            'bookDescription' => $request->bookDescription,
-            'physicalPrice' => $request->physicalPrice,
-            'physicalQuantity' => $request->physicalQuantity,
-            'filePrice' => $request->filePrice,
-            'removeFile' => $request->removeFile,
+            'bookPublisher' => $bookPublisher,
+            'bookPublicationDate' => $bookPublicationDate,
+            'bookDescription' => $bookDescription,
+            'physicalPrice' => $physicalPrice,
+            'physicalQuantity' => $physicalQuantity,
+            'filePrice' => $filePrice,
+            'removeFile' => $removeFile,
             'bookImages' => $request->file('bookImages'),
             'pdfFiles' => $request->file('pdfFiles'),
         ], [
-            'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($request) {
-                return $query->where('name', $request->bookName);
+            'bookEdition' => ['required', 'numeric', 'min:1', Rule::unique('books', 'edition')->where(function ($query) use ($bookName) {
+                return $query->where('name', $bookName);
             })->whereNot('id', $request->id)->whereNull('deleted_at')],
-            'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($request) {
-                return $query->where('edition', is_numeric($request->bookEdition) ? $request->bookEdition : -1);
+            'bookName' => ['required', 'string', 'max:255', Rule::unique('books', 'name')->where(function ($query) use ($bookEdition) {
+                return $query->where('edition', is_numeric($bookEdition) ? $bookEdition : -1);
             })->whereNot('id', $request->id)->whereNull('deleted_at')],
             'bookIsbn' => ['required', 'string', 'size:13', 'regex:/^\d{13}$/', Rule::unique('books', 'isbn')->whereNull('deleted_at')->whereNot('id', $request->id)],
             'bookCategories' => 'required|array|min:1',
@@ -285,17 +312,17 @@ class Book extends Controller
             return redirect()->route('admin.manage.book.detail', ["id" => $request->id])->withErrors($validator)->withInput();
         }
 
-        DB::transaction(function () use ($request, $categories, $authors) {
+        DB::transaction(function () use ($bookName, $bookEdition, $bookIsbn, $bookPublisher, $bookPublicationDate, $bookDescription, $physicalPrice, $physicalQuantity, $filePrice, $removeFile, $request, $categories, $authors) {
             $id = $request->id;
             $date = new DateTime('now', new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')));
 
             $book = BookModel::find($id);
-            $book->name = $request->bookName;
-            $book->edition = $request->bookEdition;
-            $book->isbn = $request->bookIsbn;
-            $book->publisher = $request->bookPublisher;
-            $book->publication_date = $request->bookPublicationDate;
-            $book->description = $request->bookDescription;
+            $book->name = $bookName;
+            $book->edition = $bookEdition;
+            $book->isbn = $bookIsbn;
+            $book->publisher = $bookPublisher;
+            $book->publication_date = $bookPublicationDate;
+            $book->description = $bookDescription;
             if ($request->hasFile('bookImages')) {
                 $imagePath = Storage::putFileAs('files/images/books/' . $id, $request->file('bookImages')[0], $date->format('YmdHis') . '.' . $request->file('bookImages')[0]->extension());
                 $book->image = $imagePath;
@@ -320,8 +347,8 @@ class Book extends Controller
 
             $physicalCopy = PhyiscalCopy::find($id);
             if ($physicalCopy) {
-                $physicalCopy->price = $request->physicalPrice !== null ? $request->physicalPrice : null;
-                $physicalCopy->quantity = $request->physicalQuantity !== null ? $request->physicalQuantity : null;
+                $physicalCopy->price = $physicalPrice !== null ? $physicalPrice : null;
+                $physicalCopy->quantity = $physicalQuantity !== null ? $physicalQuantity : null;
                 $physicalCopy->save();
 
                 if ($physicalCopy->quantity === null && $physicalCopy->price === null) {
@@ -330,20 +357,20 @@ class Book extends Controller
                 } else if ($physicalCopy->quantity === null || $physicalCopy->price === null) {
                     $this->removeBookFromCarts($id, 1);
                 }
-            } else if ($request->physicalPrice !== null || $request->physicalQuantity !== null) {
+            } else if ($physicalPrice !== null || $physicalQuantity !== null) {
                 $physicalCopy = new PhyiscalCopy();
                 $physicalCopy->id = $id;
-                $physicalCopy->price = $request->physicalPrice !== null ? $request->physicalPrice : null;
-                $physicalCopy->quantity = $request->physicalQuantity !== null ? $request->physicalQuantity : null;
+                $physicalCopy->price = $physicalPrice !== null ? $physicalPrice : null;
+                $physicalCopy->quantity = $physicalQuantity !== null ? $physicalQuantity : null;
                 $physicalCopy->save();
             }
 
             $fileCopy = FileCopy::find($id);
             if ($fileCopy) {
-                if ($request->removeFile) {
+                if ($removeFile) {
                     $fileCopy->path = null;
                 }
-                $fileCopy->price = $request->filePrice !== null ? $request->filePrice : null;
+                $fileCopy->price = $filePrice !== null ? $filePrice : null;
                 if ($request->hasFile('pdfFiles')) {
                     $pdfPath = Storage::putFileAs('files/pdfs/books/' . $id, $request->file('pdfFiles')[0], $date->format('YmdHis') . '.' . $request->file('pdfFiles')[0]->extension());
                     $fileCopy->path = $pdfPath;
@@ -356,10 +383,10 @@ class Book extends Controller
                 } else if ($fileCopy->price === null || $fileCopy->path === null) {
                     $this->removeBookFromCarts($id, 2);
                 }
-            } else if ($request->filePrice !== null || ($request->hasFile('pdfFiles') && !$request->removeFile)) {
+            } else if ($filePrice !== null || ($request->hasFile('pdfFiles') && !$removeFile)) {
                 $fileCopy = new FileCopy();
                 $fileCopy->id = $id;
-                $fileCopy->price = $request->filePrice !== null ? $request->filePrice : null;
+                $fileCopy->price = $filePrice !== null ? $filePrice : null;
                 if ($request->hasFile('pdfFiles')) {
                     $pdfPath = Storage::putFileAs('files/pdfs/books/' . $id, $request->file('pdfFiles')[0], $date->format('YmdHis') . '.' . $request->file('pdfFiles')[0]->extension());
                     $fileCopy->path = $pdfPath;

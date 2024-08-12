@@ -31,6 +31,8 @@ class CategoryForm extends Component
 
     public function updateCategory()
     {
+        $this->categoryName = trim($this->categoryName);
+        $this->categoryDescription = trim($this->categoryDescription);
         $this->validate([
             'categoryName' => 'required|string|max:255|unique:categories,name,' . $this->selectedCategory,
             'categoryDescription' => 'required|string|max:500',
@@ -42,6 +44,8 @@ class CategoryForm extends Component
 
     public function createCategory()
     {
+        $this->categoryName = trim($this->categoryName);
+        $this->categoryDescription = trim($this->categoryDescription);
         $this->validate([
             'categoryName' => 'required|string|max:255|unique:categories,name',
             'categoryDescription' => 'required|string|max:500',

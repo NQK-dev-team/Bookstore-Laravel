@@ -154,7 +154,7 @@ class Coupon extends Controller
             $discount = new Discount();
             $id = null;
 
-            $discount->name = $name;
+            $discount->name = trim($name);
             $discount->discount = $discountPercentage;
             if ((int) $couponType === 1) {
                 $discount->id = IdGenerator::generate(['table' => 'discounts', 'length' => 20, 'prefix' => 'D-E-', 'reset_on_prefix_change' => true]);
@@ -193,7 +193,7 @@ class Coupon extends Controller
         DB::transaction(function () use ($couponType, $id, $name, $discountPercentage, $params) {
             $discount = Discount::find($id);
 
-            $discount->name = $name;
+            $discount->name = trim($name);
             $discount->discount = $discountPercentage;
             if ((int) $couponType === 1) {
             } elseif ((int) $couponType === 2) {

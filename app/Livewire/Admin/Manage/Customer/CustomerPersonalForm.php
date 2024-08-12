@@ -35,6 +35,7 @@ class CustomerPersonalForm extends Component
 
     public function saveInfo()
     {
+        $this->email=trim($this->email);
         $this->validate([
             'email' => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($this->customerID)->whereNull('deleted_at')],
         ]);

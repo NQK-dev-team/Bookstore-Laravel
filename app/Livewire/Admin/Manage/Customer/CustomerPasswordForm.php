@@ -32,6 +32,8 @@ class CustomerPasswordForm extends Component
 
     public function updatePassword()
     {
+        $this->newPassword = trim($this->newPassword);
+        $this->confirmPassword = trim($this->confirmPassword);
         $this->validate([
             'newPassword' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols(),
             function (string $attribute, mixed $value, Closure $fail) {

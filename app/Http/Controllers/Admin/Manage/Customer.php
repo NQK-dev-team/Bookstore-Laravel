@@ -62,6 +62,7 @@ class Customer extends Controller
 
     public function updateEmail($customerID, $email)
     {
+        $email=trim($email);
         DB::transaction(
             function () use ($customerID, $email) {
                 $customer = User::find($customerID);
@@ -76,6 +77,7 @@ class Customer extends Controller
 
     public function updatePassword($customerID, $password)
     {
+        $password = trim($password);
         DB::transaction(function () use ($customerID, $password) {
             $customer = User::find($customerID);
             $customer->password = Hash::make($password);

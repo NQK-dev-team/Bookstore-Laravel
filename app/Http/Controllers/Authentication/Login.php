@@ -17,18 +17,25 @@ class Login extends Controller
 {
     public function login(Request $request)
     {
-        session()->flash('email', $request->email);
-        session()->flash('password', $request->password);
+        $email = trim($request->email);
+        $password = trim($request->password);
+        session()->flash('email', $email);
+        session()->flash('password', $password);
 
-        $request->validate([
-            'email' => 'required|email',
-            'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()]
-        ]);
+        $validator = Validator::make(
+            ['email' => $email, 'password' => $password],
+            [
+                'email' => 'required|email',
+                'password' => ['required', 'string', Password::min(8)->mixedCase()->numbers()->symbols()],
+            ]
+        );
+        if ($validator->fails()) {
+            return back()->withErrors($validator->errors());
+        }
 
-        if (($request->user_type === 'customer' && !Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' => 0]))
-            || ($request->user_type === 'admin' && !Auth::attempt(['email' => $request->email, 'password' => $request->password, 'is_admin' => 1]))
+        if (($request->user_type === 'customer' && !Auth::attempt(['email' => $email, 'password' => $password, 'is_admin' => 0]))
+            || ($request->user_type === 'admin' && !Auth::attempt(['email' => $email, 'password' => $password, 'is_admin' => 1]))
         ) {
-            $validator = Validator::make($request->all(), []);
             $validator->errors()->add('error_message', 'Incorrect email or password.');
             return back()->withErrors($validator->errors());
         }

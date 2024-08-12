@@ -43,6 +43,7 @@ class Cart extends Component
 
     public function updateAddress($address)
     {
+        $address = trim($address);
         Validator::make(['address' => $address], [
             'address' => 'required|string|max:1000',
         ])->validate();

@@ -66,6 +66,8 @@ class CouponInfo extends Component
 
     public function updateCoupon()
     {
+        $this->couponName = trim($this->couponName);
+        
         if ((int)$this->couponType === 1) {
         } else if ((int)$this->couponType === 2) {
             $nameRules = ['required', 'string', 'max:255'];
@@ -123,6 +125,8 @@ class CouponInfo extends Component
 
     public function createCoupon()
     {
+        $this->couponName = trim($this->couponName);
+
         if ((int)$this->couponType === 1) {
         } else if ((int)$this->couponType === 2) {
             $this->validate([

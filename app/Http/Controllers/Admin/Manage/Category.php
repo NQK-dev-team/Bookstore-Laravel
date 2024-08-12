@@ -37,8 +37,8 @@ class Category extends Controller
     {
         DB::transaction(function () use ($categoryID, $categoryName, $categoryDescription) {
             $category = CategoryModel::find($categoryID);
-            $category->name = $categoryName;
-            $category->description = $categoryDescription;
+            $category->name = trim($categoryName);
+            $category->description = trim($categoryDescription);
             $category->save();
         });
     }
@@ -48,8 +48,8 @@ class Category extends Controller
         DB::transaction(function () use ($categoryName, $categoryDescription) {
             $category = new CategoryModel();
             $category->id = IdGenerator::generate(['table' => 'categories', 'length' => 20, 'prefix' => 'C-']);
-            $category->name = $categoryName;
-            $category->description = $categoryDescription;
+            $category->name = trim($categoryName);
+            $category->description = trim($categoryDescription);
             $category->save();
         });
     }
