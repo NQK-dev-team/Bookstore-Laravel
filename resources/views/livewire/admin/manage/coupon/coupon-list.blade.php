@@ -304,4 +304,9 @@
                 }));
         });
     </script>
+    <script>
+        window.addEventListener('dismiss-coupon-info-modal', function(event) {
+            document.getElementById('close_modal_btn').click();
+        });
+    </script>
 </div>
