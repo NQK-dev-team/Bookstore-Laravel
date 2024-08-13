@@ -1,5 +1,4 @@
-<form class="modal-content" wire:submit="{{ $couponID ? ' updateCoupon()' : 'createCoupon()' }}"
-    @if ((int) $couponType === 1) x-data="{ disabled: false }" @endif>
+<form class="modal-content" wire:submit="{{ $couponID ? ' updateCoupon()' : 'createCoupon()' }}">
     <div class="modal-header">
         <h2 class="modal-title fs-5">{{ $couponID ? 'Coupon Details' : 'Add New Coupon' }}</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="close_modal_btn"></button>
@@ -51,11 +50,17 @@
                     class='fw-bold text-danger'>&nbsp;*</span></label>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" role="switch" id="selectAllSwitch" wire:model="all"
-                    x-on:change="disabled=$el.checked;">
+                    x-on:change="if($el.checked){
+                        document.getElementById('books-applied').disabled = true;
+                        document.getElementById('books-applied').classList.remove('pointer');
+                    }else{
+                        document.getElementById('books-applied').disabled = false;
+                        document.getElementById('books-applied').classList.add('pointer');
+                    }">
                 <label class="form-check-label" for="selectAllSwitch" wire:model="all">All Books</label>
             </div>
-            <textarea rows="5" id="books-applied" class="form-control readonly" style="caret-color: transparent;"
-                x-bind:disabled="disabled" x-bind:class="{ 'pointer': !disabled }"></textarea>
+            <textarea rows="5" id="books-applied" class="form-control readonly {{ $all ? '' : 'pointer' }}"
+                @if ($all) disabled @endif style="caret-color: transparent;"></textarea>
         @elseif((int) $couponType === 2)
             <label class='form-label mt-3' for="points">Accumulated Points:<span
                     class='fw-bold text-danger'>&nbsp;*</span></label>
