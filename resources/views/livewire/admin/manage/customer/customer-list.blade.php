@@ -134,13 +134,13 @@
         </div>
     </div>
 
-    <script>
-        // const infoModal = document.getElementById('infoModal');
-        // infoModal.addEventListener('hidden.bs.modal', function(event) {
-        //     window.dispatchEvent(new CustomEvent(
-        //         'reset-customer-id', {
-        //             bubbles: true
-        //         }));
-        // });
-    </script>
+    {{-- <script>
+        const infoModal = document.getElementById('infoModal');
+        infoModal.addEventListener('hidden.bs.modal', function(event) {
+            window.dispatchEvent(new CustomEvent(
+                'reset-customer-id', {
+                    bubbles: true
+                }));
+        });
+    </script> --}}
 </div>

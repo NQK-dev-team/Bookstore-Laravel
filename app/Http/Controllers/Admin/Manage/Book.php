@@ -64,9 +64,9 @@ class Book extends Controller
 
     public function getTotal($category = null, $author = null, $publisher = null, $search = null, $status = true)
     {
-        $category = trim($category) ?? '%';
-        $author = trim($author) ?? '%';
-        $publisher = trim($publisher) ?? '%';
+        $category = $category ? trim($category) : '%';
+        $author = $author ? trim($author) : '%';
+        $publisher = $publisher ? trim($publisher) : '%';
         $search = $search ? '%' . trim($search) . '%' : '%';
         return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
             $query->where('name', 'like', $author);
@@ -81,9 +81,9 @@ class Book extends Controller
 
     public function getBooks($category = null, $author = null, $publisher = null, $search = null, $status = true, $offset = 0, $limit = 10)
     {
-        $category = trim($category) ?? '%';
-        $author = trim($author) ?? '%';
-        $publisher = trim($publisher) ?? '%';
+        $category = $category ? trim($category) : '%';
+        $author = $author ? trim($author) : '%';
+        $publisher = $publisher ? trim($publisher) : '%';
         $search = $search ? '%' . trim($search) . '%' : '%';
         return BookModel::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->whereHas('authors', function ($query) use ($author) {
             $query->where('name', 'like', $author);

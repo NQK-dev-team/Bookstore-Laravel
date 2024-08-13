@@ -1,0 +1,17 @@
+.dropdown-toggle::after {
+    content: none;
+}
+
+.dropdown-menu {
+    max-height: 250px !important;
+    overflow-y: auto !important;
+}
+
+.selected {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.group_button {
+    max-width: 180px;
+}

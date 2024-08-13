@@ -24,8 +24,8 @@
     </form>
     <div class="mt-2 d-flex flex-md-row flex-column">
         @livewire('admin.manage.book.category')
-        @livewire('admin.manage.book.author')
-        @livewire('admin.manage.book.publisher')
+        @livewire('admin.manage.book.author', ['breakpoint' => 'md'])
+        @livewire('admin.manage.book.publisher', ['breakpoint' => 'md'])
     </div>
     <div class="mt-2">
         <div class="d-flex align-items-center">
@@ -115,8 +115,9 @@
                                 {{ $book->description ? $book->description : 'N/A' }}</div>
                         </td>
                         <td class="align-middle col-1 text-nowrap">
-                            <span class='text-warning'>{!! displayRatingStars($book->average_rating) !!}</span></span
-                                class='ms-2'>({{ $book->average_rating }})</span>
+                            <span
+                                class='text-warning'>{!! displayRatingStars($book->average_rating) !!}</span>&nbsp;({{ $book->average_rating }})
+                            </span>
                         </td>
                         @php
                             $discount = getBookBestDiscount($book);

@@ -1,4 +1,4 @@
-<div class="d-flex align-items-center ms-md-3 mt-2 mt-md-0">
+<div class="d-flex align-items-center ms-{{$breakpoint}}-3 mt-2 mt-{{$breakpoint}}-0">
     <p class="mb-0 me-2">Author</p>
     <div class="dropdown" id="authorDropdown">
         <form data-bs-toggle="dropdown" class="dropdown-toggle" wire:submit="searchAuthors()" data-bs-auto-close="outside"

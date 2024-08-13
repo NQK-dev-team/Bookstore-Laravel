@@ -11,6 +11,7 @@ class Author extends Component
     public $search;
     public $authors;
     public $selectedAuthor;
+    public $breakpoint;
 
     public function __construct()
     {

@@ -9,10 +9,6 @@
     max-width: 180px;
 }
 
-.pointer:hover {
-    cursor: pointer;
-}
-
 .truncate {
     overflow: hidden;
     text-overflow: ellipsis;

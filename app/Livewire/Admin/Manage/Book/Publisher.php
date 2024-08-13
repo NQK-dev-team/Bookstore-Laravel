@@ -11,6 +11,7 @@ class Publisher extends Component
     public $search;
     public $publishers;
     public $selectedPublisher;
+    public $breakpoint;
 
     public function __construct()
     {

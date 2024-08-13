@@ -5,6 +5,7 @@
     <meta name="page creator" content="Nghia Duong">
     <meta name="description" content="Manage discount coupons of NQK Bookstore">
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/admin/manage/coupon/style.css') }}">
     @livewireStyles
 @endsection
 

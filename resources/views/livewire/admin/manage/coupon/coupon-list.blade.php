@@ -215,6 +215,24 @@
         </div>
     </div>
 
+    <div class="modal fade" id="bookListModal" tabindex="-1" aria-labelledby="Books applied list modal" x-init="
+        $el.addEventListener('shown.bs.modal', function(event) {
+            while(document.querySelectorAll('.modal-backdrop').length > 2){
+                document.querySelectorAll('.modal-backdrop')[0].remove();
+            }
+        });
+    ">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 95%;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title fs-5">Books Applied</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                @livewire('admin.manage.coupon.book-list')
+            </div>
+        </div>
+    </div>
+
     <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="Delete modal" wire:ignore.self>
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">

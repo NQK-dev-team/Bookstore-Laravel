@@ -11,6 +11,7 @@ class Category extends Component
     public $search;
     public $categories;
     public $selectedCategory;
+    public $breakpoint;
 
     public function __construct()
     {
