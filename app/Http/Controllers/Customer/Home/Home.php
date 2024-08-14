@@ -4,126 +4,23 @@ namespace App\Http\Controllers\Customer\Home;
 
 use Carbon\Carbon;
 use App\Models\Book;
-use App\Models\Order;
 use App\Models\Discount;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Controllers\Customer\Book\BookController;
 
 class Home extends Controller
 {
-    private function getBestBooksInWeek()
+    private $bookController;
+
+    public function __construct()
     {
-        $orders = Order::with([
-            'physicalOrder' => ['physicalCopies'],
-            'fileOrder' => ['fileCopies'],
-        ])->where([
-            ['status', '=', true],
-        ])->whereRaw("DATE_PART('week', updated_at) = ?", [date('W')])->get();
-
-        $bookSales = [];
-
-        foreach ($orders as $order) {
-            if ($physicalOrder = $order->physicalOrder) {
-                foreach ($physicalOrder->physicalCopies as $physicalCopy) {
-                    $book = Book::find($physicalCopy->id);
-                    if (!$book || !$book->status)
-                        continue;
-                    if (isset($bookSales[$physicalCopy->id])) {
-                        $bookSales[$physicalCopy->id] += $physicalCopy->pivot->amount;
-                    } else {
-                        $bookSales[$physicalCopy->id] = $physicalCopy->pivot->amount;
-                    }
-                }
-            }
-
-            if ($fileOrder = $order->fileOrder) {
-                foreach ($fileOrder->fileCopies as $fileCopy) {
-                    $book = Book::find($fileCopy->id);
-                    if (!$book || !$book->status)
-                        continue;
-                    if (isset($bookSales[$fileCopy->id])) {
-                        $bookSales[$fileCopy->id]++;
-                    } else {
-                        $bookSales[$fileCopy->id] = 1;
-                    }
-                }
-            }
-        }
-
-        arsort($bookSales, 1);
-        return $bookSales;
+        $this->bookController = new BookController();
     }
 
-    private function getDiscountBooks()
+    public function getBestSellers()
     {
-        $discountedBooks = [];
-
-        $discounts = null;
-        $discounts = Discount::with([
-            "eventDiscount" => ["booksApplied"],
-        ])->whereHas('eventDiscount', function (Builder $query) {
-            $query->where([
-                ['apply_for_all_books', '=', true],
-                ['start_time', '<=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
-                ['end_time', '>=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
-            ]);
-        })->where('status', true)->orderBy('discount', 'desc')->first();
-
-        if (!$discounts) {
-            $discounts = Discount::with([
-                "eventDiscount" => ["booksApplied"],
-            ])->whereHas('eventDiscount', function (Builder $query) {
-                $query->where([
-                    ['apply_for_all_books', '=', false],
-                    ['start_time', '<=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
-                    ['end_time', '>=', Carbon::now()->timezone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))],
-                ]);
-            })->where('status', true)->orderBy('discount', 'desc')->get();
-
-            if (!$discounts) return [];
-            else {
-                foreach ($discounts as $discount) {
-                    $books = $discount->eventDiscount->booksApplied;
-                    foreach ($books as $book) {
-                        if (!$book->status) continue;
-                        if (!in_array($book, $discountedBooks))
-                            $discountedBooks[] = $book->id;
-                    }
-                }
-            }
-        } else {
-            $books = Book::all();
-            foreach ($books as $book) {
-                if (!$book->status) continue;
-                $discountedBooks[] = $book->id;
-            }
-        }
-
-        $bookSales = $this->getBestBooksInWeek();
-        $bookIDs = array_keys($bookSales);
-        $temp = $discountedBooks;
-        $discountedBooks = array_intersect($bookIDs, $discountedBooks);
-
-        if (count($discountedBooks) < 15) {
-            $moreBooks = array_diff($temp, $discountedBooks);
-            $moreBooks = array_slice($moreBooks, 0, 15 - count($discountedBooks), true);
-            $discountedBooks = array_merge($discountedBooks, $moreBooks);
-        }
-
-        $temp = $discountedBooks;
-        $discountedBooks = [];
-        foreach ($temp as $id) {
-            $discountedBooks[] = refineBookData(Book::with(['physicalCopy', 'fileCopy', 'categories', 'authors'])->where('status', true)->find($id));
-        }
-
-        return $discountedBooks;
-    }
-
-    private function getBestSellers()
-    {
-        $bookSales = $this->getBestBooksInWeek();
+        $bookSales = $this->bookController->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
         $bookIDs = array_slice($bookIDs, 0, 5, true);
 
@@ -137,7 +34,7 @@ class Home extends Controller
 
     public function getCategoryBooks($category)
     {
-        $bookSales = $this->getBestBooksInWeek();
+        $bookSales = $this->bookController->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
         $books = [];
@@ -176,7 +73,7 @@ class Home extends Controller
 
     public function getPublisherBooks($publisher)
     {
-        $bookSales = $this->getBestBooksInWeek();
+        $bookSales = $this->bookController->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
         $books = [];
@@ -211,7 +108,7 @@ class Home extends Controller
 
     public function getTopCategories()
     {
-        $bookSales = $this->getBestBooksInWeek();
+        $bookSales = $this->bookController->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
         $books = Book::with("categories")->whereIn('id', $bookIDs)->where('status', true)->get();
@@ -236,7 +133,7 @@ class Home extends Controller
 
     public function getTopPublishers()
     {
-        $bookSales = $this->getBestBooksInWeek();
+        $bookSales = $this->bookController->getBestBooksInWeek();
         $bookIDs = array_keys($bookSales);
 
         $books = Book::whereIn('id', $bookIDs)->where('status', true)->get();
@@ -257,11 +154,10 @@ class Home extends Controller
         return $publisherNames;
     }
 
-
     public function show()
     {
         return view('customer.home.index', [
-            'discountedBooks' => $this->getDiscountBooks(),
+            'discountedBooks' => $this->bookController->getDiscountBooks(),
             'bestSellingBooks' => $this->getBestSellers(),
         ]);
     }

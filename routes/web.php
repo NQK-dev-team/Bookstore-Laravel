@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\Manage\Coupon;
 use App\Http\Controllers\Admin\Manage\Customer;
 use App\Http\Controllers\Admin\Manage\Request;
 use App\Http\Controllers\Admin\Profile\Profile;
+use App\Http\Controllers\Customer\Book\BookController;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\VerifyEmail;
 use App\Http\Middleware\RedirectAuth;
@@ -16,8 +17,6 @@ use App\Http\Middleware\RedirectVerifiedEmail;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
-use App\Http\Controllers\Customer\Book\BookDetail;
-use App\Http\Controllers\Customer\Book\BookList;
 use App\Http\Controllers\Customer\Cart\CartController;
 use App\Http\Controllers\Customer\Home\Home as CustomerHome;
 use App\Http\Controllers\Customer\Profile\ProfileController;
@@ -112,9 +111,9 @@ Route::middleware(XssSanitization::class)->group(function () {
             Route::get('/', [CustomerHome::class, 'show'])->name('home.index');
 
             Route::prefix('book')->name('book.')->group(function () {
-                Route::get('/', [BookList::class, 'show'])->name('index');
+                Route::get('/', [BookController::class, 'showList'])->name('index');
 
-                Route::get('/{id}', [BookDetail::class, 'show'])->name('detail');
+                Route::get('/{id}', [BookController::class, 'showDetail'])->name('detail');
             });
 
             Route::middleware(CheckAuth::class)->group(function () {

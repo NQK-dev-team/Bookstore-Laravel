@@ -4,7 +4,7 @@ namespace App\Livewire\Admin\Manage\Book;
 
 use Livewire\Component;
 use Livewire\Attributes\On;
-use App\Http\Controllers\Admin\Manage\Book;
+use App\Http\Controllers\Admin\Manage\Category;
 
 class CategoryModalBody extends Component
 {
@@ -15,7 +15,7 @@ class CategoryModalBody extends Component
 
     public function __construct()
     {
-        $this->controller = new Book();
+        $this->controller = new Category();
         $this->search = null;
     }
 
@@ -27,7 +27,7 @@ class CategoryModalBody extends Component
 
     public function render()
     {
-        $this->categories = $this->controller->getCategory($this->search);
+        $this->categories = $this->controller->searchCategory($this->search);
         return view('livewire.admin.manage.book.category-modal-body');
     }
 }

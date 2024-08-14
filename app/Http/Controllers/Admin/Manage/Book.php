@@ -8,7 +8,6 @@ use DateTimeZone;
 use App\Models\Order;
 use App\Models\Author;
 use App\Models\Belong;
-use App\Models\Category;
 use App\Models\FileCopy;
 use App\Models\FileOrder;
 use App\Models\PhyiscalCopy;
@@ -27,21 +26,6 @@ use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class Book extends Controller
 {
-    public function getCategory($category = null)
-    {
-        if (!$category)
-            return Category::get();
-        else
-            $category = trim($category);
-
-        return Category::where('name', 'ilike', "%{$category}%")->get();
-    }
-
-    public function getCategoryByIds($ids)
-    {
-        return Category::whereIn('id', $ids)->get();
-    }
-
     public function getPublisher($publisher = null)
     {
         if (!$publisher)

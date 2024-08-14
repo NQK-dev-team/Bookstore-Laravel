@@ -4,7 +4,7 @@ namespace App\Livewire\Customer\Book\Detail;
 
 use App\Models\Book;
 use Livewire\Component;
-use App\Http\Controllers\Customer\Book\BookDetail;
+use App\Http\Controllers\Customer\Book\BookController;
 
 class Rating extends Component
 {
@@ -24,7 +24,7 @@ class Rating extends Component
 
     public function __construct()
     {
-        $this->controller = new BookDetail;
+        $this->controller = new BookController();
     }
 
     private function getCustomerRating()

@@ -6,7 +6,6 @@ use App\Models\Book;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\Discount;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;

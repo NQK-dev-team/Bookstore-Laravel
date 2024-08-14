@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Admin\Manage;
 
 use App\Models\Discount;
-use Illuminate\Http\Request;
 use App\Models\CustomerDiscount;
 use App\Models\ReferrerDiscount;
 use Illuminate\Support\Facades\DB;

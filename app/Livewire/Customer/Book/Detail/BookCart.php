@@ -2,7 +2,7 @@
 
 namespace App\Livewire\Customer\Book\Detail;
 
-use App\Http\Controllers\Customer\Book\BookDetail;
+use App\Http\Controllers\Customer\Book\BookController;
 use Livewire\Component;
 
 class BookCart extends Component
@@ -18,7 +18,7 @@ class BookCart extends Component
 
     public function __construct()
     {
-        $this->controller = new BookDetail;
+        $this->controller = new BookController();
     }
 
     public function refetchStock()

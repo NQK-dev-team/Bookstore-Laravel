@@ -3,13 +3,27 @@
 namespace App\Http\Controllers\Admin\Manage;
 
 use App\Models\Category as CategoryModel;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class Category extends Controller
 {
+    public function searchCategory($category = null)
+    {
+        if (!$category)
+            return CategoryModel::get();
+        else
+            $category = trim($category);
+
+        return CategoryModel::where('name', 'ilike', "%{$category}%")->get();
+    }
+
+    // public function getCategoryByIds($ids)
+    // {
+    //     return CategoryModel::whereIn('id', $ids)->get();
+    // }
+
     public function getCategories($search, $limit, $offset)
     {
         if (!$search)

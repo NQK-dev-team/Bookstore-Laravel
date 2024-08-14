@@ -3,7 +3,7 @@
 namespace App\Livewire\Admin\Manage\Book;
 
 use Livewire\Component;
-use App\Http\Controllers\Admin\Manage\Book;
+use App\Http\Controllers\Admin\Manage\Category as CategoryController;
 
 class Category extends Component
 {
@@ -15,7 +15,7 @@ class Category extends Component
 
     public function __construct()
     {
-        $this->controller = new Book();
+        $this->controller = new CategoryController();
         $this->search = null;
         $this->selectedCategory = null;
         $this->searchCategories();
@@ -23,7 +23,7 @@ class Category extends Component
 
     public function searchCategories()
     {
-        $this->categories = $this->controller->getCategory($this->search);
+        $this->categories = $this->controller->searchCategory($this->search);
     }
 
     public function setCategory($category)
@@ -32,7 +32,7 @@ class Category extends Component
             $this->selectedCategory = null;
         else
             $this->selectedCategory = $category;
-        $this->categories = $this->controller->getCategory($this->selectedCategory);
+        $this->categories = $this->controller->searchCategory($this->selectedCategory);
         $this->search = $this->selectedCategory;
         $this->dispatch('select-category', $this->selectedCategory);
     }
