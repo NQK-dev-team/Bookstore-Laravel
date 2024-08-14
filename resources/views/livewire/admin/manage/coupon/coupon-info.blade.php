@@ -31,7 +31,7 @@
             <label class='form-label mt-3' for="start-time">Start Time:<span
                     class='fw-bold text-danger'>&nbsp;*</span></label>
             <input class='form-control {{ $errors->has('startTime') ? 'is-invalid' : '' }}' required
-                type="datetime-local" wire:model="startTime" min="{{ $minDateTime }}" id="start-time">
+                type="datetime-local" @if(!$couponID) wire:model="startTime" min="{{ $minDateTime }}" @endif id="start-time" step="1">
             @if ($errors->has('startTime'))
                 <div class="invalid-feedback">
                     {{ $errors->first('startTime') }}
@@ -40,7 +40,7 @@
             <label class='form-label mt-3' for="end-time">End Time:<span
                     class='fw-bold text-danger'>&nbsp;*</span></label>
             <input class='form-control {{ $errors->has('endTime') ? 'is-invalid' : '' }}' required type="datetime-local"
-                wire:model="endTime" min="{{ $minDateTime }}" id="end-time">
+                wire:model="endTime" @if(!$couponID) min="{{ $minDateTime }}" @endif id="end-time" step="1">
             @if ($errors->has('endTime'))
                 <div class="invalid-feedback">
                     {{ $errors->first('endTime') }}

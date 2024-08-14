@@ -62,10 +62,10 @@ class Coupon extends Controller
         if ((int)$couponType === 1) {
             $subConditions = [];
             if ($startDate) {
-                $subConditions[] = ['start_time', '>=', $startDate];
+                $subConditions[] = [DB::raw('DATE(start_time)'), '>=', $startDate];
             }
             if ($endDate) {
-                $subConditions[] = ['end_time', '<=', $endDate];
+                $subConditions[] = [DB::raw('DATE(end_time)'), '<=', $endDate];
             }
             return Discount::select('*')
                 ->join('event_discounts', 'discounts.id', '=', 'event_discounts.id')

@@ -97,7 +97,7 @@ class BookList extends Component
         if ($this->couponID) {
             $result = $this->couponController->getBooksApplied($this->couponID);
             $this->selectedBooks = $result->pluck('id')->toArray();
-            $this->originalSelectedBooks= $result->pluck('id')->toArray();
+            $this->originalSelectedBooks = $result->pluck('id')->toArray();
         } else {
             $this->selectedBooks = [];
             $this->originalSelectedBooks = [];

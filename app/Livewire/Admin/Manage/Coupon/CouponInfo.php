@@ -121,13 +121,30 @@ class CouponInfo extends Component
     {
         $this->couponName = $this->couponName ? trim($this->couponName) : '';
 
+        $nameRules = ['required', 'string', 'max:255'];
+        $discountRules = ['required', 'numeric', 'min:0', 'max:100'];
+        if ($this->status) {
+            $nameRules[] = Rule::unique('discounts', 'name')->where('status', true)->whereNot('id', $this->couponID)->whereNull('deleted_at');
+        }
+
         if ((int)$this->couponType === 1) {
+            $this->startTime =  $this->startTime ? str_replace('T', ' ', $this->startTime) : null;
+            $this->endTime = $this->endTime ? str_replace('T', ' ', $this->endTime) : null;
+            if (substr_count($this->startTime, ':') === 1) {
+                $this->startTime .= ':00';
+            }
+            if (substr_count($this->endTime, ':') === 1) {
+                $this->endTime .= ':00';
+            }
+            $this->validate([
+                'couponName' => $nameRules,
+                'couponDiscount' => $discountRules,
+                'startTime' => 'required|date_format:Y-m-d H:i:s',
+                'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
+            ]);
         } else if ((int)$this->couponType === 2) {
-            $nameRules = ['required', 'string', 'max:255'];
-            $discountRules = ['required', 'numeric', 'min:0', 'max:100'];
             $pointRules = ['required', 'numeric', 'min:0'];
             if ($this->status) {
-                $nameRules[] = Rule::unique('discounts', 'name')->where('status', true)->whereNot('id', $this->couponID)->whereNull('deleted_at');
                 $discountRules[] = function (string $attribute, mixed $value, Closure $fail) {
                     if (Discount::whereHas('customerDiscount')->where([['status', '=', true], ['discount', '=', $value], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()) {
                         $fail('The discount percentage milestone has been used!');
@@ -148,11 +165,8 @@ class CouponInfo extends Component
             ]);
             $this->couponController->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->point);
         } else if ((int)$this->couponType === 3) {
-            $nameRules = ['required', 'string', 'max:255'];
-            $discountRules = ['required', 'numeric', 'min:0', 'max:100'];
             $peopleRules = ['required', 'numeric', 'min:0'];
             if ($this->status) {
-                $nameRules[] = Rule::unique('discounts', 'name')->where('status', true)->whereNot('id', $this->couponID)->whereNull('deleted_at');
                 $discountRules[] = function (string $attribute, mixed $value, Closure $fail) {
                     if (Discount::whereHas('referrerDiscount')->where([['status', '=', true], ['discount', '=', $value], ['id', '!=', $this->couponID],])->whereNull('deleted_at')->exists()) {
                         $fail('The discount percentage milestone has been used!');
@@ -181,11 +195,28 @@ class CouponInfo extends Component
         $this->couponName = $this->couponName ? trim($this->couponName) : '';
 
         if ((int)$this->couponType === 1) {
+            $this->startTime =  $this->startTime ? str_replace('T', ' ', $this->startTime) : null;
+            $this->endTime = $this->endTime ? str_replace('T', ' ', $this->endTime) : null;
+            if (substr_count($this->startTime, ':') === 1) {
+                $this->startTime .= ':00';
+            }
+            if (substr_count($this->endTime, ':') === 1) {
+                $this->endTime .= ':00';
+            }
+            $this->validate([
+                'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
+                'couponDiscount' => ['required', 'numeric', 'min:0', 'max:100'],
+                'startTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:' . now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->format('Y-m-d H:i:s'),
+                'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
+            ]);
         } else if ((int)$this->couponType === 2) {
             $this->validate([
-                'couponName' => ['required', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
+                'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
                 'couponDiscount' => [
                     'required',
+                    'numeric',
+                    'min:0',
+                    'max:100',
                     function (string $attribute, mixed $value, Closure $fail) {
                         if (Discount::whereHas('customerDiscount')->where([['status', '=', true], ['discount', '=', $value],])->whereNull('deleted_at')->exists()) {
                             $fail('The discount percentage milestone has been used!');
@@ -194,6 +225,8 @@ class CouponInfo extends Component
                 ],
                 'point' => [
                     'required',
+                    'numeric',
+                    'min:0',
                     function (string $attribute, mixed $value, Closure $fail) {
                         if (
                             Discount::whereHas('customerDiscount', function (Builder $query) use ($value) {
@@ -208,13 +241,13 @@ class CouponInfo extends Component
             $this->couponController->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->point);
         } else if ((int)$this->couponType === 3) {
             $this->validate([
-                'couponName' => ['required', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
-                'couponDiscount' => ['required', function (string $attribute, mixed $value, Closure $fail) {
+                'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
+                'couponDiscount' => ['required',  'numeric', 'min:0', 'max:100', function (string $attribute, mixed $value, Closure $fail) {
                     if (Discount::whereHas('referrerDiscount')->where([['status', '=', true], ['discount', '=', $value],])->whereNull('deleted_at')->exists()) {
                         $fail('The discount percentage milestone has been used!');
                     }
                 }],
-                'numberOfPeople' => ['required', function (string $attribute, mixed $value, Closure $fail) {
+                'numberOfPeople' => ['required', 'numeric', 'min:0', function (string $attribute, mixed $value, Closure $fail) {
                     if (Discount::whereHas('referrerDiscount', function (Builder $query) use ($value) {
                         $query->where([['number_of_people', '=', $value],]);
                     })->where([['status', '=', true],])->whereNull('deleted_at')->exists()) {
