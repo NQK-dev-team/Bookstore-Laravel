@@ -15,4 +15,33 @@
 
 @section('postloads')
     @livewireScripts
+    <script>
+        function checkAll() {
+            const inputs = document.querySelectorAll('input[type="checkbox"][name="select-books-applied"]');
+            inputs.forEach(input => {
+                input.checked = true;
+                input.dispatchEvent(new Event('change'));
+            });
+        }
+
+        function unCheckAll() {
+            const inputs = document.querySelectorAll('input[type="checkbox"][name="select-books-applied"]');
+            inputs.forEach(input => {
+                input.checked = false;
+                input.dispatchEvent(new Event('change'));
+            });
+        }
+
+        function checkAllSelected() {
+            const inputs = document.querySelectorAll('input[type="checkbox"][name="select-books-applied"]');
+            let allChecked = true;
+            inputs.forEach(input => {
+                if (!input.checked) {
+                    allChecked = false;
+                    return;
+                }
+            });
+            document.getElementById('checkAll').checked = allChecked;
+        }
+    </script>
 @endsection

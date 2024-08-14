@@ -45,7 +45,13 @@
             <thead>
                 <tr>
                     <th scope="col" class='text-center align-middle'><input type="checkbox" id="checkAll"
-                            style="width:1rem; height:1rem;" class="pointer"></th>
+                            style="width:1rem; height:1rem;" class="pointer"
+                            x-on:change="if($el.checked){
+                                    checkAll();
+                                } else{
+                                    unCheckAll();
+                                }">
+                    </th>
                     <th scope="col">#</th>
                     <th scope="col">Name</th>
                     <th scope="col">Edition</th>
@@ -62,7 +68,16 @@
                     <tr>
                         <td class="align-middle col text-center"><input type="checkbox"
                                 id="checkBook_{{ $book->id }}" class="pointer" style="width:1rem; height:1rem;"
-                                value={{ $book->id }}>
+                                value={{ $book->id }} name="select-books-applied"
+                                x-on:change="if($el.checked){
+                                    $wire.checkBook('{{ $book->id }}');
+                                    checkAllSelected();
+                                } else{
+                                    $wire.unCheckBook('{{ $book->id }}');
+                                    document.getElementById('checkAll').checked = false;
+                                }"
+                                x-init="checkAllSelected();" @if (in_array($book->id, $selectedBooks)) checked @endif
+                                data-checked="{{ in_array($book->id, $originalSelectedBooks) ? 1 : 0 }}">
                         </td>
                         <td class="align-middle col">{{ $offset * $limit + $index + 1 }}</td>
                         <td class="col-2 align-middle">
@@ -143,7 +158,17 @@
     </div>
     <hr>
     <div class="d-flex align-items-center justify-content-end">
-        <button type="button" class="btn btn-light border border-dark me-2">Reset</button>
+        <button type="button" class="btn btn-light border border-dark me-2"
+            x-on:click="$wire.resetSelection();
+            const inputs=document.querySelectorAll('input[type=checkbox][name=select-books-applied]');
+            inputs.forEach(input => {
+                if(input.getAttribute('data-checked') === '1'){
+                    input.checked = true;
+                } else{
+                    input.checked = false;
+                }
+            });
+            checkAllSelected();">Reset</button>
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
     </div>
 </div>

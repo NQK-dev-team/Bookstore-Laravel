@@ -4,12 +4,13 @@ namespace App\Livewire\Admin\Manage\Coupon;
 
 use Closure;
 use Livewire\Component;
+use App\Models\Discount;
 use Livewire\Attributes\On;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Reactive;
-use App\Http\Controllers\Admin\Manage\Coupon;
-use App\Models\Discount;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Controllers\Admin\Manage\Book;
+use App\Http\Controllers\Admin\Manage\Coupon;
 
 class CouponInfo extends Component
 {
@@ -24,14 +25,26 @@ class CouponInfo extends Component
     public $point;
     public $startTime;
     public $endTime;
-    // public $books;
+    public $books;
+    public $booksDisplayed;
     public $all;
-    private $controller;
+    private $couponController;
+    private $bookController;
 
     public function __construct()
     {
-        $this->controller = new Coupon();
+        $this->couponController = new Coupon();
+        $this->bookController = new Book();
         $this->couponID = null;
+        $this->couponName = null;
+        $this->couponDiscount = null;
+        $this->numberOfPeople = null;
+        $this->point = null;
+        $this->startTime = null;
+        $this->endTime = null;
+        $this->all = false;
+        $this->books = [];
+        $this->booksDisplayed = "";
     }
 
     #[On('set-coupon-id')]
@@ -47,8 +60,10 @@ class CouponInfo extends Component
             $this->startTime = null;
             $this->endTime = null;
             $this->all = false;
+            $this->books = [];
+            $this->booksDisplayed = "";
         } else {
-            $discount = $this->controller->getDiscount($couponID);
+            $discount = $this->couponController->getDiscount($couponID);
 
             $this->couponName = $discount->name;
             $this->couponDiscount = $discount->discount;
@@ -56,6 +71,11 @@ class CouponInfo extends Component
                 $this->startTime = $discount->eventDiscount->start_time;
                 $this->endTime = $discount->eventDiscount->end_time;
                 $this->all = $discount->eventDiscount->apply_for_all_books;
+                if (!$this->all) {
+                    $result = $this->couponController->getBooksApplied($this->couponID);
+                    $this->books = $result->pluck('id')->toArray();
+                    $this->displayBooks();
+                }
             } else if ((int)$this->couponType === 2) {
                 $this->point = $discount->customerDiscount->point;
             } else if ((int)$this->couponType === 3) {
@@ -64,10 +84,43 @@ class CouponInfo extends Component
         }
     }
 
+    public function displayBooks()
+    {
+        $this->booksDisplayed = "";
+        $result = $this->bookController->getBooksByIds($this->books);
+        $result = $result->sortBy([['name', 'asc'], ['edition', 'asc']]);
+        foreach ($result as $index => $book) {
+            $book->edition = convertToOrdinal($book->edition);
+            $this->booksDisplayed .= "{$book->name} - {$book->edition}";
+            if ($index < count($result) - 1) {
+                $this->booksDisplayed .= "\n";
+            }
+        }
+    }
+
+    #[On('remove-book-applied')]
+    public function removeBook($bookID)
+    {
+        $index = array_search($bookID, $this->books);
+        if ($index !== false) {
+            unset($this->books[$index]);
+            $this->displayBooks();
+        }
+    }
+
+    #[On('add-book-applied')]
+    public function addBook($bookID)
+    {
+        if (!in_array($bookID, $this->books)) {
+            $this->books[] = $bookID;
+            $this->displayBooks();
+        }
+    }
+
     public function updateCoupon()
     {
-        $this->couponName = trim($this->couponName);
-        
+        $this->couponName = $this->couponName ? trim($this->couponName) : '';
+
         if ((int)$this->couponType === 1) {
         } else if ((int)$this->couponType === 2) {
             $nameRules = ['required', 'string', 'max:255'];
@@ -93,7 +146,7 @@ class CouponInfo extends Component
                 'couponDiscount' => $discountRules,
                 'point' => $pointRules,
             ]);
-            $this->controller->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->point);
+            $this->couponController->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->point);
         } else if ((int)$this->couponType === 3) {
             $nameRules = ['required', 'string', 'max:255'];
             $discountRules = ['required', 'numeric', 'min:0', 'max:100'];
@@ -118,14 +171,14 @@ class CouponInfo extends Component
                 'couponDiscount' => $discountRules,
                 'numberOfPeople' => $peopleRules,
             ]);
-            $this->controller->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->numberOfPeople);
+            $this->couponController->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->numberOfPeople);
         }
         $this->dispatch('dismiss-coupon-info-modal');
     }
 
     public function createCoupon()
     {
-        $this->couponName = trim($this->couponName);
+        $this->couponName = $this->couponName ? trim($this->couponName) : '';
 
         if ((int)$this->couponType === 1) {
         } else if ((int)$this->couponType === 2) {
@@ -152,7 +205,7 @@ class CouponInfo extends Component
                     }
                 ],
             ]);
-            $this->controller->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->point);
+            $this->couponController->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->point);
         } else if ((int)$this->couponType === 3) {
             $this->validate([
                 'couponName' => ['required', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
@@ -169,7 +222,7 @@ class CouponInfo extends Component
                     }
                 }],
             ]);
-            $this->controller->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->numberOfPeople);
+            $this->couponController->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->numberOfPeople);
         }
         $this->dispatch('dismiss-coupon-info-modal');
     }

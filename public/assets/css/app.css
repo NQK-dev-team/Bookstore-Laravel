@@ -58,14 +58,6 @@ body {
   flex-grow: 1;
 }
 
-.wait {
-  cursor: wait !important;
-}
-
-.disable_link {
-  pointer-events: none;
-}
-
 .help {
   cursor: help;
 }

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Admin\Manage;
 
-use App\Models\CustomerDiscount;
 use App\Models\Discount;
 use Illuminate\Http\Request;
+use App\Models\CustomerDiscount;
+use App\Models\ReferrerDiscount;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\ReferrerDiscount;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Database\Eloquent\Builder;
+use Haruncpi\LaravelIdGenerator\IdGenerator;
 
 class Coupon extends Controller
 {
@@ -205,6 +205,11 @@ class Coupon extends Controller
             }
             $discount->save();
         });
+    }
+
+    public function getBooksApplied($couponID)
+    {
+        return Discount::whereHas('eventDiscount')->where('id', $couponID)->first()->eventDiscount->booksApplied;
     }
 
     public function show()

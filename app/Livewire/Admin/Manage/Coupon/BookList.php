@@ -7,6 +7,7 @@ use Livewire\Attributes\On;
 use Livewire\Attributes\Reactive;
 use App\Http\Controllers\Admin\Manage\Book;
 use App\Http\Controllers\Admin\Manage\Coupon;
+use Livewire\Attributes\Renderless;
 
 class BookList extends Component
 {
@@ -20,6 +21,7 @@ class BookList extends Component
     public $books;
     public $total;
     public $selectedBooks;
+    public $originalSelectedBooks;
     private $bookController;
     private $couponController;
 
@@ -31,6 +33,8 @@ class BookList extends Component
         $this->search = null;
         $this->offset = 0;
         $this->limit = 10;
+        $this->selectedBooks = [];
+        $this->originalSelectedBooks = [];
         $this->bookController = new Book();
         $this->couponController = new Coupon();
     }
@@ -89,7 +93,47 @@ class BookList extends Component
         $this->search = null;
         $this->offset = 0;
         $this->limit = 10;
+
+        if ($this->couponID) {
+            $result = $this->couponController->getBooksApplied($this->couponID);
+            $this->selectedBooks = $result->pluck('id')->toArray();
+            $this->originalSelectedBooks= $result->pluck('id')->toArray();
+        } else {
+            $this->selectedBooks = [];
+            $this->originalSelectedBooks = [];
+        }
     }
+
+    public function resetSelection()
+    {
+        if ($this->couponID) {
+            $result = $this->couponController->getBooksApplied($this->couponID);
+            $this->selectedBooks = $result->pluck('id')->toArray();
+        } else {
+            $this->selectedBooks = [];
+        }
+        $this->dispatch('set-coupon-id', couponID: $this->couponID)->to(CouponInfo::class);
+    }
+
+    #[Renderless]
+    public function checkBook($bookID)
+    {
+        if (!in_array($bookID, $this->selectedBooks)) {
+            $this->selectedBooks[] = $bookID;
+            $this->dispatch('add-book-applied', bookID: $bookID)->to(CouponInfo::class);
+        }
+    }
+
+    #[Renderless]
+    public function unCheckBook($bookID)
+    {
+        $index = array_search($bookID, $this->selectedBooks);
+        if ($index !== false) {
+            unset($this->selectedBooks[$index]);
+            $this->dispatch('remove-book-applied', bookID: $bookID)->to(CouponInfo::class);
+        }
+    }
+
 
     public function render()
     {
@@ -97,10 +141,6 @@ class BookList extends Component
         $this->books = $this->bookController->getBooks($this->category, $this->author, $this->publisher, $this->search, true, $this->offset, $this->limit) ?? [];
         foreach ($this->books as &$book) {
             refineBookData($book);
-        }
-        if ($this->couponID) {
-        } else {
-            $this->selectedBooks = [];
         }
         return view('livewire.admin.manage.coupon.book-list');
     }

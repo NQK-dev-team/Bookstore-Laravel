@@ -482,6 +482,11 @@ class Book extends Controller
         ])->exists();
     }
 
+    public function getBooksByIds($ids)
+    {
+        return BookModel::whereIn('id', $ids)->get();
+    }
+
     public function showList()
     {
         return view('admin.manage.book.index');

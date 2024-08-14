@@ -53,22 +53,25 @@
                     x-on:change="if($el.checked){
                         document.getElementById('books-applied').disabled = true;
                         document.getElementById('books-applied').classList.remove('pointer');
-                        document.getElementById('books-applied').addEventListener('click', function(e){
-                            new bootstrap.Modal(document.getElementById('bookListModal')).toggle();
-                        });
-                    }else{
-                        document.getElementById('books-applied').disabled = false;
-                        document.getElementById('books-applied').classList.add('pointer');
                         document.getElementById('books-applied').removeEventListener('click', function(e){
                             new bootstrap.Modal(document.getElementById('bookListModal')).toggle();
                         });
+                        $wire.booksDisplayed='';
+                        $wire.$refresh();
+                    }else{
+                        document.getElementById('books-applied').disabled = false;
+                        document.getElementById('books-applied').classList.add('pointer');
+                        document.getElementById('books-applied').addEventListener('click', function(e){
+                            new bootstrap.Modal(document.getElementById('bookListModal')).toggle();
+                        });
+                        $wire.displayBooks();
                     }">
                 <label class="form-check-label" for="selectAllSwitch" wire:model="all">All Books</label>
             </div>
             <textarea rows="5" id="books-applied" class="form-control readonly {{ $all ? '' : 'pointer' }}"
                 @if ($all) disabled
                 @else onclick="new bootstrap.Modal(document.getElementById('bookListModal')).toggle();" @endif
-                style="caret-color: transparent;"></textarea>
+                style="caret-color: transparent;" wire:model="booksDisplayed"></textarea>
         @elseif((int) $couponType === 2)
             <label class='form-label mt-3' for="points">Accumulated Points:<span
                     class='fw-bold text-danger'>&nbsp;*</span></label>
