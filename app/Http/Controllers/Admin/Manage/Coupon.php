@@ -9,6 +9,7 @@ use App\Models\CustomerDiscount;
 use App\Models\ReferrerDiscount;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Jobs\NotifyDiscountEvent;
 use Illuminate\Database\Eloquent\Builder;
 use Haruncpi\LaravelIdGenerator\IdGenerator;
 
@@ -188,7 +189,11 @@ class Coupon extends Controller
                 $discount->eventDiscount->save();
                 if ($params[4]) {
                     $path = $params[4]->store(path: 'files/email_templates');
-                    // Create a job to send email
+                    if (now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->diffInDays($params[0]) <= 1) {
+                        NotifyDiscountEvent::dispatch($path);
+                    } else {
+                        NotifyDiscountEvent::dispatch($path)->delay(now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->addDay()->diffInSeconds($params[0]));
+                    }
                 }
             } elseif ((int) $couponType === 2) {
                 $discount = Discount::find($id);
@@ -229,7 +234,11 @@ class Coupon extends Controller
                 $discount->eventDiscount->save();
                 if ($params[4]) {
                     $path = $params[4]->store(path: 'files/email_templates');
-                    // Create a job to send email
+                    if (now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->diffInDays($params[0]) <= 1) {
+                        NotifyDiscountEvent::dispatch($path);
+                    } else {
+                        NotifyDiscountEvent::dispatch($path)->delay(now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->addDay()->diffInSeconds($params[0]));
+                    }
                 }
             } elseif ((int) $couponType === 2) {
                 $discount->customerDiscount->point = $params[0];

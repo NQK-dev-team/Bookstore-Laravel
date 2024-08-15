@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('address', 1000)->nullable();
             $table->date('dob')->nullable(false);
             $table->string('phone', 10)->nullable(false);
-            $table->string('image')->nullable();
+            $table->string('image', 1000)->nullable();
             $table->string('gender', 1)->nullable(false);
             $table->boolean('is_admin')->default(false)->nullable(false);
             $table->double('points')->nullable()->default(0);

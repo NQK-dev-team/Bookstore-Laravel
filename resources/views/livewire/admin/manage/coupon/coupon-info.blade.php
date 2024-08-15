@@ -79,7 +79,7 @@
             <input
                 class="form-control form-control-sm {{ $errors->has('emails') || $errors->has('emails.0') ? 'is-invalid' : '' }}"
                 id="email-template" type="file" wire:model="emails" accept=".htm,.html" multiple
-                wire:key="{{ uniqid() }}">
+                wire:key="{{ $inputFileKey }}">
             @if ($errors->has('emails'))
                 <div class="invalid-feedback">
                     {{ $errors->first('emails') }}

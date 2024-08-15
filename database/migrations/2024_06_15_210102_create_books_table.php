@@ -20,7 +20,7 @@ return new class extends Migration
             $table->double('average_rating')->nullable(false)->default(0);
             $table->string('publisher', 255)->nullable(false);
             $table->date('publication_date')->nullable(false);
-            $table->string('image', 255)->nullable(false);
+            $table->string('image', 1000)->nullable(false);
             $table->string('description', 2000)->nullable();
             $table->boolean('status')->nullable(false)->default(true);
             $table->softDeletes();

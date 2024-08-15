@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('file_copies', function (Blueprint $table) {
             $table->string('id', 20)->primary();
             $table->double('price')->nullable();
-            $table->string('path', 255)->nullable();
+            $table->string('path', 1000)->nullable();
             $table->timestamps();
 
             // Foreign keys

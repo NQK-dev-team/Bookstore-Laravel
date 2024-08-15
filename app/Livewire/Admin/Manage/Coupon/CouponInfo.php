@@ -32,6 +32,7 @@ class CouponInfo extends Component
     public $booksDisplayed;
     public $all;
     public $emails; // For some reason, might be how livewire works, the .html and .htm files are converted to .txt files
+    public $inputFileKey;
     private $couponController;
     private $bookController;
 
@@ -55,6 +56,10 @@ class CouponInfo extends Component
     #[On('set-coupon-id')]
     public function setCouponID($couponID)
     {
+        if ($couponID !== $this->couponID) {
+            $this->inputFileKey = uniqid();
+        }
+        
         $this->couponID = $couponID;
         if (!$couponID) {
             $this->resetErrorBag();
