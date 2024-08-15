@@ -1,28 +1,30 @@
 <?php
 
-use App\Http\Controllers\Admin\Manage\Book;
-use App\Http\Controllers\Admin\Manage\Category;
-use App\Http\Controllers\Admin\Manage\Coupon;
-use App\Http\Controllers\Admin\Manage\Customer;
-use App\Http\Controllers\Admin\Manage\Request;
-use App\Http\Controllers\Admin\Profile\Profile;
-use App\Http\Controllers\Customer\Book\BookController;
+use App\Models\Discount;
 use App\Http\Middleware\CheckAuth;
 use App\Http\Middleware\VerifyEmail;
 use App\Http\Middleware\RedirectAuth;
 use App\Http\Middleware\RedirectRole;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\General\File;
+use App\Http\Middleware\XssSanitization;
+use App\Http\Controllers\Admin\Manage\Book;
+use App\Http\Controllers\Admin\Manage\Coupon;
+use App\Http\Controllers\Admin\Home\HomeController as AdminHome;
+use App\Http\Controllers\Admin\Manage\Request;
 use App\Http\Controllers\Authentication\Login;
 use App\Http\Middleware\RedirectVerifiedEmail;
+use App\Http\Controllers\Admin\Manage\Category;
+use App\Http\Controllers\Admin\Manage\Customer;
+use App\Http\Controllers\Admin\Profile\Profile;
 use App\Http\Controllers\Authentication\Logout;
 use App\Http\Controllers\Authentication\Recovery;
 use App\Http\Controllers\Authentication\Register;
+use App\Http\Controllers\Admin\Statistic\StatisticController;
+use App\Http\Controllers\Customer\Book\BookController;
 use App\Http\Controllers\Customer\Cart\CartController;
 use App\Http\Controllers\Customer\Home\Home as CustomerHome;
 use App\Http\Controllers\Customer\Profile\ProfileController;
-use App\Http\Controllers\General\File;
-use App\Http\Middleware\XssSanitization;
-use App\Models\Discount;
 
 Route::middleware(XssSanitization::class)->group(function () {
     // Admin routes
@@ -39,9 +41,7 @@ Route::middleware(XssSanitization::class)->group(function () {
         });
 
         Route::middleware(CheckAuth::class)->group(function () {
-            Route::get('/', function () {
-                return view('admin.home.index');
-            })->name('home.index');
+            Route::get('/', [AdminHome::class, 'show'])->name('home.index');
 
             Route::prefix('manage')->name('manage.')->group(function () {
                 Route::prefix('book')->name('book.')->group(function () {
@@ -70,9 +70,7 @@ Route::middleware(XssSanitization::class)->group(function () {
             });
 
             Route::prefix('statistic')->name('statistic.')->group(function () {
-                Route::get('/', function () {
-                    return view('admin.statistic.index');
-                })->name('index');
+                Route::get('/', [StatisticController::class, 'show'])->name('index');
             });
 
             Route::prefix('profile')->name('profile.')->group(function () {

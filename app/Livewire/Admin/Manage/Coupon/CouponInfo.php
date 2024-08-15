@@ -11,9 +11,12 @@ use Livewire\Attributes\Reactive;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Controllers\Admin\Manage\Book;
 use App\Http\Controllers\Admin\Manage\Coupon;
+use Livewire\WithFileUploads;
 
 class CouponInfo extends Component
 {
+    use WithFileUploads;
+
     public $couponID;
     #[Reactive]
     public $couponType;
@@ -28,6 +31,7 @@ class CouponInfo extends Component
     public $books;
     public $booksDisplayed;
     public $all;
+    public $emails; // For some reason, might be how livewire works, the .html and .htm files are converted to .txt files
     private $couponController;
     private $bookController;
 
@@ -43,6 +47,7 @@ class CouponInfo extends Component
         $this->startTime = null;
         $this->endTime = null;
         $this->all = false;
+        $this->emails = [];
         $this->books = [];
         $this->booksDisplayed = "";
     }
@@ -59,6 +64,7 @@ class CouponInfo extends Component
             $this->point = null;
             $this->startTime = null;
             $this->endTime = null;
+            $this->emails = [];
             $this->all = false;
             $this->books = [];
             $this->booksDisplayed = "";
@@ -136,13 +142,22 @@ class CouponInfo extends Component
             if (substr_count($this->endTime, ':') === 1) {
                 $this->endTime .= ':00';
             }
-            $this->validate([
-                'couponName' => $nameRules,
-                'couponDiscount' => $discountRules,
-                'startTime' => 'required|date_format:Y-m-d H:i:s',
-                'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
-            ]);
-            $this->couponController->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->startTime, $this->endTime, $this->all, $this->books);
+            $this->validate(
+                [
+                    'couponName' => $nameRules,
+                    'couponDiscount' => $discountRules,
+                    'startTime' => 'required|date_format:Y-m-d H:i:s',
+                    'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
+                    'emails' => 'max:1',
+                    'emails.*' => ['nullable', 'mimes:html,htm', 'max:5120'],
+                ],
+                [
+                    'emails.*.mimes' => 'Email template file type invalid.',
+                    'emails.*.max' => 'Email template file size must not be greater than 5MB.',
+                    'emails.max' => 'Only one email template file is allowed.',
+                ]
+            );
+            $this->couponController->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->startTime, $this->endTime, $this->all, $this->books, $this->emails ? $this->emails[0] : null);
         } else if ((int)$this->couponType === 2) {
             $pointRules = ['required', 'numeric', 'min:0'];
             if ($this->status) {
@@ -204,13 +219,22 @@ class CouponInfo extends Component
             if (substr_count($this->endTime, ':') === 1) {
                 $this->endTime .= ':00';
             }
-            $this->validate([
-                'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
-                'couponDiscount' => ['required', 'numeric', 'min:0', 'max:100'],
-                'startTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:' . now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->format('Y-m-d H:i:s'),
-                'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
-            ]);
-            $this->couponController->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->startTime, $this->endTime, $this->all, $this->books);
+            $this->validate(
+                [
+                    'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
+                    'couponDiscount' => ['required', 'numeric', 'min:0', 'max:100'],
+                    'startTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:' . now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->format('Y-m-d H:i:s'),
+                    'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
+                    'emails' => 'max:1',
+                    'emails.*' => ['nullable', 'mimes:html,htm', 'max:5120'],
+                ],
+                [
+                    'emails.*.mimes' => 'Email template file type invalid.',
+                    'emails.*.max' => 'Email template file size must not be greater than 5MB.',
+                    'emails.max' => 'Only one email template file is allowed.',
+                ]
+            );
+            $this->couponController->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->startTime, $this->endTime, $this->all, $this->books, $this->emails ? $this->emails[0] : null);
         } else if ((int)$this->couponType === 2) {
             $this->validate([
                 'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],

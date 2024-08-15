@@ -186,6 +186,10 @@ class Coupon extends Controller
                     }
                 }
                 $discount->eventDiscount->save();
+                if ($params[4]) {
+                    $path = $params[4]->store(path: 'files/email_templates');
+                    // Create a job to send email
+                }
             } elseif ((int) $couponType === 2) {
                 $discount = Discount::find($id);
                 $discount->customerDiscount = new CustomerDiscount();
@@ -223,6 +227,10 @@ class Coupon extends Controller
                     }
                 }
                 $discount->eventDiscount->save();
+                if ($params[4]) {
+                    $path = $params[4]->store(path: 'files/email_templates');
+                    // Create a job to send email
+                }
             } elseif ((int) $couponType === 2) {
                 $discount->customerDiscount->point = $params[0];
                 $discount->customerDiscount->save();
