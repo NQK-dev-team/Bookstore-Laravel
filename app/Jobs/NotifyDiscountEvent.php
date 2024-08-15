@@ -33,7 +33,7 @@ class NotifyDiscountEvent implements ShouldQueue
     {
         $customers = User::where('is_admin', 0)->get();
         foreach ($customers as $customer) {
-            Mail::to($customer->email)->queue(new EventMail($this->emailContent));
+            Mail::to($customer->email)->queue(new EventMail($this->emailContent)); // For some reason this might not work sometimes, idk why
         }
     }
 }
