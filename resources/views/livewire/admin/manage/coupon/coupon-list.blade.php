@@ -106,11 +106,11 @@
                                 <td class="align-middle text-nowrap">
                                     {{ (new DateTime($coupon->eventDiscount->end_time))->setTimezone(new DateTimeZone(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh')))->format('F j, Y H:i:s') }}
                                 </td>
-                                <td class="align-middle text-nowrap">
+                                <td class="align-middle" style="min-width:500px;">
                                     @if ($coupon->eventDiscount->apply_for_all_books)
                                         <div>All</div>
                                     @else
-                                        <div class='overflow-auto' style="max-height:300px;">
+                                        <div class='overflow-y-auto' style="max-height:300px;">
                                             @php
                                                 $books = $coupon->eventDiscount->booksApplied;
                                                 $books = $books->sortBy([['name', 'asc'], ['edition', 'asc']]);
@@ -215,13 +215,12 @@
         </div>
     </div>
 
-    <div class="modal fade" id="bookListModal" tabindex="-1" aria-labelledby="Books applied list modal" x-init="
-        $el.addEventListener('shown.bs.modal', function(event) {
-            while(document.querySelectorAll('.modal-backdrop').length > 2){
+    <div class="modal fade" id="bookListModal" tabindex="-1" aria-labelledby="Books applied list modal"
+        x-init="$el.addEventListener('shown.bs.modal', function(event) {
+            while (document.querySelectorAll('.modal-backdrop').length > 2) {
                 document.querySelectorAll('.modal-backdrop')[0].remove();
             }
-        });
-    ">
+        });">
         <div class="modal-dialog modal-dialog-centered" style="max-width: 95%;">
             <div class="modal-content">
                 <div class="modal-header">

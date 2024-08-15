@@ -134,7 +134,6 @@ class BookList extends Component
         }
     }
 
-
     public function render()
     {
         $this->total = $this->bookController->getTotal($this->category, $this->author, $this->publisher, $this->search, true) ?? 0;

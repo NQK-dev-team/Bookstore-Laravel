@@ -43,9 +43,9 @@
                 <col style="width:50px;">
             </colgroup>
             <thead>
-                <tr>
-                    <th scope="col" class='text-center align-middle'><input type="checkbox" id="checkAll"
-                            style="width:1rem; height:1rem;" class="pointer"
+                <tr wire:key={{ uniqid() }}>
+                    <th scope="col" class='text-center align-middle'><input
+                            type="checkbox" id="checkAll" style="width:1rem; height:1rem;" class="pointer"
                             x-on:change="if($el.checked){
                                     checkAll();
                                 } else{
@@ -65,10 +65,10 @@
             <tbody x-init="const tooltipTriggerList = document.querySelectorAll(`[data-bs-toggle='tooltip']`);
             const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));">
                 @foreach ($books as $index => $book)
-                    <tr>
-                        <td class="align-middle col text-center"><input type="checkbox"
-                                id="checkBook_{{ $book->id }}" class="pointer" style="width:1rem; height:1rem;"
-                                value={{ $book->id }} name="select-books-applied"
+                    <tr wire:key={{ uniqid() }}>
+                        <td class="align-middle col text-center" x-init="checkAllSelected();">
+                            <input type="checkbox" id="checkBook_{{ $book->id }}" class="pointer"
+                                style="width:1rem; height:1rem;" value={{ $book->id }} name="select-books-applied"
                                 x-on:change="if($el.checked){
                                     $wire.checkBook('{{ $book->id }}');
                                     checkAllSelected();
@@ -76,7 +76,7 @@
                                     $wire.unCheckBook('{{ $book->id }}');
                                     document.getElementById('checkAll').checked = false;
                                 }"
-                                x-init="checkAllSelected();" @if (in_array($book->id, $selectedBooks)) checked @endif
+                                @if (in_array($book->id, $selectedBooks)) checked @endif
                                 data-checked="{{ in_array($book->id, $originalSelectedBooks) ? 1 : 0 }}">
                         </td>
                         <td class="align-middle col">{{ $offset * $limit + $index + 1 }}</td>

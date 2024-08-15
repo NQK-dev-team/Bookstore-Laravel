@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin\Manage;
 
+use App\Models\Book;
 use App\Models\Discount;
+use App\Models\EventDiscount;
 use App\Models\CustomerDiscount;
 use App\Models\ReferrerDiscount;
 use Illuminate\Support\Facades\DB;
@@ -171,6 +173,19 @@ class Coupon extends Controller
 
             if ((int) $couponType === 1) {
                 $discount = Discount::find($id);
+                $discount->eventDiscount = new EventDiscount();
+                $discount->eventDiscount->id = $id;
+                $discount->eventDiscount->start_time = $params[0];
+                $discount->eventDiscount->end_time = $params[1];
+                if ($params[2]) {
+                    $discount->eventDiscount->apply_for_all_books = true;
+                } else {
+                    $discount->eventDiscount->apply_for_all_books = false;
+                    foreach ($params[3] as $book) {
+                        $discount->eventDiscount->booksApplied()->attach(Book::find($book));
+                    }
+                }
+                $discount->eventDiscount->save();
             } elseif ((int) $couponType === 2) {
                 $discount = Discount::find($id);
                 $discount->customerDiscount = new CustomerDiscount();
@@ -195,6 +210,19 @@ class Coupon extends Controller
             $discount->name = trim($name);
             $discount->discount = $discountPercentage;
             if ((int) $couponType === 1) {
+                $discount->eventDiscount->start_time = $params[0];
+                $discount->eventDiscount->end_time = $params[1];
+                if ($params[2]) {
+                    $discount->eventDiscount->apply_for_all_books = true;
+                    $discount->eventDiscount->booksApplied()->detach();
+                } else {
+                    $discount->eventDiscount->apply_for_all_books = false;
+                    $discount->eventDiscount->booksApplied()->detach();
+                    foreach ($params[3] as $book) {
+                        $discount->eventDiscount->booksApplied()->attach(Book::find($book));
+                    }
+                }
+                $discount->eventDiscount->save();
             } elseif ((int) $couponType === 2) {
                 $discount->customerDiscount->point = $params[0];
                 $discount->customerDiscount->save();

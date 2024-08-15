@@ -406,4 +406,22 @@
         </div>
     </section>
     @yield('postloads')
+    <script>
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('shown.bs.modal', e => {
+                const tooltips = document.querySelectorAll(`.tooltip`);
+                tooltips.forEach(element => {
+                    element.remove();
+                });
+            });
+
+            modal.addEventListener('hidden.bs.modal', e => {
+                const tooltips = document.querySelectorAll(`.tooltip`);
+                tooltips.forEach(element => {
+                    element.remove();
+                });
+            });
+        });
+    </script>
 </body>

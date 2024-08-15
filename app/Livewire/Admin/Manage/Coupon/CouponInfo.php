@@ -142,6 +142,7 @@ class CouponInfo extends Component
                 'startTime' => 'required|date_format:Y-m-d H:i:s',
                 'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
             ]);
+            $this->couponController->updateDiscount($this->couponType, $this->couponID, $this->couponName, $this->couponDiscount, $this->startTime, $this->endTime, $this->all, $this->books);
         } else if ((int)$this->couponType === 2) {
             $pointRules = ['required', 'numeric', 'min:0'];
             if ($this->status) {
@@ -209,6 +210,7 @@ class CouponInfo extends Component
                 'startTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:' . now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->format('Y-m-d H:i:s'),
                 'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
             ]);
+            $this->couponController->createDiscount($this->couponType, $this->couponName, $this->couponDiscount, $this->startTime, $this->endTime, $this->all, $this->books);
         } else if ((int)$this->couponType === 2) {
             $this->validate([
                 'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
