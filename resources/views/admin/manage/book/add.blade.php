@@ -59,9 +59,9 @@
                             </img>
                             <label
                                 class='btn btn-sm btn-light border border-dark mt-3 mx-auto d-flex position-relative justify-content-center {{ $errors->has('bookImages') || $errors->has('bookImages.0') ? 'is-invalid' : '' }}'>
-                                <input accept='image/jpeg,image/png' id="imageInput" type='file'
-                                    style="opacity: 0; width:1px;" name="bookImages[]" required class='position-absolute'
-                                    x-on:change="setNewImage(event); imageErrorSignal=0;"></input>
+                                <input accept='{{ env('HTML_ACCEPT_IMAGE', 'image/jpeg,image/png') }}' id="imageInput"
+                                    type='file' style="opacity: 0; width:1px;" name="bookImages[]" required
+                                    class='position-absolute' x-on:change="setNewImage(event); imageErrorSignal=0;"></input>
                                 <span>Browse</span>
                             </label>
                             @if ($errors->has('bookImages'))
@@ -223,23 +223,20 @@
                                         E-book file:
                                     </span>
                                     <div class="d-flex align-items-center">
-                                        <label
-                                            class='btn btn-sm btn-light border border-dark'>
+                                        <label class='btn btn-sm btn-light border border-dark'>
                                             <input type="file" class="form-control d-none" id="filePathInput"
-                                                name="pdfFiles[]" accept='.pdf'
+                                                name="pdfFiles[]" accept='{{ env('HTML_ACCEPT_FILE', '.pdf') }}'
                                                 x-on:change="setNewFile(event); fileErrorSignal=0;">
                                             Browse
                                         </label>
                                     </div>
                                     @if ($errors->has('pdfFiles'))
-                                        <div class="invalid-feedback"
-                                            x-bind:class="{ 'd-block': fileErrorSignal }">
+                                        <div class="invalid-feedback" x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles') }}
                                         </div>
                                     @endif
                                     @if ($errors->has('pdfFiles.0'))
-                                        <div class="invalid-feedback"
-                                            x-bind:class="{ 'd-block': fileErrorSignal }">
+                                        <div class="invalid-feedback" x-bind:class="{ 'd-block': fileErrorSignal }">
                                             {{ $errors->first('pdfFiles.0') }}
                                         </div>
                                     @endif

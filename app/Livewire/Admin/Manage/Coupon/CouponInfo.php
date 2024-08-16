@@ -56,10 +56,10 @@ class CouponInfo extends Component
     #[On('set-coupon-id')]
     public function setCouponID($couponID)
     {
-        if ($couponID !== $this->couponID) {
+        if (!$couponID || $this->couponID !== $couponID) {
             $this->inputFileKey = uniqid();
         }
-        
+
         $this->couponID = $couponID;
         if (!$couponID) {
             $this->resetErrorBag();
@@ -147,6 +147,12 @@ class CouponInfo extends Component
             if (substr_count($this->endTime, ':') === 1) {
                 $this->endTime .= ':00';
             }
+
+            $emailTemplateTypes = env('SERVER_ACCEPT_EMAIL_TEMPLATE', 'mimes:html,htm');
+            $emailTemplateTypes = str_replace('mimes:', '', $emailTemplateTypes);
+            $emailTemplateTypes = explode(',', $emailTemplateTypes);
+            $emailTemplateTypes = implode(', ', $emailTemplateTypes);
+
             $this->validate(
                 [
                     'couponName' => $nameRules,
@@ -154,10 +160,10 @@ class CouponInfo extends Component
                     'startTime' => 'required|date_format:Y-m-d H:i:s',
                     'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
                     'emails' => 'max:1',
-                    'emails.*' => ['nullable', 'mimes:html,htm', 'max:5120'],
+                    'emails.*' => ['nullable', env('SERVER_ACCEPT_EMAIL_TEMPLATE', 'mimes:html,htm'), 'max:5120'],
                 ],
                 [
-                    'emails.*.mimes' => 'Email template file type invalid.',
+                    'emails.*.mimes' => "Email template file type must be of type: {$emailTemplateTypes}.",
                     'emails.*.max' => 'Email template file size must not be greater than 5MB.',
                     'emails.max' => 'Only one email template file is allowed.',
                 ]
@@ -224,6 +230,12 @@ class CouponInfo extends Component
             if (substr_count($this->endTime, ':') === 1) {
                 $this->endTime .= ':00';
             }
+
+            $emailTemplateTypes = env('SERVER_ACCEPT_EMAIL_TEMPLATE', 'mimes:html,htm');
+            $emailTemplateTypes = str_replace('mimes:', '', $emailTemplateTypes);
+            $emailTemplateTypes = explode(',', $emailTemplateTypes);
+            $emailTemplateTypes = implode(', ', $emailTemplateTypes);
+
             $this->validate(
                 [
                     'couponName' => ['required', 'string', 'max:255', Rule::unique('discounts', 'name')->where('status', true)->whereNull('deleted_at')],
@@ -231,10 +243,10 @@ class CouponInfo extends Component
                     'startTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:' . now(env('APP_TIMEZONE', 'Asia/Ho_Chi_Minh'))->format('Y-m-d H:i:s'),
                     'endTime' => 'required|date_format:Y-m-d H:i:s|after_or_equal:startTime',
                     'emails' => 'max:1',
-                    'emails.*' => ['nullable', 'mimes:html,htm', 'max:5120'],
+                    'emails.*' => ['nullable', env('SERVER_ACCEPT_EMAIL_TEMPLATE', 'mimes:html,htm'), 'max:5120'],
                 ],
                 [
-                    'emails.*.mimes' => 'Email template file type invalid.',
+                    'emails.*.mimes' => "Email template file type must be of type: {$emailTemplateTypes}.",
                     'emails.*.max' => 'Email template file size must not be greater than 5MB.',
                     'emails.max' => 'Only one email template file is allowed.',
                 ]

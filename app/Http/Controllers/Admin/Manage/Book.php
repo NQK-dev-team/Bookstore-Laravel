@@ -106,6 +106,16 @@ class Book extends Controller
         $physicalQuantity = $request->bookPhysicalQuantity ? trim($request->bookPhysicalQuantity) : null;
         $filePrice = $request->filePrice ? trim($request->filePrice) : null;
 
+        $imageTypes = env('SERVER_ACCEPT_IMAGE', 'mimes:jpeg,png,jpg');
+        $imageTypes = str_replace('mimes:', '', $imageTypes);
+        $imageTypes = explode(',', $imageTypes);
+        $imageTypes = implode(', ', $imageTypes);
+
+        $fileTypes = env('SERVER_ACCEPT_FILE', 'mimes:pdf');
+        $fileTypes = str_replace('mimes:', '', $fileTypes);
+        $fileTypes = explode(',', $fileTypes);
+        $fileTypes = implode(', ', $fileTypes);
+
         $validator = Validator::make([
             'bookName' => $bookName,
             'bookEdition' => $bookEdition,
@@ -138,13 +148,13 @@ class Book extends Controller
             'physicalQuantity'  => 'nullable|numeric|min:0',
             'filePrice' => 'nullable|numeric|min:0',
             'bookImages' => 'size:1',
-            'bookImages.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'bookImages.*' => ['nullable', 'image',env('SERVER_ACCEPT_IMAGE', 'mimes:jpeg,png,jpg'), 'max:2048'],
             'pdfFiles' => 'max:1',
-            'pdfFiles.*' => ['nullable', 'mimes:pdf', 'max:512000'],
+            'pdfFiles.*' => ['nullable', env('SERVER_ACCEPT_FILE', 'mimes:pdf'), 'max:512000'],
         ], [
-            'bookImages.*.mimes' => 'The image must be a file of type: jpeg, png, jpg.',
+            'bookImages.*.mimes' => "The image must be a file of type: {$imageTypes}.",
             'bookImages.*.max' => 'The image size must not be greater than 2MB.',
-            'pdfFiles.*.mimes' => 'The file must be a file of type: pdf.',
+            'pdfFiles.*.mimes' => "The file must be a file of type: {$fileTypes}.",
             'pdfFiles.*.max' => 'The file size must not be greater than 500MB.',
             'bookName.unique' => 'The book name and edition have already been taken.',
             'bookEdition.unique' => 'The book name and edition have already been taken.',
@@ -231,6 +241,16 @@ class Book extends Controller
         $filePrice = $request->filePrice ? trim($request->filePrice) : null;
         $removeFile = boolval($request->removeFile);
 
+        $imageTypes = env('SERVER_ACCEPT_IMAGE', 'mimes:jpeg,png,jpg');
+        $imageTypes = str_replace('mimes:', '', $imageTypes);
+        $imageTypes = explode(',', $imageTypes);
+        $imageTypes = implode(', ', $imageTypes);
+
+        $fileTypes = env('SERVER_ACCEPT_FILE', 'mimes:pdf');
+        $fileTypes = str_replace('mimes:', '', $fileTypes);
+        $fileTypes = explode(',', $fileTypes);
+        $fileTypes = implode(', ', $fileTypes);
+
         $validator = Validator::make([
             'bookName' => $bookName,
             'bookEdition' => $bookEdition,
@@ -264,9 +284,9 @@ class Book extends Controller
             'physicalQuantity'  => 'nullable|numeric|min:0',
             'filePrice' => 'nullable|numeric|min:0',
             'bookImages' => 'max:1',
-            'bookImages.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'bookImages.*' => ['nullable', 'image', env('SERVER_ACCEPT_IMAGE', 'mimes:jpeg,png,jpg'), 'max:2048'],
             'pdfFiles' => 'max:1',
-            'pdfFiles.*' => ['nullable', 'mimes:pdf', 'max:512000'],
+            'pdfFiles.*' => ['nullable', env('SERVER_ACCEPT_FILE', 'mimes:pdf'), 'max:512000'],
             'removeFile' => [
                 function (string $attribute, mixed $value, Closure $fail)
                 use ($request) {
@@ -284,9 +304,9 @@ class Book extends Controller
                 }
             ],
         ], [
-            'bookImages.*.mimes' => 'The image must be a file of type: jpeg, png, jpg.',
+            'bookImages.*.mimes' => "The image must be a file of type: {$imageTypes}.",
             'bookImages.*.max' => 'The image size must not be greater than 2MB.',
-            'pdfFiles.*.mimes' => 'The file must be a file of type: pdf.',
+            'pdfFiles.*.mimes' => "The file must be a file of type: {$fileTypes}.",
             'pdfFiles.*.max' => 'The file size must not be greater than 500MB.',
             'bookName.unique' => 'The book name and edition have already been taken.',
             'bookEdition.unique' => 'The book name and edition have already been taken.',

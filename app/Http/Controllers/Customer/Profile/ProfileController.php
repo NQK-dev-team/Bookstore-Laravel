@@ -31,6 +31,11 @@ class ProfileController extends Controller
         $input = $request->all();
         $input = array_map('trim', $input);
 
+        $imageTypes = env('SERVER_ACCEPT_IMAGE', 'mimes:jpeg,png,jpg');
+        $imageTypes = str_replace('mimes:', '', $imageTypes);
+        $imageTypes = explode(',', $imageTypes);
+        $imageTypes = implode(', ', $imageTypes);
+
         $validator = Validator::make($input, [
             'name' => 'required|string|max:255',
             'phone' => ['required', 'numeric', 'digits:10', Rule::unique('users', 'phone')->whereNot('id', Auth::user()->id)->whereNull('deleted_at')],
@@ -38,10 +43,10 @@ class ProfileController extends Controller
             'gender' => 'required|in:M,F,O',
             'address' => 'nullable|string|max:1000',
             'images' => 'max:1',
-            'images.*' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'images.*' => ['nullable', 'image',env('SERVER_ACCEPT_IMAGE', 'mimes:jpeg,png,jpg'), 'max:2048'],
         ], [
             'dob.before_or_equal' => 'You must be at least 18 years old.',
-            'images.*.mimes' => 'The image must be a file of type: jpeg, png, jpg.',
+            'images.*.mimes' => "The image must be a file of type: {$imageTypes}.",
             'images.*.max' => 'The image size must not be greater than 2MB.',
         ]);
 
