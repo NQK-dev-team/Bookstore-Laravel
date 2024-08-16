@@ -78,7 +78,7 @@
             <label for="email-template" class="form-label mt-3">Email Template</label>
             <input
                 class="form-control form-control-sm {{ $errors->has('emails') || $errors->has('emails.0') ? 'is-invalid' : '' }}"
-                id="email-template" type="file" wire:model="emails" accept=".htm,.html" multiple
+                id="email-template" type="file" wire:model="emails" accept=".htm,.html"
                 wire:key="{{ $inputFileKey }}">
             @if ($errors->has('emails'))
                 <div class="invalid-feedback">
